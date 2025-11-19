@@ -1,0 +1,158 @@
+meta {
+  name: signup
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseURL-dev}}/auth/signup
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "doctor@example.com",
+    "password": "SecurePass123!",
+    "firstName": "John",
+    "lastName": "Doe",
+    "gender": "male",
+    "dob": "1990-01-15T00:00:00Z",
+    "country": "United States",
+    "role": "doctor",
+    "specialty": "Cardiology",
+    "medicalCertificate": "MD-12345-2020"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  # Sign Up
+  
+  Creates a new user account. Supports both doctor and patient roles with role-specific validation.
+  
+  ## Request Body
+  
+  ### Common Fields (Required for all users)
+  
+  - `email` (string, required): Valid email address (must be unique)
+  - `password` (string, required): Minimum 8 characters
+  - `firstName` (string, required): User's first name
+  - `lastName` (string, required): User's last name
+  - `gender` (enum, required): Either "male" or "female"
+  - `dob` (string, required): Date of birth in ISO 8601 format
+  - `country` (string, required): User's country
+  - `role` (enum, required): Either "doctor" or "patient"
+  
+  ### Doctor-Specific Fields (Required when role is "doctor")
+  
+  - `specialty` (string, required): Medical specialty (e.g., "Cardiology", "Pediatrics")
+  - `medicalCertificate` (string, required): Medical license/certificate number
+  
+  ### Patient Example
+  
+  ```json
+  {
+    "email": "patient@example.com",
+    "password": "SecurePass123!",
+    "firstName": "Jane",
+    "lastName": "Smith",
+    "gender": "female",
+    "dob": "1995-06-20T00:00:00Z",
+    "country": "Canada",
+    "role": "patient"
+  }
+  ```
+  
+  ### Doctor Example
+  
+  ```json
+  {
+    "email": "doctor@example.com",
+    "password": "SecurePass123!",
+    "firstName": "John",
+    "lastName": "Doe",
+    "gender": "male",
+    "dob": "1990-01-15T00:00:00Z",
+    "country": "United States",
+    "role": "doctor",
+    "specialty": "Cardiology",
+    "medicalCertificate": "MD-12345-2020"
+  }
+  ```
+  
+  ## Success Response (200 OK)
+  
+  ```json
+  {
+    "status": "success",
+    "message": "Account created successfully",
+    "data": {
+      "email": "doctor@example.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "role": "doctor",
+      "avatar": "https://avatar.iran.liara.run/public/boy"
+    }
+  }
+  ```
+  
+  **Note**:
+  - Sets `zayneAccessToken` and `zayneRefreshToken` cookies
+  - Avatar is auto-generated based on gender
+  - Verification email will be sent (TODO)
+  
+  ## Error Response (400 Bad Request)
+  
+  If user already exists:
+  
+  ```json
+  {
+    "status": "error",
+    "message": "User already exists"
+  }
+  ```
+  
+  ## Error Response (422 Validation Error)
+  
+  If password is too short:
+  
+  ```json
+  {
+    "status": "error",
+    "message": "Validation Error: ✖ Password must be at least 8 characters long → at password",
+    "errors": {
+      "password": ["Password must be at least 8 characters long"]
+    }
+  }
+  ```
+  
+  If doctor is missing required fields:
+  
+  ```json
+  {
+    "status": "error",
+    "message": "Validation Error: ✖ Medical certificate is required for doctors → at medicalCertificate | ✖ Specialty is required for doctors → at specialty",
+    "errors": {
+      "medicalCertificate": ["Medical certificate is required for doctors"],
+      "specialty": ["Specialty is required for doctors"]
+    }
+  }
+  ```
+  
+  If email format is invalid:
+  
+  ```json
+  {
+    "status": "error",
+    "message": "Validation Error: ✖ Invalid email → at email",
+    "errors": {
+      "email": ["Invalid email"]
+    }
+  }
+  ```
+}

@@ -1,5 +1,5 @@
+import { AppError, AppJsonResponse } from "@/lib/utils";
 import { validateWithZod } from "@/middlewares";
-import { AppError, AppJsonResponse } from "@/utils";
 import {
 	backendApiSchemaRoutes,
 	type DiseaseSchemaType,

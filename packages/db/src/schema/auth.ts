@@ -5,6 +5,7 @@ export const users = pg.pgTable("users", {
 	avatar: pg.text().notNull(),
 	country: pg.text().notNull(),
 	createdAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
+	deletedAt: pg.timestamp({ withTimezone: true }),
 	dob: pg.timestamp({ mode: "string", withTimezone: true }).notNull(),
 	email: pg.text().notNull().unique(),
 	emailVerifiedAt: pg.timestamp({ withTimezone: true }),
@@ -12,16 +13,20 @@ export const users = pg.pgTable("users", {
 	gender: pg.text({ enum: ["male", "female"] }).notNull(),
 	googleId: pg.text(),
 	id: pg.uuid().defaultRandom().primaryKey(),
-	isDeleted: pg.boolean().notNull().default(false),
 	isSuspended: pg.boolean().notNull().default(false),
 	lastLoginAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
 	lastName: pg.text().notNull(),
+	loginRetryCount: pg.integer().notNull().default(0),
 	medicalCertificate: pg.text(),
 	passwordHash: pg.text().notNull(),
 	refreshTokenArray: pg.jsonb().notNull().$type<string[]>().default([]),
 	role: pg.text({ enum: ["doctor", "patient"] }).notNull(),
 	specialty: pg.text(),
-	updatedAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
+	updatedAt: pg
+		.timestamp({ withTimezone: true })
+		.notNull()
+		.defaultNow()
+		.$onUpdate(() => new Date()),
 });
 
 export const InsertUserSchema = createInsertSchema(users);

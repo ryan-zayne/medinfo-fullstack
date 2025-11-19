@@ -32,6 +32,10 @@ export default zayne(
 		rules: { "node/no-process-env": "off" },
 	},
 	{
+		files: ["apps/backend/src/middlewares/**/*.ts"],
+		rules: { "import/default": "off" },
+	},
+	{
 		files: ["apps/backend/testing.ts"],
 		rules: { "unicorn/no-empty-file": "off" },
 	}

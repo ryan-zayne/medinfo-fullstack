@@ -3,8 +3,8 @@ import type { ErrorHandler } from "hono";
 import type { HTTPException } from "hono/http-exception";
 import type { BlankEnv } from "hono/types";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
-import { errorCodes } from "../../constants";
-import { AppError } from "../../utils";
+import { errorCodes } from "../../app/constants";
+import { AppError } from "../../lib/utils";
 import { transformError } from "./transformError";
 
 const errorHandler: ErrorHandler<BlankEnv> = (error: AppError | Error | HTTPException, ctx) => {

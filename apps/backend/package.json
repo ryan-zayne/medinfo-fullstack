@@ -13,6 +13,7 @@
 		"test:code": "tsx testing.ts"
 	},
 	"dependencies": {
+		"@colors/colors": "^1.6.0",
 		"@dotenvx/dotenvx": "catalog:",
 		"@hono/node-server": "1.19.6",
 		"@medinfo/backend-db": "workspace:*",
@@ -20,21 +21,25 @@
 		"@medinfo/shared": "workspace:*",
 		"@node-rs/argon2": "^2.0.2",
 		"@zayne-labs/callapi": "1.11.23",
-		"@zayne-labs/toolkit-core": "0.12.12",
-		"@zayne-labs/toolkit-type-helpers": "0.12.12",
+		"@zayne-labs/toolkit-core": "0.12.14",
+		"@zayne-labs/toolkit-type-helpers": "0.12.14",
 		"@zayne-labs/tsconfig": "^0.11.5",
 		"consola": "3.4.2",
 		"cross-env": "^10.1.0",
+		"date-fns": "4.1.0",
 		"drizzle-orm": "0.44.7",
-		"hono": "4.10.4",
+		"hono": "4.10.6",
+		"hono-pino": "^0.10.3",
 		"jsonwebtoken": "^9.0.2",
+		"pino": "^10.1.0",
+		"pino-pretty": "^13.1.2",
 		"tsx": "4.20.6",
 		"zod": "catalog:"
 	},
 	"devDependencies": {
 		"@total-typescript/ts-reset": "0.6.1",
 		"@types/jsonwebtoken": "^9.0.10",
-		"@types/node": "24.10.0",
+		"@types/node": "24.10.1",
 		"tsdown": "catalog:",
 		"typescript": "catalog:"
 	}

@@ -1,4 +1,4 @@
-import { getValidatedValue } from "@/utils";
+import { getValidatedValue } from "@/lib/utils";
 import type { ValidationTargets } from "hono";
 import { validator } from "hono/validator";
 import type { z } from "zod";

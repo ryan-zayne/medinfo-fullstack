@@ -1,4 +1,4 @@
-import { AppError } from "@/utils";
+import { AppError } from "@/lib/utils";
 import type { HealthTipSchemaType } from "@medinfo/shared/validation/backendApiSchema";
 import { createFetchClient } from "@zayne-labs/callapi";
 import { z } from "zod";

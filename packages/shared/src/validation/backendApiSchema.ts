@@ -75,13 +75,8 @@ const defaultSchemaRoute = defineSchemaRoutes({
 	},
 });
 
-const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
-
-const stringWithNumberValidation = (key: "limit" | "page") => {
-	return z
-		.transform((value: string) => Number(value))
-		.refine((value) => !Number.isNaN(value), `${capitalize(key)} must be a number`)
-		.refine((value) => value > 0, `${capitalize(key)} must be greater than 0`);
+const stringWithNumberValidation = () => {
+	return z.preprocess((value: string) => Number(value), z.int().positive());
 };
 
 const healthTipRoutes = defineSchemaRoutes({
@@ -89,10 +84,7 @@ const healthTipRoutes = defineSchemaRoutes({
 		data: withBaseSuccessResponse(
 			z.array(HealthTipSchema.omit({ lastUpdated: true, mainContent: true }))
 		),
-		query: z
-			.object({ limit: stringWithNumberValidation("limit") })
-			.partial()
-			.optional(),
+		query: z.object({ limit: stringWithNumberValidation() }).partial().optional(),
 	},
 
 	"@get/health-tips/one/:id": {
@@ -121,19 +113,17 @@ const diseaseRoutes = defineSchemaRoutes({
 		),
 		query: z
 			.object({
-				limit: stringWithNumberValidation("limit"),
-				page: stringWithNumberValidation("page"),
-				random: z
-					.transform((value: string) => {
-						if (value === "true") {
-							return true;
-						}
-						if (value === "false") {
-							return false;
-						}
-						return "unknown";
-					})
-					.refine((value) => value !== "unknown", "random must be 'true' or 'false'"),
+				limit: stringWithNumberValidation(),
+				page: stringWithNumberValidation(),
+				random: z.preprocess((value: string) => {
+					if (value === "true") {
+						return true;
+					}
+					if (value === "false") {
+						return false;
+					}
+					return value;
+				}, z.boolean()),
 			})
 			.partial()
 			.optional(),
@@ -160,51 +150,97 @@ const diseaseRoutes = defineSchemaRoutes({
 	},
 });
 
-const authRoutes = defineSchemaRoutes({
-	"@post/auth/signup": {
-		body: InsertUserSchema.pick({
-			country: true,
-			dob: true,
-			email: true,
-			firstName: true,
-			gender: true,
-			lastName: true,
-			medicalCertificate: true,
-			role: true,
-			specialty: true,
-		})
-			.extend({
-				password: z.string().min(8, "Password must be at least 8 characters long"),
-			})
-			.superRefine((data, ctx) => {
-				if (data.role === "doctor" && !data.medicalCertificate) {
-					ctx.addIssue({
-						code: "custom",
-						message: "Medical certificate is required for doctors",
-						path: ["medicalCertificate"],
-					});
-				}
+const authRoutes = () => {
+	const PasswordSchema = z.string().min(8, "Password must be at least 8 characters long");
 
-				if (data.role === "doctor" && !data.specialty) {
-					ctx.addIssue({
-						code: "custom",
-						message: "Specialty is required for doctors",
-						path: ["specialty"],
-					});
-				}
+	const PatientSchema = SelectUserSchema.pick({
+		avatar: true,
+		email: true,
+		firstName: true,
+		lastName: true,
+		role: true,
+	});
+
+	const DoctorRequiredSchema = SelectUserSchema.pick({
+		medicalCertificate: true,
+		specialty: true,
+	});
+
+	// const DoctorSchema = z.object({
+	// 	...PatientSchema.shape,
+	// 	...DoctorRequiredSchema.shape,
+	// 	medicalCertificate: DoctorRequiredSchema.shape.medicalCertificate.unwrap(),
+	// 	role: z.literal("doctor"),
+	// 	specialty: DoctorRequiredSchema.shape.specialty.unwrap(),
+	// });
+
+	const UserDataSchema = z.object({
+		...PatientSchema.shape,
+		...DoctorRequiredSchema.shape,
+	});
+
+	return defineSchemaRoutes({
+		"@get/auth/session": {
+			data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
+		},
+
+		"@get/auth/signout": {
+			data: withBaseSuccessResponse(z.null()),
+		},
+
+		"@post/auth/signin": {
+			body: InsertUserSchema.pick({
+				email: true,
+			}).extend({
+				password: PasswordSchema,
 			}),
-		data: withBaseSuccessResponse(
-			SelectUserSchema.pick({ avatar: true, email: true, firstName: true, lastName: true, role: true })
-		),
-	},
-});
+
+			data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
+		},
+
+		"@post/auth/signup": {
+			body: InsertUserSchema.pick({
+				country: true,
+				dob: true,
+				email: true,
+				firstName: true,
+				gender: true,
+				lastName: true,
+				medicalCertificate: true,
+				role: true,
+				specialty: true,
+			})
+				.extend({
+					password: PasswordSchema,
+				})
+				.superRefine((data, ctx) => {
+					if (data.role === "doctor" && !data.medicalCertificate) {
+						ctx.addIssue({
+							code: "custom",
+							message: "Medical certificate is required for doctors",
+							path: ["medicalCertificate"],
+						});
+					}
+
+					if (data.role === "doctor" && !data.specialty) {
+						ctx.addIssue({
+							code: "custom",
+							message: "Specialty is required for doctors",
+							path: ["specialty"],
+						});
+					}
+				}),
+			data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
+		},
+	});
+};
 
 export const backendApiSchema = defineSchema(
 	{
 		...defaultSchemaRoute,
 		...diseaseRoutes,
 		...healthTipRoutes,
-		...authRoutes,
+		...authRoutes(),
 	},
 	{ strict: true }
 );

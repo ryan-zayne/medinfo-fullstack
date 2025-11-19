@@ -1,10 +1,10 @@
+import { AppJsonResponse } from "@/lib/utils/AppJsonResponse";
 import { validateWithZod } from "@/middlewares";
-import { AppJsonResponse } from "@/utils/AppJsonResponse";
 import { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
 import { omitKeys } from "@zayne-labs/toolkit-core";
 import { Hono } from "hono";
-import { getRandomHealthTipIds } from "./services/common";
 import { healthApi } from "./services/api";
+import { getRandomHealthTipIds } from "./services/common";
 
 const healthTipsRoutes = new Hono()
 	.basePath("/health-tips")

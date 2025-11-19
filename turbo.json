@@ -11,6 +11,9 @@
 			"dependsOn": ["^build"],
 			"outputs": ["dist/**", ".next/**", "!.next/cache/**", "build", ".vercel"]
 		},
+		"db:studio": {
+			"persistent": true
+		},
 		"lint:format": {},
 		"lint:eslint": {},
 		"lint:type-check": {},

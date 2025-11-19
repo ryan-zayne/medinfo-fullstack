@@ -1,4 +1,4 @@
-import { AppError } from "@/utils";
+import { AppError } from "@/lib/utils";
 import { DiseaseSchema } from "@medinfo/shared/validation/backendApiSchema";
 import fs from "node:fs/promises";
 import path from "node:path";
