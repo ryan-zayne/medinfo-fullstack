@@ -15,6 +15,7 @@
 	"dependencies": {
 		"@colors/colors": "^1.6.0",
 		"@dotenvx/dotenvx": "catalog:",
+		"@hono-storage/node-disk": "^0.0.17",
 		"@hono/node-server": "1.19.6",
 		"@medinfo/backend-db": "workspace:*",
 		"@medinfo/env": "workspace:*",
@@ -24,6 +25,7 @@
 		"@zayne-labs/toolkit-core": "0.12.14",
 		"@zayne-labs/toolkit-type-helpers": "0.12.14",
 		"@zayne-labs/tsconfig": "^0.11.5",
+		"cloudinary": "^2.8.0",
 		"consola": "3.4.2",
 		"cross-env": "^10.1.0",
 		"date-fns": "4.1.0",

@@ -9,6 +9,9 @@ const stringBoolean = z.stringbool({ falsy: ["false"], truthy: ["true"] });
 export const envSchema = z.object({
 	ACCESS_JWT_EXPIRES_IN: z.string().transform((value) => evaluateString<number>(value)),
 	ACCESS_SECRET: z.string(),
+	CLOUDINARY_API_KEY: z.string(),
+	CLOUDINARY_API_SECRET: z.string(),
+	CLOUDINARY_CLOUD_NAME: z.string(),
 	DATABASE_URL_DEV: z.string(),
 	DATABASE_URL_PROD: z.string(),
 	DB_MIGRATING: stringBoolean.default(false),

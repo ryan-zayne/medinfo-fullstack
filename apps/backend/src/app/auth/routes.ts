@@ -1,6 +1,7 @@
 import { AppError, AppJsonResponse } from "@/lib/utils";
 import { validateWithZod } from "@/middlewares";
 import { protect } from "@/middlewares/protect/protect";
+import { uploadStreamToCloudinary } from "@/services/cloudinary";
 import { db } from "@medinfo/backend-db";
 import { users } from "@medinfo/backend-db/schema/auth";
 import { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
@@ -23,20 +24,23 @@ const authRoutes = new Hono()
 	.basePath("/auth")
 	.post(
 		"/signup",
-		validateWithZod("json", backendApiSchemaRoutes["@post/auth/signup"].body),
+		validateWithZod(
+			"json",
+			backendApiSchemaRoutes["@post/auth/signup"].body.omit({ medicalCertificate: true })
+		),
 		async (ctx) => {
-			const {
-				country,
-				dob,
-				email,
-				firstName,
-				gender,
-				lastName,
-				medicalCertificate,
-				password,
-				role,
-				specialty,
-			} = ctx.req.valid("json");
+			const { country, dob, email, firstName, gender, lastName, password, role, specialty } =
+				ctx.req.valid("json");
+
+			const filesSchema = backendApiSchemaRoutes["@post/auth/signup"].body.pick({
+				medicalCertificate: true,
+			});
+
+			const validFiles = filesSchema.parse(await ctx.req.parseBody());
+
+			const uploadResult = await uploadStreamToCloudinary(validFiles.medicalCertificate);
+
+			const medicalCertificate = uploadResult ? uploadResult.secure_url : null;
 
 			const [existingUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
 

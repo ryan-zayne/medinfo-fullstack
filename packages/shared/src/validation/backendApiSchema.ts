@@ -166,14 +166,6 @@ const authRoutes = () => {
 		specialty: true,
 	});
 
-	// const DoctorSchema = z.object({
-	// 	...PatientSchema.shape,
-	// 	...DoctorRequiredSchema.shape,
-	// 	medicalCertificate: DoctorRequiredSchema.shape.medicalCertificate.unwrap(),
-	// 	role: z.literal("doctor"),
-	// 	specialty: DoctorRequiredSchema.shape.specialty.unwrap(),
-	// });
-
 	const UserDataSchema = z.object({
 		...PatientSchema.shape,
 		...DoctorRequiredSchema.shape,
@@ -211,10 +203,16 @@ const authRoutes = () => {
 				specialty: true,
 			})
 				.extend({
+					medicalCertificate: z.file().optional(),
 					password: PasswordSchema,
+					specialty: z.string().optional(),
 				})
 				.superRefine((data, ctx) => {
-					if (data.role === "doctor" && !data.medicalCertificate) {
+					if (data.role !== "doctor") {
+						return;
+					}
+
+					if (!data.medicalCertificate) {
 						ctx.addIssue({
 							code: "custom",
 							message: "Medical certificate is required for doctors",
@@ -222,7 +220,7 @@ const authRoutes = () => {
 						});
 					}
 
-					if (data.role === "doctor" && !data.specialty) {
+					if (!data.specialty) {
 						ctx.addIssue({
 							code: "custom",
 							message: "Specialty is required for doctors",
