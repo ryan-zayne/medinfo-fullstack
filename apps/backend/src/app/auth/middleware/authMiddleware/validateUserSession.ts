@@ -3,7 +3,7 @@ import {
 	decodeJwtToken,
 	generateAccessToken,
 	isTokenInWhitelist,
-	type DecodedJwtPayload,
+	type DecodedAuthJwtPayload,
 } from "@/app/auth/services/common";
 import { ENVIRONMENT } from "@/config/env";
 import { AppError } from "@/lib/utils";
@@ -25,7 +25,10 @@ const AUTH_ERROR_MESSAGES = defineEnum({
 	USER_NOT_FOUND: "User not found or not logged in",
 });
 
-const getAndVerifyUserFromToken = async (decodedPayload: DecodedJwtPayload, zayneRefreshToken: string) => {
+const getAndVerifyUserFromToken = async (
+	decodedPayload: DecodedAuthJwtPayload,
+	zayneRefreshToken: string
+) => {
 	const [currentUser] = await db.select().from(users).where(eq(users.id, decodedPayload.id)).limit(1);
 
 	if (!currentUser) {

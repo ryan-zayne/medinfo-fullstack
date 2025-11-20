@@ -19,11 +19,11 @@ export type JwtOptions<TExtraOptions> = TExtraOptions & {
 	secretKey: string;
 };
 
-export type DecodedJwtPayload = {
+export type DecodedAuthJwtPayload = {
 	id: string;
 };
 
-export const decodeJwtToken = <TDecodedPayload extends Record<string, unknown> = DecodedJwtPayload>(
+export const decodeJwtToken = <TDecodedPayload extends Record<string, unknown> = DecodedAuthJwtPayload>(
 	token: string,
 	options: JwtOptions<jwt.VerifyOptions>
 ) => {
@@ -34,7 +34,7 @@ export const decodeJwtToken = <TDecodedPayload extends Record<string, unknown> =
 	return decodedPayload;
 };
 
-export const encodeJwtToken = <TDecodedPayload extends Record<string, unknown> = DecodedJwtPayload>(
+export const encodeJwtToken = <TDecodedPayload extends Record<string, unknown> = DecodedAuthJwtPayload>(
 	payload: TDecodedPayload,
 	options: JwtOptions<jwt.SignOptions>
 ) => {
