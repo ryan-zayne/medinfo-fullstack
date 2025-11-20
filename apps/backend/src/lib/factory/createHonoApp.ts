@@ -1,6 +1,6 @@
 import { corsOptions } from "@/app/constants/corsOptions";
-import { errorHandler, notFoundHandler } from "@/middlewares";
-import { pinoLogger } from "@/middlewares/pinoLogger";
+import { errorHandler, notFoundHandler } from "@/middleware";
+import { pinoLoggerMiddleware } from "@/middleware/pinoLoggerMiddleware";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
@@ -17,7 +17,7 @@ const createHonoApp = () => {
 	 *  == Middleware - Logger
 	 */
 	// app.use(logger((...args) => consola.log(...args)));
-	app.use(requestId(), pinoLogger());
+	app.use(requestId(), pinoLoggerMiddleware());
 
 	/**
 	 *  == Notfound Route handler

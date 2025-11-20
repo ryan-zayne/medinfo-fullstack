@@ -3,7 +3,7 @@ import { pinoLogger as pinoLoggerPrimitive } from "hono-pino";
 import { pino } from "pino";
 import pretty from "pino-pretty";
 
-const pinoLogger = () => {
+const pinoLoggerMiddleware = () => {
 	return pinoLoggerPrimitive({
 		pino: pino(
 			{
@@ -19,4 +19,4 @@ const pinoLogger = () => {
 	});
 };
 
-export { pinoLogger };
+export { pinoLoggerMiddleware };

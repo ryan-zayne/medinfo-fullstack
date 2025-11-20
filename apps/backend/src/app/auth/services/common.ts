@@ -104,6 +104,12 @@ export const removeCookie = (ctx: Context, name: PossibleCookieNames) => {
 	cookieHelpers.deleteCookie(ctx, name);
 };
 
+export const isTokenInWhitelist = (refreshTokenArray: string[], zayneRefreshToken: string) => {
+	const whiteListSet = new Set(refreshTokenArray);
+
+	return whiteListSet.has(zayneRefreshToken);
+};
+
 export const getUpdatedTokenArray = (options: {
 	currentUser: SelectUserType;
 	zayneRefreshToken: string | undefined;
@@ -118,12 +124,9 @@ export const getUpdatedTokenArray = (options: {
 	// == So it can be seen as a token reuse situation. Whether it's valid or not is of no concern rn.
 	// == Is it a possible token reuse attack or not? E no concern me.
 	// == Just log out the user from all devices by removing all tokens from the array to avoid any possible wahala
-	if (!currentUser.refreshTokenArray.includes(zayneRefreshToken)) {
+	if (!isTokenInWhitelist(currentUser.refreshTokenArray, zayneRefreshToken)) {
 		consola.warn("Possible token reuse detected!");
-		consola.warn({
-			timestamp: new Date().toISOString(),
-			userId: currentUser.id,
-		});
+		consola.trace({ timestamp: new Date().toISOString(), userId: currentUser.id });
 
 		return [];
 	}

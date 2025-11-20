@@ -17,7 +17,7 @@ export const users = pg.pgTable("users", {
 	lastLoginAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
 	lastName: pg.text().notNull(),
 	loginRetryCount: pg.integer().notNull().default(0),
-	medicalCertificate: pg.text(),
+	medicalLicense: pg.text(),
 	passwordHash: pg.text().notNull(),
 	refreshTokenArray: pg.jsonb().notNull().$type<string[]>().default([]),
 	role: pg.text({ enum: ["doctor", "patient"] }).notNull(),

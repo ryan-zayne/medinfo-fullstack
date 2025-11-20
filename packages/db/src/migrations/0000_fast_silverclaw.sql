@@ -14,7 +14,7 @@ CREATE TABLE "users" (
 	"last_login_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"last_name" text NOT NULL,
 	"login_retry_count" integer DEFAULT 0 NOT NULL,
-	"medical_certificate" text,
+	"medical_license" text,
 	"password_hash" text NOT NULL,
 	"refresh_token_array" jsonb DEFAULT '[]'::jsonb NOT NULL,
 	"role" text NOT NULL,

@@ -162,7 +162,7 @@ const authRoutes = () => {
 	});
 
 	const DoctorRequiredSchema = SelectUserSchema.pick({
-		medicalCertificate: true,
+		medicalLicense: true,
 		specialty: true,
 	});
 
@@ -198,12 +198,12 @@ const authRoutes = () => {
 				firstName: true,
 				gender: true,
 				lastName: true,
-				medicalCertificate: true,
+				medicalLicense: true,
 				role: true,
 				specialty: true,
 			})
 				.extend({
-					medicalCertificate: z.file().optional(),
+					medicalLicense: z.file().optional(),
 					password: PasswordSchema,
 					specialty: z.string().optional(),
 				})
@@ -212,11 +212,11 @@ const authRoutes = () => {
 						return;
 					}
 
-					if (!data.medicalCertificate) {
+					if (!data.medicalLicense) {
 						ctx.addIssue({
 							code: "custom",
 							message: "Medical certificate is required for doctors",
-							path: ["medicalCertificate"],
+							path: ["medicalLicense"],
 						});
 					}
 

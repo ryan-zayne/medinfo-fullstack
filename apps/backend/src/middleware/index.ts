@@ -1,3 +1,3 @@
 export * from "./errorHandler";
 export * from "./notFoundHandler";
-export * from "./validateWithZod";
+export * from "./validateWithZodMiddleware";

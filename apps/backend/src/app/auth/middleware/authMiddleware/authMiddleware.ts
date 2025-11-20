@@ -7,7 +7,7 @@ import { eq } from "drizzle-orm";
 import { createMiddleware } from "hono/factory";
 import { validateUserSession } from "./validateUserSession";
 
-const protect = createMiddleware<HonoAppBindings>(async (ctx, next) => {
+const authMiddleware = createMiddleware<HonoAppBindings>(async (ctx, next) => {
 	const zayneAccessToken = getCookie(ctx, "zayneAccessToken");
 	const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
 
@@ -55,4 +55,4 @@ const protect = createMiddleware<HonoAppBindings>(async (ctx, next) => {
 	await next();
 });
 
-export { protect };
+export { authMiddleware };

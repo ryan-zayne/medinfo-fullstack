@@ -1,5 +1,5 @@
 import { AppJsonResponse } from "@/lib/utils/AppJsonResponse";
-import { validateWithZod } from "@/middlewares";
+import { validateWithZodMiddleware } from "@/middleware";
 import { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
 import { omitKeys } from "@zayne-labs/toolkit-core";
 import { Hono } from "hono";
@@ -10,7 +10,7 @@ const healthTipsRoutes = new Hono()
 	.basePath("/health-tips")
 	.get(
 		"/all",
-		validateWithZod("query", backendApiSchemaRoutes["@get/health-tips/all"].query),
+		validateWithZodMiddleware("query", backendApiSchemaRoutes["@get/health-tips/all"].query),
 		async (ctx) => {
 			const { limit = 6 } = ctx.req.valid("query") ?? {};
 
@@ -31,7 +31,7 @@ const healthTipsRoutes = new Hono()
 	)
 	.get(
 		"/one/:id",
-		validateWithZod("param", backendApiSchemaRoutes["@get/health-tips/one/:id"].params),
+		validateWithZodMiddleware("param", backendApiSchemaRoutes["@get/health-tips/one/:id"].params),
 		async (ctx) => {
 			const { id } = ctx.req.valid("param");
 

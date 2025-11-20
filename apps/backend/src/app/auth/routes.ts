@@ -1,6 +1,4 @@
-import { AppError, AppJsonResponse } from "@/lib/utils";
-import { validateWithZod } from "@/middlewares";
-import { protect } from "@/middlewares/protect/protect";
+import { AppError, AppJsonResponse, getValidatedValue } from "@/lib/utils";
 import { uploadStreamToCloudinary } from "@/services/cloudinary";
 import { db } from "@medinfo/backend-db";
 import { users } from "@medinfo/backend-db/schema/auth";
@@ -8,6 +6,7 @@ import { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSch
 import { differenceInHours } from "date-fns";
 import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
+import { authMiddleware } from "./middleware/authMiddleware";
 import {
 	generateAccessToken,
 	generateRefreshToken,
@@ -24,23 +23,22 @@ const authRoutes = new Hono()
 	.basePath("/auth")
 	.post(
 		"/signup",
-		validateWithZod(
+		validateWithZodMiddleware(
 			"json",
-			backendApiSchemaRoutes["@post/auth/signup"].body.omit({ medicalCertificate: true })
+			backendApiSchemaRoutes["@post/auth/signup"].body.omit({ medicalLicense: true })
 		),
 		async (ctx) => {
 			const { country, dob, email, firstName, gender, lastName, password, role, specialty } =
 				ctx.req.valid("json");
 
-			const filesSchema = backendApiSchemaRoutes["@post/auth/signup"].body.pick({
-				medicalCertificate: true,
-			});
+			const validFiles = await getValidatedValue(
+				await ctx.req.parseBody(),
+				backendApiSchemaRoutes["@post/auth/signup"].body.pick({ medicalLicense: true })
+			);
 
-			const validFiles = filesSchema.parse(await ctx.req.parseBody());
+			const uploadResult = await uploadStreamToCloudinary(validFiles.medicalLicense);
 
-			const uploadResult = await uploadStreamToCloudinary(validFiles.medicalCertificate);
-
-			const medicalCertificate = uploadResult ? uploadResult.secure_url : null;
+			const medicalLicense = uploadResult ? uploadResult.secure_url : null;
 
 			const [existingUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
@@ -62,7 +60,7 @@ const authRoutes = new Hono()
 					firstName,
 					gender,
 					lastName,
-					medicalCertificate,
+					medicalLicense,
 					passwordHash,
 					role,
 					specialty,
@@ -101,7 +99,7 @@ const authRoutes = new Hono()
 	)
 	.post(
 		"/signin",
-		validateWithZod("json", backendApiSchemaRoutes["@post/auth/signin"].body),
+		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/auth/signin"].body),
 		async (ctx) => {
 			const { email, password } = ctx.req.valid("json");
 
@@ -192,7 +190,7 @@ const authRoutes = new Hono()
 			});
 		}
 	)
-	.get("/signout", protect, async (ctx) => {
+	.get("/signout", authMiddleware, async (ctx) => {
 		const currentUser = ctx.get("currentUser");
 
 		const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
@@ -213,7 +211,7 @@ const authRoutes = new Hono()
 			routeSchemaKey: "@get/auth/signout",
 		});
 	})
-	.get("/session", protect, async (ctx) => {
+	.get("/session", authMiddleware, async (ctx) => {
 		const currentUser = ctx.get("currentUser");
 
 		return AppJsonResponse(ctx, {

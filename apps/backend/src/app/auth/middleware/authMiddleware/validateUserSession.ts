@@ -3,6 +3,7 @@ import {
 	decodeJwtToken,
 	generateAccessToken,
 	generateRefreshToken,
+	isTokenInWhitelist,
 	type DecodedJwtPayload,
 } from "@/app/auth/services/common";
 import { ENVIRONMENT } from "@/config/env";
@@ -36,12 +37,10 @@ const getUserFromToken = async (decodedPayload: DecodedJwtPayload, zayneRefreshT
 	// == At this point, the refresh token is still valid but is not in the refreshTokenArray (whitelist)
 	// == So it can be seen as a token reuse situation
 	// == So clear the refreshTokenArray to log out the user from all devices, greatly diminishing the risk of another token reuse attack
-	if (!currentUser.refreshTokenArray.includes(zayneRefreshToken)) {
-		consola.warn({
-			message: "Possible token reuse detected!",
-			timestamp: new Date().toISOString(),
-			userId: currentUser.id,
-		});
+
+	if (!isTokenInWhitelist(currentUser.refreshTokenArray, zayneRefreshToken)) {
+		consola.warn("Possible token reuse detected!");
+		consola.trace({ timestamp: new Date().toISOString(), userId: currentUser.id });
 
 		await db.update(users).set({ refreshTokenArray: [] }).where(eq(users.id, decodedPayload.id));
 

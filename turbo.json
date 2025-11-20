@@ -14,6 +14,7 @@
 		"db:studio": {
 			"persistent": true
 		},
+		"db:push": {},
 		"lint:format": {},
 		"lint:eslint": {},
 		"lint:type-check": {},

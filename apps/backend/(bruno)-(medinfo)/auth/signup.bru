@@ -21,7 +21,7 @@ body:json {
     "country": "United States",
     "role": "doctor",
     "specialty": "Cardiology",
-    "medicalCertificate": "MD-12345-2020"
+    "medicalLicense": "MD-12345-2020"
   }
 }
 
@@ -32,13 +32,13 @@ settings {
 
 docs {
   # Sign Up
-  
+
   Creates a new user account. Supports both doctor and patient roles with role-specific validation.
-  
+
   ## Request Body
-  
+
   ### Common Fields (Required for all users)
-  
+
   - `email` (string, required): Valid email address (must be unique)
   - `password` (string, required): Minimum 8 characters
   - `firstName` (string, required): User's first name
@@ -47,14 +47,14 @@ docs {
   - `dob` (string, required): Date of birth in ISO 8601 format
   - `country` (string, required): User's country
   - `role` (enum, required): Either "doctor" or "patient"
-  
+
   ### Doctor-Specific Fields (Required when role is "doctor")
-  
+
   - `specialty` (string, required): Medical specialty (e.g., "Cardiology", "Pediatrics")
-  - `medicalCertificate` (string, required): Medical license/certificate number
-  
+  - `medicalLicense` (string, required): Medical license/certificate number
+
   ### Patient Example
-  
+
   ```json
   {
     "email": "patient@example.com",
@@ -67,9 +67,9 @@ docs {
     "role": "patient"
   }
   ```
-  
+
   ### Doctor Example
-  
+
   ```json
   {
     "email": "doctor@example.com",
@@ -81,12 +81,12 @@ docs {
     "country": "United States",
     "role": "doctor",
     "specialty": "Cardiology",
-    "medicalCertificate": "MD-12345-2020"
+    "medicalLicense": "MD-12345-2020"
   }
   ```
-  
+
   ## Success Response (200 OK)
-  
+
   ```json
   {
     "status": "success",
@@ -100,27 +100,27 @@ docs {
     }
   }
   ```
-  
+
   **Note**:
   - Sets `zayneAccessToken` and `zayneRefreshToken` cookies
   - Avatar is auto-generated based on gender
   - Verification email will be sent (TODO)
-  
+
   ## Error Response (400 Bad Request)
-  
+
   If user already exists:
-  
+
   ```json
   {
     "status": "error",
     "message": "User already exists"
   }
   ```
-  
+
   ## Error Response (422 Validation Error)
-  
+
   If password is too short:
-  
+
   ```json
   {
     "status": "error",
@@ -130,22 +130,22 @@ docs {
     }
   }
   ```
-  
+
   If doctor is missing required fields:
-  
+
   ```json
   {
     "status": "error",
-    "message": "Validation Error: ✖ Medical certificate is required for doctors → at medicalCertificate | ✖ Specialty is required for doctors → at specialty",
+    "message": "Validation Error: ✖ Medical certificate is required for doctors → at medicalLicense | ✖ Specialty is required for doctors → at specialty",
     "errors": {
-      "medicalCertificate": ["Medical certificate is required for doctors"],
+      "medicalLicense": ["Medical certificate is required for doctors"],
       "specialty": ["Specialty is required for doctors"]
     }
   }
   ```
-  
+
   If email format is invalid:
-  
+
   ```json
   {
     "status": "error",

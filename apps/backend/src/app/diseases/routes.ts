@@ -1,5 +1,5 @@
 import { AppError, AppJsonResponse } from "@/lib/utils";
-import { validateWithZod } from "@/middlewares";
+import { validateWithZodMiddleware } from "@/middleware";
 import {
 	backendApiSchemaRoutes,
 	type DiseaseSchemaType,
@@ -12,7 +12,7 @@ const diseasesRoutes = new Hono()
 	.basePath("/diseases")
 	.get(
 		"/all",
-		validateWithZod("query", backendApiSchemaRoutes["@get/diseases/all"].query),
+		validateWithZodMiddleware("query", backendApiSchemaRoutes["@get/diseases/all"].query),
 		async (ctx) => {
 			const { limit = 6, page = 1, random = false } = ctx.req.valid("query") ?? {};
 
@@ -43,7 +43,7 @@ const diseasesRoutes = new Hono()
 	)
 	.get(
 		"/one/:name",
-		validateWithZod("param", backendApiSchemaRoutes["@get/diseases/one/:name"].params),
+		validateWithZodMiddleware("param", backendApiSchemaRoutes["@get/diseases/one/:name"].params),
 		async (ctx) => {
 			const { name: diseaseName } = ctx.req.valid("param");
 
@@ -69,7 +69,7 @@ const diseasesRoutes = new Hono()
 	)
 	.post(
 		"/add",
-		validateWithZod("json", backendApiSchemaRoutes["@post/diseases/add"].body),
+		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/diseases/add"].body),
 		async (ctx) => {
 			const { details } = ctx.req.valid("json");
 
@@ -99,7 +99,7 @@ const diseasesRoutes = new Hono()
 	)
 	.patch(
 		"/update",
-		validateWithZod("json", backendApiSchemaRoutes["@patch/diseases/update"].body),
+		validateWithZodMiddleware("json", backendApiSchemaRoutes["@patch/diseases/update"].body),
 		async (ctx) => {
 			const { details: diseaseDetails, name: diseaseName } = ctx.req.valid("json");
 
@@ -131,7 +131,7 @@ const diseasesRoutes = new Hono()
 	)
 	.delete(
 		"/delete",
-		validateWithZod("json", backendApiSchemaRoutes["@delete/diseases/delete"].body),
+		validateWithZodMiddleware("json", backendApiSchemaRoutes["@delete/diseases/delete"].body),
 		async (ctx) => {
 			const { name: diseaseName } = ctx.req.valid("json");
 

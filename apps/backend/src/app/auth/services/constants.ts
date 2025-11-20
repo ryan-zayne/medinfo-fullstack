@@ -6,6 +6,6 @@ export const necessaryUserDetails = defineEnum([
 	"email",
 	"avatar",
 	"role",
-	"medicalCertificate",
+	"medicalLicense",
 	"specialty",
 ]);

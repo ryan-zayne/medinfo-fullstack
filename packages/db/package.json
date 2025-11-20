@@ -8,7 +8,7 @@
 	},
 	"scripts": {
 		"db:generate": "drizzle-kit generate",
-		"db:migrate": "drizzle-kit migrate",
+		"db:migrate": "cross-env DB_MIGRATING=true drizzle-kit migrate",
 		"db:push": "drizzle-kit push",
 		"db:studio": "drizzle-kit studio",
 		"dev": "tsx watch src/db.ts",
@@ -20,6 +20,7 @@
 		"@dotenvx/dotenvx": "catalog:",
 		"@medinfo/env": "workspace:*",
 		"@zayne-labs/tsconfig": "0.11.5",
+		"cross-env": "^10.1.0",
 		"drizzle-orm": "0.44.7",
 		"drizzle-zod": "0.8.3",
 		"pg": "8.16.3",
