@@ -4,8 +4,8 @@ import { hash, verify } from "@node-rs/argon2";
 // eslint-disable-next-line import/default
 import jwt from "jsonwebtoken";
 
-import { isProduction } from "@/app/constants";
 import { ENVIRONMENT } from "@/config/env";
+import { isProduction } from "@/constants";
 import type { SelectUserType } from "@medinfo/backend-db/schema/auth";
 import { pickKeys } from "@zayne-labs/toolkit-core";
 import type { UnmaskType } from "@zayne-labs/toolkit-type-helpers";

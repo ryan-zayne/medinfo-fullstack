@@ -1,4 +1,4 @@
-import { corsOptions } from "@/app/constants/corsOptions";
+import { corsOptions } from "@/constants/corsOptions";
 import { errorHandler, notFoundHandler } from "@/middleware";
 import { pinoLoggerMiddleware } from "@/middleware/pinoLoggerMiddleware";
 import { Hono } from "hono";

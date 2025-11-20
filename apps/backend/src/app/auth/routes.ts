@@ -1,4 +1,5 @@
 import { AppError, AppJsonResponse, getValidatedValue } from "@/lib/utils";
+import { validateWithZodMiddleware } from "@/middleware";
 import { uploadStreamToCloudinary } from "@/services/cloudinary";
 import { db } from "@medinfo/backend-db";
 import { users } from "@medinfo/backend-db/schema/auth";
@@ -36,7 +37,10 @@ const authRoutes = new Hono()
 				backendApiSchemaRoutes["@post/auth/signup"].body.pick({ medicalLicense: true })
 			);
 
-			const uploadResult = await uploadStreamToCloudinary(validFiles.medicalLicense);
+			const uploadResult = await uploadStreamToCloudinary(validFiles.medicalLicense, {
+				folder: "medicalCerts",
+				resource_type: "raw",
+			});
 
 			const medicalLicense = uploadResult ? uploadResult.secure_url : null;
 

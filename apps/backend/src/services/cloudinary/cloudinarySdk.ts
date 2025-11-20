@@ -1,6 +1,6 @@
 import { ENVIRONMENT } from "@/config/env";
 import { createPromiseWithResolvers } from "@zayne-labs/toolkit-core";
-import { v2 as cloudinary, type UploadApiResponse } from "cloudinary";
+import { v2 as cloudinary, type UploadApiOptions, type UploadApiResponse } from "cloudinary";
 
 cloudinary.config({
 	api_key: ENVIRONMENT.CLOUDINARY_API_KEY,
@@ -9,7 +9,10 @@ cloudinary.config({
 	secure: true,
 });
 
-export const uploadStreamToCloudinary = async (file: File | undefined) => {
+export const uploadStreamToCloudinary = async (
+	file: File | undefined,
+	uploadOptions?: UploadApiOptions
+) => {
 	if (!file) {
 		return null;
 	}
@@ -21,19 +24,13 @@ export const uploadStreamToCloudinary = async (file: File | undefined) => {
 
 	const uploadStream = cloudinary.uploader.upload_stream(
 		{
-			folder: "medicalCerts",
-			resource_type: "raw",
+			...uploadOptions,
 			unique_filename: true,
 			use_filename: true,
 		},
 		(error, result) => {
-			if (error) {
+			if (error || !result) {
 				reject(error);
-				return;
-			}
-
-			if (!result) {
-				reject(new Error("Upload Result is undefined"));
 				return;
 			}
 
