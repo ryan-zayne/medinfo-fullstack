@@ -12,7 +12,6 @@ const authMiddleware = createMiddleware<HonoAppBindings>(async (ctx, next) => {
 		zayneRefreshToken,
 	});
 
-	//  == Attach the user to the request object and return if no new tokens are generated
 	if (newZayneAccessTokenResult) {
 		setCookie(ctx, "zayneAccessToken", newZayneAccessTokenResult.token, {
 			expires: newZayneAccessTokenResult.expiresAt,

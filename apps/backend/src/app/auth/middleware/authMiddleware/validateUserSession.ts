@@ -17,6 +17,7 @@ import jwt from "jsonwebtoken";
 
 const AUTH_ERROR_MESSAGES = defineEnum({
 	ACCOUNT_SUSPENDED: "Your account is currently suspended",
+	EMAIL_UNVERIFIED: "Your email is yet to be verified",
 	GENERIC_ERROR: "An error occurred, please log in again",
 	INVALID_SESSION: "Invalid session. Please log in again!",
 	SESSION_EXPIRED: "Session expired, please log in again",
@@ -24,7 +25,7 @@ const AUTH_ERROR_MESSAGES = defineEnum({
 	USER_NOT_FOUND: "User not found or not logged in",
 });
 
-const verifyAndGetUserFromToken = async (decodedPayload: DecodedJwtPayload, zayneRefreshToken: string) => {
+const getAndVerifyUserFromToken = async (decodedPayload: DecodedJwtPayload, zayneRefreshToken: string) => {
 	const [currentUser] = await db.select().from(users).where(eq(users.id, decodedPayload.id)).limit(1);
 
 	if (!currentUser) {
@@ -62,6 +63,13 @@ const verifyAndGetUserFromToken = async (decodedPayload: DecodedJwtPayload, zayn
 		});
 	}
 
+	if (!currentUser.emailVerifiedAt) {
+		throw new AppError({
+			code: 422,
+			message: AUTH_ERROR_MESSAGES.EMAIL_UNVERIFIED,
+		});
+	}
+
 	// TODO csrf protection
 	// TODO browser client fingerprinting
 
@@ -87,7 +95,7 @@ const refreshUserSession = async (zayneRefreshToken: string): Promise<ValidSessi
 			secretKey: ENVIRONMENT.REFRESH_SECRET,
 		});
 
-		const currentUser = await verifyAndGetUserFromToken(decodedRefreshPayload, zayneRefreshToken);
+		const currentUser = await getAndVerifyUserFromToken(decodedRefreshPayload, zayneRefreshToken);
 
 		const newZayneAccessTokenResult = generateAccessToken(currentUser);
 
@@ -138,7 +146,9 @@ const validateUserSession = async (tokens: TokenPairFromCookies): Promise<ValidS
 
 	// == If access token is not present, verify the refresh token and generate new tokens
 	if (!zayneAccessToken) {
-		return refreshUserSession(zayneRefreshToken);
+		const newSession = await refreshUserSession(zayneRefreshToken);
+
+		return newSession;
 	}
 
 	try {
@@ -147,7 +157,7 @@ const validateUserSession = async (tokens: TokenPairFromCookies): Promise<ValidS
 			secretKey: ENVIRONMENT.ACCESS_SECRET,
 		});
 
-		const currentUser = await verifyAndGetUserFromToken(decodedAccessPayload, zayneRefreshToken);
+		const currentUser = await getAndVerifyUserFromToken(decodedAccessPayload, zayneRefreshToken);
 
 		return {
 			currentUser,
@@ -156,7 +166,9 @@ const validateUserSession = async (tokens: TokenPairFromCookies): Promise<ValidS
 	} catch (error) {
 		// == Attempt session renewal if the error indicates that the access token is invalid / expired
 		if (error instanceof jwt.JsonWebTokenError || error instanceof jwt.TokenExpiredError) {
-			return refreshUserSession(zayneRefreshToken);
+			const newSession = await refreshUserSession(zayneRefreshToken);
+
+			return newSession;
 		}
 
 		if (AppError.isError(error)) {
