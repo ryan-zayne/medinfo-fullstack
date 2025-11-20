@@ -42,7 +42,7 @@ const authRoutes = new Hono()
 				resource_type: "raw",
 			});
 
-			const medicalLicense = uploadResult ? uploadResult.secure_url : null;
+			const medicalLicenseUrl = uploadResult ? uploadResult.secure_url : null;
 
 			const [existingUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
@@ -64,7 +64,7 @@ const authRoutes = new Hono()
 					firstName,
 					gender,
 					lastName,
-					medicalLicense,
+					medicalLicense: medicalLicenseUrl,
 					passwordHash,
 					role,
 					specialty,
