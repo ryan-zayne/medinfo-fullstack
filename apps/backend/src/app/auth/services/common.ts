@@ -123,7 +123,8 @@ export const getUpdatedTokenArray = (options: {
 	// == If it turns out that the refreshToken is not in the whitelist array, the question is why would a user be signing in with a refreshToken that is not in the array?
 	// == So it can be seen as a token reuse situation. Whether it's valid or not is of no concern rn.
 	// == Is it a possible token reuse attack or not? E no concern me.
-	// == Just log out the user from all devices by removing all tokens from the array to avoid any possible wahala
+	// == Just log out the user from all other devices by removing all tokens from the array to avoid any possible issues
+
 	if (!isTokenInWhitelist(currentUser.refreshTokenArray, zayneRefreshToken)) {
 		consola.warn("Possible token reuse detected!");
 		consola.trace({ timestamp: new Date().toISOString(), userId: currentUser.id });

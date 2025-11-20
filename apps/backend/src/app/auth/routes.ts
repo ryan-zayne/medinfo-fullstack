@@ -107,7 +107,7 @@ const authRoutes = new Hono()
 		async (ctx) => {
 			const { email, password } = ctx.req.valid("json");
 
-			const [currentUser] = await db.select().from(users).where(eq(users.email, email));
+			const [currentUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
 			if (!currentUser) {
 				throw new AppError({
@@ -139,9 +139,9 @@ const authRoutes = new Hono()
 				});
 			}
 
-			const now = new Date();
+			const NOW = new Date();
 
-			const hoursSinceLastLogin = differenceInHours(now, currentUser.lastLoginAt);
+			const hoursSinceLastLogin = differenceInHours(NOW, currentUser.lastLoginAt);
 
 			// == Check if user has exceeded login retries (3 times in 12 hours)
 			if (currentUser.loginRetryCount >= 3 && hoursSinceLastLogin < 12) {

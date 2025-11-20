@@ -3,7 +3,6 @@ import type { ContentfulStatusCode } from "hono/utils/http-status";
 class AppError extends Error {
 	errors?: unknown;
 	errorStatus: string;
-	isOperational: boolean;
 	statusCode: ContentfulStatusCode;
 
 	constructor(options: ErrorOptions & { code: ContentfulStatusCode; errors?: unknown; message: string }) {
@@ -13,7 +12,6 @@ class AppError extends Error {
 
 		this.statusCode = statusCode;
 		this.errorStatus = String(statusCode).startsWith("5") ? "Failed" : "Error";
-		this.isOperational = true;
 		this.errors = errors;
 	}
 
