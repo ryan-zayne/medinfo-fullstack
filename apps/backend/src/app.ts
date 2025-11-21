@@ -25,4 +25,4 @@ app.basePath("/api/v1")
 	.route("", authRoutes)
 	.route("", appointmentsRoutes);
 
-export default app;
+export { app };

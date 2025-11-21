@@ -1,7 +1,7 @@
 import "@colors/colors";
 import { serve } from "@hono/node-server";
 import { consola } from "consola";
-import app from "./app";
+import { app } from "./app";
 import { ENVIRONMENT } from "./config/env";
 
 serve(
@@ -13,3 +13,6 @@ serve(
 		consola.info(`Server is running on 'http://localhost:${info.port}'`.yellow.italic);
 	}
 );
+
+// eslint-disable-next-line unicorn/prefer-export-from
+export default app;
