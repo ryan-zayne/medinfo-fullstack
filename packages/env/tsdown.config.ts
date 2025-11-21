@@ -3,7 +3,8 @@ import { defineConfig } from "tsdown";
 export default defineConfig({
 	clean: true,
 	dts: { newContext: true },
-	entry: ["src/backend.ts"],
+	fixedExtension:false,
+	entry: ["src/*.ts"],
 	format: ["esm"],
 	platform: "node",
 	sourcemap: true,
