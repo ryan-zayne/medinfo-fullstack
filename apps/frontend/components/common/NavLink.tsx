@@ -1,11 +1,11 @@
 "use client";
 
-import type { UrlObject } from "node:url";
 import { cnMerge } from "@/lib/utils/cn";
 import type { InferProps } from "@zayne-labs/toolkit-react/utils";
 import { isString } from "@zayne-labs/toolkit-type-helpers";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { UrlObject } from "node:url";
 
 const isRelativeLink = (value: string | UrlObject | null | undefined): value is string => {
 	return isString(value) && !value.startsWith("/");
@@ -27,6 +27,7 @@ function NavLink(
 
 	return (
 		<Link
+			prefetch={false}
 			href={isRelativeLink(href) ? `${pathname}/${href.replaceAll(" ", "")}` : href}
 			className={cnMerge(
 				transitionType !== "no-transition" && "nav-link-transition relative",

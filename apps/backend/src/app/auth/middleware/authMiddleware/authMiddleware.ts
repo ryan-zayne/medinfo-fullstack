@@ -1,4 +1,4 @@
-import { getCookie, setCookie } from "@/app/auth/services/common";
+import { getCookie, setCookie } from "@/app/auth/services/cookie";
 import type { HonoAppBindings } from "@/lib/types/common";
 import { createMiddleware } from "hono/factory";
 import { validateUserSession } from "./validateUserSession";

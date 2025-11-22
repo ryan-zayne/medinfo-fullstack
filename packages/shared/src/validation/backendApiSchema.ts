@@ -150,9 +150,41 @@ const diseaseRoutes = defineSchemaRoutes({
 	},
 });
 
-const authRoutes = () => {
-	const PasswordSchema = z.string().min(8, "Password must be at least 8 characters long");
+const PasswordSchema = z.string().min(8, "Password must be at least 8 characters long");
 
+export const SignUpSchema = InsertUserSchema.pick({
+	country: true,
+	dob: true,
+	gender: true,
+	role: true,
+})
+	.extend({
+		email: z.email("Please enter a valid email"),
+		firstName: z.string().min(1, "First name is required"),
+		lastName: z.string().min(1, "Last name is required"),
+		medicalLicense: z.file().optional(),
+		password: PasswordSchema,
+		specialty: z.string().optional(),
+	})
+	.superRefine((data, ctx) => {
+		if (data.role === "doctor" && !data.medicalLicense) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Medical certificate is required for doctors",
+				path: ["medicalLicense"],
+			});
+		}
+
+		if (data.role === "doctor" && !data.specialty) {
+			ctx.addIssue({
+				code: "custom",
+				message: "Specialty is required for doctors",
+				path: ["specialty"],
+			});
+		}
+	});
+
+const authRoutes = () => {
 	const PatientSchema = SelectUserSchema.pick({
 		avatar: true,
 		email: true,
@@ -181,9 +213,8 @@ const authRoutes = () => {
 		},
 
 		"@post/auth/signin": {
-			body: InsertUserSchema.pick({
-				email: true,
-			}).extend({
+			body: z.object({
+				email: z.email("Please enter a valid email"),
 				password: PasswordSchema,
 			}),
 
@@ -191,43 +222,7 @@ const authRoutes = () => {
 		},
 
 		"@post/auth/signup": {
-			body: InsertUserSchema.pick({
-				country: true,
-				dob: true,
-				email: true,
-				firstName: true,
-				gender: true,
-				lastName: true,
-				medicalLicense: true,
-				role: true,
-				specialty: true,
-			})
-				.extend({
-					medicalLicense: z.file().optional(),
-					password: PasswordSchema,
-					specialty: z.string().optional(),
-				})
-				.superRefine((data, ctx) => {
-					if (data.role !== "doctor") {
-						return;
-					}
-
-					if (!data.medicalLicense) {
-						ctx.addIssue({
-							code: "custom",
-							message: "Medical certificate is required for doctors",
-							path: ["medicalLicense"],
-						});
-					}
-
-					if (!data.specialty) {
-						ctx.addIssue({
-							code: "custom",
-							message: "Specialty is required for doctors",
-							path: ["specialty"],
-						});
-					}
-				}),
+			body: z.instanceof(FormData),
 			data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
 		},
 	});

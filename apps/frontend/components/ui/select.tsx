@@ -97,7 +97,7 @@ function SelectContent(
 			<SelectPrimitive.Content
 				data-slot="select-content"
 				className={cnMerge(
-					`relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem]
+					`relative z-50 max-h-(--radix-select-content-available-height) min-w-32
 					origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto
 					rounded-md border bg-shadcn-popover text-shadcn-popover-foreground shadow-md
 					data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2

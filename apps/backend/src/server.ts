@@ -10,7 +10,7 @@ serve(
 		port: ENVIRONMENT.PORT,
 	},
 	(info) => {
-		consola.info(`Server is running on 'http://localhost:${info.port}'`.yellow.italic);
+		consola.info(`Server is running on http://localhost:${info.port}`.yellow.italic);
 	}
 );
 

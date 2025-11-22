@@ -4,44 +4,46 @@ import { Main } from "@/app/(primary)/-components";
 import { IconBox, Logo, NavLink, Show } from "@/components/common";
 import { Button, Form } from "@/components/ui";
 import { callBackendApi } from "@/lib/api/callBackendApi";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use } from "react";
 import { useForm } from "react-hook-form";
 
-function SignInPage(props: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-	const methods = useForm({
-		defaultValues: {
-			email: "",
-			password: "",
-		},
-	});
+const SignInSchema = backendApiSchemaRoutes["@post/auth/signin"].body;
 
-	const { control } = methods;
-
-	const router = useRouter();
-
+function SignInPage(props: PageProps<"/signin">) {
 	const { searchParams: searchParamsPromise } = props;
 
 	const searchParams = use(searchParamsPromise);
 
 	const user = searchParams.user as "doctor" | "patient" | undefined;
 
-	const onSubmit = async (data: Record<string, unknown>) => {
-		const resolvedUser = user ?? "patient";
+	const methods = useForm({
+		defaultValues: {
+			email: "",
+			password: "",
+		},
+		resolver: zodResolver(SignInSchema),
+	});
 
-		await callBackendApi("/:user/login", {
+	const { control } = methods;
+
+	const router = useRouter();
+
+	const onSubmit = methods.handleSubmit(async (data) => {
+		await callBackendApi("@post/auth/signin", {
 			body: data,
 			meta: { toast: { success: true } },
-			method: "POST",
 
 			onSuccess: () => {
-				router.push(`/${resolvedUser}`);
-			},
+				const resolvedUser = user ?? "patient";
 
-			params: { user: resolvedUser },
+				router.push(`/dashboard/${resolvedUser}`);
+			},
 		});
-	};
+	});
 
 	return (
 		<Main className="w-full px-0 max-md:max-w-[400px] md:flex md:flex-col md:items-center">
@@ -67,7 +69,7 @@ function SignInPage(props: { searchParams: Promise<Record<string, string | strin
 						<Form.Root
 							methods={methods}
 							className="w-full gap-[14px]"
-							onSubmit={(event) => void methods.handleSubmit(onSubmit)(event)}
+							onSubmit={(event) => void onSubmit(event)}
 						>
 							<Form.Field control={control} name="email" className="gap-1 font-roboto font-medium">
 								<Form.Label className="md:text-[20px]">Email</Form.Label>

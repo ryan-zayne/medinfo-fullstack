@@ -3,7 +3,7 @@
 import { IconBox, NavLink } from "@/components/common";
 import { For } from "@/components/common/for";
 import { Card, Carousel } from "@/components/ui";
-import { healthTipsQuery } from "@/lib/react-query/queryFactory";
+import { healthTipsQuery } from "@/lib/react-query/queryOptions";
 import { cnMerge } from "@/lib/utils/cn";
 import type { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
 import { useQuery } from "@tanstack/react-query";

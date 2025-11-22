@@ -12,62 +12,53 @@ import {
 import { Button, DateTimePicker, Form, Select } from "@/components/ui";
 import { DropZone } from "@/components/ui/drop-zone";
 import { callBackendApi } from "@/lib/api/callBackendApi";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SignUpSchema as SignUpSchemaPrimitive } from "@medinfo/shared/validation/backendApiSchema";
+import { toFormData } from "@zayne-labs/callapi/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use } from "react";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-function SignUpPage(props: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-	const methods = useForm({
-		defaultValues: {
-			confirmPassword: "",
-			country: "",
-			dob: "",
-			email: "",
-			firstName: "",
-			gender: "",
-			lastName: "",
-			license: null,
-			password: "",
-			specialty: "",
-		},
-	});
+const SignUpSchema = SignUpSchemaPrimitive.safeExtend({
+	confirmPassword: z.string().min(1, "Confirm password is required"),
+}).refine((data) => data.password === data.confirmPassword, {
+	message: "Passwords do not match",
+	path: ["confirmPassword"],
+});
 
-	const { control } = methods;
-
-	const router = useRouter();
-
+function SignUpPage(props: PageProps<"/signup">) {
 	const { searchParams: searchParamsPromise } = props;
 
 	const searchParams = use(searchParamsPromise);
 
 	const user = searchParams.user as "doctor" | "patient" | undefined;
 
-	const onSubmit = async (data: Record<string, unknown>) => {
-		const resolvedUser = user ?? "patient";
+	const resolvedRole = user ?? "patient";
 
-		const formData = new FormData();
+	const form = useForm({
+		defaultValues: {
+			role: resolvedRole,
+		},
+		mode: "onTouched",
+		resolver: zodResolver(SignUpSchema),
+	});
 
-		for (const [key, value] of Object.entries(data)) {
-			formData.set(key, value as string);
-		}
+	const { control } = form;
 
-		await callBackendApi("/:user/signup", {
-			body: formData,
-			meta: {
-				toast: {
-					success: true,
-				},
-			},
-			method: "POST",
+	const router = useRouter();
+
+	const onSubmit = form.handleSubmit(async (data) => {
+		await callBackendApi("@post/auth/signup", {
+			body: toFormData(data),
+			meta: { toast: { success: true } },
 
 			onSuccess: () => {
-				router.push("/signin");
+				router.push(`/dashboard/${resolvedRole}`);
 			},
-
-			params: { user: resolvedUser },
 		});
-	};
+	});
 
 	return (
 		<Main className="w-full px-0 max-md:max-w-[400px] md:flex md:flex-col md:items-center">
@@ -91,9 +82,9 @@ function SignUpPage(props: { searchParams: Promise<Record<string, string | strin
 						</h1>
 
 						<Form.Root
-							methods={methods}
+							methods={form}
 							className="w-full gap-[14px]"
-							onSubmit={(event) => void methods.handleSubmit(onSubmit)(event)}
+							onSubmit={(event) => void onSubmit(event)}
 						>
 							<Form.Field
 								control={control}
@@ -116,6 +107,8 @@ function SignUpPage(props: { searchParams: Promise<Record<string, string | strin
 										className="placeholder:text-medinfo-dark-4 md:text-base"
 									/>
 								</Form.InputGroup>
+
+								<Form.ErrorMessage />
 							</Form.Field>
 
 							<Form.Field
@@ -139,6 +132,8 @@ function SignUpPage(props: { searchParams: Promise<Record<string, string | strin
 										className="placeholder:text-medinfo-dark-4 md:text-base"
 									/>
 								</Form.InputGroup>
+
+								<Form.ErrorMessage />
 							</Form.Field>
 
 							<Form.Field control={control} name="email" className="gap-1 font-roboto font-medium">
@@ -158,6 +153,8 @@ function SignUpPage(props: { searchParams: Promise<Record<string, string | strin
 										className="placeholder:text-medinfo-dark-4 md:text-base"
 									/>
 								</Form.InputGroup>
+
+								<Form.ErrorMessage />
 							</Form.Field>
 
 							<Form.Field control={control} name="gender" className="gap-1 font-roboto font-medium">
@@ -190,7 +187,7 @@ function SignUpPage(props: { searchParams: Promise<Record<string, string | strin
 												}}
 											>
 												<Select.Item
-													value="Male"
+													value="male"
 													className="h-[48px] bg-medinfo-light-3 font-medium
 														text-medinfo-dark-4 focus:bg-medinfo-light-1
 														focus:text-medinfo-body-color
@@ -199,7 +196,7 @@ function SignUpPage(props: { searchParams: Promise<Record<string, string | strin
 													Male
 												</Select.Item>
 												<Select.Item
-													value="Female"
+													value="female"
 													className="h-[48px] bg-medinfo-light-3 font-medium
 														text-medinfo-dark-4 focus:bg-medinfo-light-1
 														focus:text-medinfo-body-color
@@ -211,6 +208,8 @@ function SignUpPage(props: { searchParams: Promise<Record<string, string | strin
 										</Select.Root>
 									)}
 								/>
+
+								<Form.ErrorMessage />
 							</Form.Field>
 
 							<Form.Field
@@ -269,6 +268,8 @@ function SignUpPage(props: { searchParams: Promise<Record<string, string | strin
 										</Select.Root>
 									)}
 								/>
+
+								<Form.ErrorMessage />
 							</Form.Field>
 
 							<Show.Root when={user === "doctor"}>
@@ -330,13 +331,13 @@ function SignUpPage(props: { searchParams: Promise<Record<string, string | strin
 											</Select.Root>
 										)}
 									/>
-								</Form.Field>
-							</Show.Root>
 
-							<Show.Root when={user === "doctor"}>
+									<Form.ErrorMessage />
+								</Form.Field>
+
 								<Form.Field
 									control={control}
-									name="license"
+									name="medicalLicense"
 									className="gap-1 font-roboto font-medium"
 								>
 									<Form.Label className="md:text-[20px]">
@@ -347,7 +348,7 @@ function SignUpPage(props: { searchParams: Promise<Record<string, string | strin
 										render={({ field }) => (
 											<DropZoneInput
 												allowedFileTypes={["image/jpeg", "image/png", "application/pdf"]}
-												maxFileSize={4}
+												maxFileSize={{ mb: 4 }}
 												disableFilePickerOpenOnAreaClick={true}
 												onChange={field.onChange}
 											>
@@ -384,27 +385,29 @@ function SignUpPage(props: { searchParams: Promise<Record<string, string | strin
 											</DropZoneInput>
 										)}
 									/>
+
+									<Form.ErrorMessage />
 								</Form.Field>
 							</Show.Root>
 
-							<Show.Root when={user === "patient"}>
-								<Form.Field control={control} name="dob" className="gap-1 font-roboto font-medium">
-									<Form.Label className="md:text-[20px]">Date of Birth</Form.Label>
+							<Form.Field control={control} name="dob" className="gap-1 font-roboto font-medium">
+								<Form.Label className="md:text-[20px]">Date of Birth</Form.Label>
 
-									<Form.FieldController
-										render={({ field }) => (
-											<DateTimePicker
-												className="h-[48px] gap-4 rounded-[8px] border-[1.4px]
-													border-medinfo-primary-main px-4 py-3 text-[14px] md:h-[64px]
-													md:py-5 md:text-base"
-												dateString={field.value}
-												placeholder="DD/MM/YYYY"
-												onDateStringChange={field.onChange}
-											/>
-										)}
-									/>
-								</Form.Field>
-							</Show.Root>
+								<Form.FieldController
+									render={({ field }) => (
+										<DateTimePicker
+											className="h-[48px] gap-4 rounded-[8px] border-[1.4px]
+												border-medinfo-primary-main px-4 py-3 text-[14px] md:h-[64px] md:py-5
+												md:text-base"
+											dateString={field.value}
+											placeholder="DD/MM/YYYY"
+											onDateStringChange={field.onChange}
+										/>
+									)}
+								/>
+
+								<Form.ErrorMessage />
+							</Form.Field>
 
 							<Form.Field
 								control={control}
@@ -427,6 +430,8 @@ function SignUpPage(props: { searchParams: Promise<Record<string, string | strin
 										className="placeholder:text-medinfo-dark-4 md:text-base"
 									/>
 								</Form.InputGroup>
+
+								<Form.ErrorMessage />
 							</Form.Field>
 
 							<Form.Field
@@ -450,6 +455,8 @@ function SignUpPage(props: { searchParams: Promise<Record<string, string | strin
 										className="placeholder:text-medinfo-dark-4 md:text-base"
 									/>
 								</Form.InputGroup>
+
+								<Form.ErrorMessage />
 							</Form.Field>
 
 							<article className="flex flex-col items-center gap-[14px] md:mt-[14px] md:gap-7">

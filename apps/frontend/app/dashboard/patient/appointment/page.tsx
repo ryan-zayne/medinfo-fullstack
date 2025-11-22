@@ -1,5 +1,13 @@
 "use client";
 
+import { IconBox, Show } from "@/components/common";
+import { getElementList } from "@/components/common/for";
+import { CloseIcon, GreenSpinnerIcon } from "@/components/icons";
+import { Button, DateTimePicker, Dialog, Form, Select } from "@/components/ui";
+import { bookAppointmentQuery, matchDoctorsQuery } from "@/lib/react-query/queryOptions";
+import { capitalize } from "@/lib/utils";
+import { cnJoin, cnMerge } from "@/lib/utils/cn";
+import { appointmentPlaceholder, doctorAvatar } from "@/public/assets/images/dashboard";
 import { Steps, useStepsContext } from "@ark-ui/react/steps";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDisclosure } from "@zayne-labs/toolkit-react";
@@ -7,14 +15,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { IconBox, Show } from "@/components/common";
-import { getElementList } from "@/components/common/for";
-import { CloseIcon, GreenSpinnerIcon } from "@/components/icons";
-import { Button, DateTimePicker, Dialog, Form, Select } from "@/components/ui";
-import { bookAppointmentQuery, matchDoctorsQuery } from "@/lib/react-query/queryFactory";
-import { capitalize } from "@/lib/utils";
-import { cnJoin, cnMerge } from "@/lib/utils/cn";
-import { appointmentPlaceholder, doctorAvatar } from "@/public/assets/images/dashboard";
 import { Main } from "../../-components";
 
 const stepperItems = [

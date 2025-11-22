@@ -86,7 +86,8 @@ function LibraryFilter(props: ScrollableAlternateDiseaseCardsProps) {
 					className={cnJoin(
 						"grid w-full gap-y-6 lg:gap-y-12",
 						filter === "grid"
-							&& "auto-rows-[225px] grid-cols-2 gap-x-4 lg:auto-rows-[400px] lg:gap-x-7"
+							&& `auto-rows-[225px] grid-cols-2 justify-items-center gap-x-4 lg:auto-rows-[400px]
+							lg:gap-x-7`
 					)}
 					each={diseases}
 					renderItem={(disease, index) => <DiseaseCard key={index} type={filter} disease={disease} />}

@@ -8,7 +8,7 @@
    "sessions": {
       "default": [
          {
-            "autoExecuteCommands": true,
+            "autoExecuteCommands": false,
             "cwd": "apps/frontend",
             "icon": "browser",
             "name": "dev:frontend",
@@ -17,7 +17,7 @@
             ]
          },
          {
-            "autoExecuteCommands": true,
+            "autoExecuteCommands": false,
             "cwd": "apps/backend",
             "icon": "server",
             "name": "dev:backend",

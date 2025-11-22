@@ -12,7 +12,7 @@ const pinoLoggerMiddleware = () => {
 			},
 			pretty({
 				colorize: true,
-				messageFormat: "{req.method} Request to url:{req.url} completed",
+				messageFormat: "'{req.method}' request to url:'{req.url}' completed in {responseTime}ms",
 				singleLine: true,
 			})
 		),

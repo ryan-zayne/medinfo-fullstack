@@ -2,8 +2,8 @@ import { type MatchDoctorsResponse, callBackendApiForQuery } from "@/lib/api/cal
 import { queryOptions } from "@tanstack/react-query";
 import type { CallApiExtraOptions } from "@zayne-labs/callapi";
 
-export const healthTipsQuery = (options?: { pageName?: string }) => {
-	const { pageName = "home-page" } = options ?? {};
+export const healthTipsQuery = (options: { pageName?: string } = {}) => {
+	const { pageName = "home-page" } = options;
 
 	return queryOptions({
 		queryFn: () => {

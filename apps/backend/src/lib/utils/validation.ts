@@ -19,16 +19,16 @@ const prettifyValidationIssues = (issues: z.core.$ZodIssue[]) => {
 	return issuesString;
 };
 
-export const getValidatedValue = async <TSchema extends z.ZodType>(
-	input: z.infer<TSchema>,
+export const getValidatedValue = <TSchema extends z.ZodType>(
+	input: unknown,
 	schema: TSchema | undefined,
 	schemaName?: string
-) => {
+): z.infer<TSchema> => {
 	if (!schema) {
-		return input;
+		return input as never;
 	}
 
-	const result = await schema.safeParseAsync(input);
+	const result = schema.safeParse(input);
 
 	if (!result.success) {
 		const message = prettifyValidationIssues(result.error.issues);

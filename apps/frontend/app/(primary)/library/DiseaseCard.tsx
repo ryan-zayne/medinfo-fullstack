@@ -27,7 +27,7 @@ export function DiseaseCard(props: DiseaseCardProps) {
 			as="li"
 			className={cnJoin(
 				"border-none shadow-none",
-				type === "grid" && "relative h-full max-lg:max-h-[176px]",
+				type === "grid" && "relative h-full w-fit max-lg:max-h-[176px]",
 				type === "list"
 					&& "flex w-full gap-[44px] rounded-[16px] border-2 border-medinfo-primary-main p-6"
 			)}
@@ -52,9 +52,9 @@ export function DiseaseCard(props: DiseaseCardProps) {
 				className={cnJoin(
 					"flex flex-col justify-between",
 					type === "grid"
-						&& `absolute right-0 bottom-[calc(-95px/2)] h-[95px] w-fit rounded-[16px] border-2
-						border-medinfo-primary-main bg-white p-2 lg:bottom-[calc((400px-182px)/2)] lg:h-[182px]
-						lg:max-w-[229px] lg:p-6`
+						&& `absolute right-0 -bottom-[calc(95px/2)] h-[95px] max-w-fit rounded-[16px] border-2
+						border-medinfo-primary-main bg-white p-2 lg:-right-[calc(3/5*229px)]
+						lg:bottom-[calc((400px-182px)/2)] lg:h-[182px] lg:max-w-[229px] lg:p-6`
 				)}
 			>
 				<div>

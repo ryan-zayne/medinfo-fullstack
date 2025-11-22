@@ -3,14 +3,13 @@ import {
 	decodeJwtToken,
 	generateAccessToken,
 	isTokenInWhitelist,
-	type DecodedAuthJwtPayload,
-} from "@/app/auth/services/common";
+	warnAboutTokenReuse,
+} from "@/app/auth/services/token";
 import { ENVIRONMENT } from "@/config/env";
 import { AppError } from "@/lib/utils";
 import { db } from "@medinfo/backend-db";
 import { users, type SelectUserType } from "@medinfo/backend-db/schema/auth";
 import { defineEnum } from "@zayne-labs/toolkit-type-helpers";
-import { consola } from "consola";
 import { eq } from "drizzle-orm";
 // eslint-disable-next-line import/default
 import jwt from "jsonwebtoken";
@@ -25,10 +24,25 @@ const AUTH_ERROR_MESSAGES = defineEnum({
 	USER_NOT_FOUND: "User not found or not logged in",
 });
 
-const getAndVerifyUserFromToken = async (
-	decodedPayload: DecodedAuthJwtPayload,
-	zayneRefreshToken: string
-) => {
+type VerifyOptions =
+	| {
+			variant: "accessToken";
+			zayneAccessToken: string;
+			zayneRefreshToken: string;
+	  }
+	| {
+			variant: "refreshToken";
+			zayneRefreshToken: string;
+	  };
+
+const getAndVerifyUserFromToken = async (options: VerifyOptions) => {
+	const { variant, zayneRefreshToken } = options;
+
+	const decodedPayload =
+		variant === "accessToken" ?
+			decodeJwtToken(options.zayneAccessToken, { secretKey: ENVIRONMENT.ACCESS_SECRET })
+		:	decodeJwtToken(zayneRefreshToken, { secretKey: ENVIRONMENT.REFRESH_SECRET });
+
 	const [currentUser] = await db.select().from(users).where(eq(users.id, decodedPayload.id)).limit(1);
 
 	if (!currentUser) {
@@ -43,8 +57,7 @@ const getAndVerifyUserFromToken = async (
 	// == So clear the refreshTokenArray to log out the user from all devices including current device, greatly diminishing the risk of another token reuse attack
 
 	if (!isTokenInWhitelist(currentUser.refreshTokenArray, zayneRefreshToken)) {
-		consola.warn("Possible token reuse detected!");
-		consola.trace({ timestamp: new Date().toISOString(), userId: currentUser.id });
+		warnAboutTokenReuse({ compromisedToken: zayneRefreshToken, currentUser });
 
 		await db
 			.update(users)
@@ -79,26 +92,17 @@ const getAndVerifyUserFromToken = async (
 	return currentUser;
 };
 
-type ValidSession =
-	| {
-			currentUser: SelectUserType;
-			newZayneAccessTokenResult: null;
-	  }
-	| {
-			currentUser: SelectUserType;
-			newZayneAccessTokenResult: ReturnType<typeof generateAccessToken>;
-	  };
+type NewSession = {
+	currentUser: SelectUserType;
+	newZayneAccessTokenResult: ReturnType<typeof generateAccessToken>;
+};
 
 /**
- * @description This function is used to validate the refresh token and generate a new access
+ * @description This function is used to validate the refresh token and generate a new access token
  */
-const refreshUserSession = async (zayneRefreshToken: string): Promise<ValidSession> => {
+const refreshUserSession = async (zayneRefreshToken: string): Promise<NewSession> => {
 	try {
-		const decodedRefreshPayload = decodeJwtToken(zayneRefreshToken, {
-			secretKey: ENVIRONMENT.REFRESH_SECRET,
-		});
-
-		const currentUser = await getAndVerifyUserFromToken(decodedRefreshPayload, zayneRefreshToken);
+		const currentUser = await getAndVerifyUserFromToken({ variant: "refreshToken", zayneRefreshToken });
 
 		const newZayneAccessTokenResult = generateAccessToken(currentUser);
 
@@ -128,6 +132,29 @@ const refreshUserSession = async (zayneRefreshToken: string): Promise<ValidSessi
 	}
 };
 
+type ExistingSession = {
+	currentUser: SelectUserType;
+	newZayneAccessTokenResult: null;
+};
+
+const getExistingSession = async (options: {
+	zayneAccessToken: string;
+	zayneRefreshToken: string;
+}): Promise<ExistingSession> => {
+	const { zayneAccessToken, zayneRefreshToken } = options;
+
+	const currentUser = await getAndVerifyUserFromToken({
+		variant: "accessToken",
+		zayneAccessToken,
+		zayneRefreshToken,
+	});
+
+	return {
+		currentUser,
+		newZayneAccessTokenResult: null,
+	};
+};
+
 type TokenPairFromCookies = {
 	zayneAccessToken: string | undefined;
 	zayneRefreshToken: string | undefined;
@@ -137,7 +164,9 @@ type TokenPairFromCookies = {
  * @description Main authentication function that validates or refreshes user sessions
  * Handles both initial authentication and token refresh scenarios
  */
-const validateUserSession = async (tokens: TokenPairFromCookies): Promise<ValidSession> => {
+const validateUserSession = async (
+	tokens: TokenPairFromCookies
+): Promise<ExistingSession | NewSession> => {
 	const { zayneAccessToken, zayneRefreshToken } = tokens;
 
 	if (!zayneRefreshToken) {
@@ -155,17 +184,9 @@ const validateUserSession = async (tokens: TokenPairFromCookies): Promise<ValidS
 	}
 
 	try {
-		// == Validate existing session
-		const decodedAccessPayload = decodeJwtToken(zayneAccessToken, {
-			secretKey: ENVIRONMENT.ACCESS_SECRET,
-		});
+		const existingSession = await getExistingSession({ zayneAccessToken, zayneRefreshToken });
 
-		const currentUser = await getAndVerifyUserFromToken(decodedAccessPayload, zayneRefreshToken);
-
-		return {
-			currentUser,
-			newZayneAccessTokenResult: null,
-		};
+		return existingSession;
 	} catch (error) {
 		// == Attempt session renewal if the error indicates that the access token is invalid / expired
 		if (error instanceof jwt.JsonWebTokenError || error instanceof jwt.TokenExpiredError) {

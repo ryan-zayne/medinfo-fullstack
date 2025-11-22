@@ -1,6 +1,6 @@
-import { corsOptions } from "@/constants/corsOptions";
+import { corsOptions } from "@/config/corsOptions";
 import { errorHandler, notFoundHandler } from "@/middleware";
-import { pinoLoggerMiddleware } from "@/middleware/pinoLoggerMiddleware";
+import { pinoLoggerMiddleware } from "@/middleware/pinoLogger";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
@@ -11,7 +11,7 @@ const createHonoApp = () => {
 	/**
 	 *  == Middleware - App Security
 	 */
-	app.use("/*", cors(corsOptions));
+	app.use(cors(corsOptions));
 
 	/**
 	 *  == Middleware - Logger

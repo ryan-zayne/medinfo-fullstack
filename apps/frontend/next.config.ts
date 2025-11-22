@@ -27,6 +27,12 @@ const nextConfig = {
 				protocol: "https",
 			},
 			{
+				hostname: "example.com",
+				pathname: "/**",
+				port: "",
+				protocol: "https",
+			},
+			{
 				hostname: "odphp.health.gov",
 				pathname: "/**",
 				port: "",

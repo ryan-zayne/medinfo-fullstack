@@ -3,104 +3,97 @@ import { validateWithZodMiddleware } from "@/middleware";
 import { uploadStreamToCloudinary } from "@/services/cloudinary";
 import { db } from "@medinfo/backend-db";
 import { users } from "@medinfo/backend-db/schema/auth";
-import { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
+import { backendApiSchemaRoutes, SignUpSchema } from "@medinfo/shared/validation/backendApiSchema";
 import { differenceInHours } from "date-fns";
 import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { authMiddleware } from "./middleware/authMiddleware";
-import {
-	generateAccessToken,
-	generateRefreshToken,
-	getCookie,
-	getNecessaryUserDetails,
-	getUpdatedTokenArray,
-	hashValue,
-	removeCookie,
-	setCookie,
-	verifyHashedValue,
-} from "./services/common";
+import { getNecessaryUserDetails } from "./services/common";
+import { getCookie, removeCookie, setCookie } from "./services/cookie";
+import { hashValue, verifyHashedValue } from "./services/hash";
+import { generateAccessToken, generateRefreshToken, getUpdatedTokenArray } from "./services/token";
 
 const authRoutes = new Hono()
 	.basePath("/auth")
-	.post(
-		"/signup",
-		validateWithZodMiddleware(
-			"json",
-			backendApiSchemaRoutes["@post/auth/signup"].body.omit({ medicalLicense: true })
-		),
-		async (ctx) => {
-			const { country, dob, email, firstName, gender, lastName, password, role, specialty } =
-				ctx.req.valid("json");
+	.post("/signup", async (ctx) => {
+		const formDataBody = await ctx.req.parseBody();
 
-			const validFiles = await getValidatedValue(
-				await ctx.req.parseBody(),
-				backendApiSchemaRoutes["@post/auth/signup"].body.pick({ medicalLicense: true })
-			);
+		const {
+			country,
+			dob,
+			email,
+			firstName,
+			gender,
+			lastName,
+			medicalLicense,
+			password,
+			role,
+			specialty,
+		} = getValidatedValue(formDataBody, SignUpSchema);
 
-			const uploadResult = await uploadStreamToCloudinary(validFiles.medicalLicense, {
-				folder: "medicalCerts",
-				resource_type: "raw",
-			});
+		const uploadResult = await uploadStreamToCloudinary(medicalLicense, {
+			folder: "medicalCerts",
+			resource_type: "auto",
+		});
 
-			const medicalLicenseUrl = uploadResult ? uploadResult.secure_url : null;
+		const medicalLicenseUrl = uploadResult ? uploadResult.secure_url : null;
 
-			const [existingUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+		const [existingUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
-			if (existingUser) {
-				throw new AppError({ code: 400, message: "User already exists" });
-			}
-
-			const passwordHash = await hashValue(password);
-
-			const avatar = `https://avatar.iran.liara.run/public/${gender === "male" ? "boy" : "girl"}`;
-
-			const [newUser] = await db
-				.insert(users)
-				.values({
-					avatar,
-					country,
-					dob,
-					email,
-					firstName,
-					gender,
-					lastName,
-					medicalLicense: medicalLicenseUrl,
-					passwordHash,
-					role,
-					specialty,
-				})
-				.returning();
-
-			if (!newUser) {
-				throw new AppError({ code: 500, message: "Failed to create user" });
-			}
-
-			const newZayneRefreshTokenResult = generateRefreshToken(newUser);
-
-			await db
-				.update(users)
-				.set({ refreshTokenArray: [newZayneRefreshTokenResult.token] })
-				.where(eq(users.id, newUser.id));
-
-			const newZayneAccessTokenResult = generateAccessToken(newUser);
-
-			setCookie(ctx, "zayneAccessToken", newZayneAccessTokenResult.token, {
-				expires: newZayneAccessTokenResult.expiresAt,
-			});
-
-			setCookie(ctx, "zayneRefreshToken", newZayneRefreshTokenResult.token, {
-				expires: newZayneRefreshTokenResult.expiresAt,
-			});
-
-			// TODO: Send Verification email
-
-			return AppJsonResponse(ctx, {
-				data: { user: getNecessaryUserDetails(newUser) },
-				message: "Account created successfully",
-				routeSchemaKey: "@post/auth/signup",
-			});
+		if (existingUser) {
+			throw new AppError({ code: 400, message: "User already exists" });
 		}
-	)
+
+		const passwordHash = await hashValue(password);
+
+		const avatar = `https://avatar.iran.liara.run/public/${gender === "male" ? "boy" : "girl"}`;
+
+		const [newUser] = await db
+			.insert(users)
+			.values({
+				avatar,
+				country,
+				dob,
+				email,
+				firstName,
+				gender,
+				lastName,
+				medicalLicense: medicalLicenseUrl,
+				passwordHash,
+				role,
+				specialty,
+			})
+			.returning();
+
+		if (!newUser) {
+			throw new AppError({ code: 500, message: "Failed to create user" });
+		}
+
+		const newZayneRefreshTokenResult = generateRefreshToken(newUser);
+
+		await db
+			.update(users)
+			.set({ refreshTokenArray: [newZayneRefreshTokenResult.token] })
+			.where(eq(users.id, newUser.id));
+
+		const newZayneAccessTokenResult = generateAccessToken(newUser);
+
+		setCookie(ctx, "zayneAccessToken", newZayneAccessTokenResult.token, {
+			expires: newZayneAccessTokenResult.expiresAt,
+		});
+
+		setCookie(ctx, "zayneRefreshToken", newZayneRefreshTokenResult.token, {
+			expires: newZayneRefreshTokenResult.expiresAt,
+		});
+
+		// TODO: Send Verification email
+
+		return AppJsonResponse(ctx, {
+			data: { user: getNecessaryUserDetails(newUser) },
+			message: "Account created successfully",
+			routeSchemaKey: "@post/auth/signup",
+		});
+	})
 	.post(
 		"/signin",
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/auth/signin"].body),
@@ -195,9 +188,9 @@ const authRoutes = new Hono()
 		}
 	)
 	.get("/signout", authMiddleware, async (ctx) => {
-		const currentUser = ctx.get("currentUser");
-
 		const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
+
+		const currentUser = ctx.get("currentUser");
 
 		const updatedTokenArray = getUpdatedTokenArray({ currentUser, zayneRefreshToken });
 
@@ -207,6 +200,7 @@ const authRoutes = new Hono()
 			.where(eq(users.id, currentUser.id));
 
 		removeCookie(ctx, "zayneAccessToken");
+
 		removeCookie(ctx, "zayneRefreshToken");
 
 		return AppJsonResponse(ctx, {
