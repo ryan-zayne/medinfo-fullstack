@@ -55,7 +55,7 @@ export const validateGoogleAuthorizationCode = async (code: string, codeVerifier
 	}
 };
 
- export const getGoogleUser = async (accessToken: string) => {
+export const getGoogleUser = async (accessToken: string) => {
 	const response = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
 		headers: {
 			Authorization: `Bearer ${accessToken}`,
