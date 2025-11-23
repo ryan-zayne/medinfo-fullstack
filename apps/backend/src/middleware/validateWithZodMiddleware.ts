@@ -10,8 +10,8 @@ export const validateWithZodMiddleware = <
 	target: TTarget,
 	schema: TSchema
 ) => {
-	return validator(target, async (value) => {
-		const validatedValue = await getValidatedValue(value, schema, target);
+	return validator(target, (value) => {
+		const validatedValue = getValidatedValue(value, schema, target);
 
 		return validatedValue;
 	});

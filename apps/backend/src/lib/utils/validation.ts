@@ -20,14 +20,10 @@ const prettifyValidationIssues = (issues: z.core.$ZodIssue[]) => {
 };
 
 export const getValidatedValue = <TSchema extends z.ZodType>(
-	input: unknown,
-	schema: TSchema | undefined,
+	input: z.infer<TSchema>,
+	schema: TSchema,
 	schemaName?: string
-): z.infer<TSchema> => {
-	if (!schema) {
-		return input as never;
-	}
-
+) => {
 	const result = schema.safeParse(input);
 
 	if (!result.success) {
@@ -45,5 +41,5 @@ export const getValidatedValue = <TSchema extends z.ZodType>(
 		});
 	}
 
-	return result.data;
+	return result.data as z.infer<TSchema>;
 };

@@ -22,7 +22,7 @@ export const decodeJwtToken = <TSchema extends z.ZodType = typeof DecodedAuthJwt
 
 	const decodedPayload = jwt.verify(token, secretKey, restOfOptions);
 
-	const validPayload = getValidatedValue(decodedPayload, schema);
+	const validPayload = getValidatedValue(decodedPayload as z.infer<typeof schema>, schema);
 
 	return validPayload;
 };

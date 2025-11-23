@@ -37,7 +37,7 @@ const diseasesRoutes = new Hono()
 					total: diseasesResult.length,
 				},
 				message: "Diseases retrieved successfully",
-				routeSchemaKey: "@get/diseases/all",
+				schema: backendApiSchemaRoutes["@get/diseases/all"],
 			});
 		}
 	)
@@ -63,7 +63,7 @@ const diseasesRoutes = new Hono()
 			return AppJsonResponse(ctx, {
 				data,
 				message: "Disease retrieved successfully",
-				routeSchemaKey: "@get/diseases/one/:name",
+				schema: backendApiSchemaRoutes["@get/diseases/one/:name"],
 			});
 		}
 	)
@@ -93,7 +93,7 @@ const diseasesRoutes = new Hono()
 			return AppJsonResponse(ctx, {
 				data: details,
 				message: "Diseases add successfully",
-				routeSchemaKey: "@post/diseases/add",
+				schema: backendApiSchemaRoutes["@post/diseases/add"],
 			});
 		}
 	)
@@ -125,7 +125,7 @@ const diseasesRoutes = new Hono()
 			return AppJsonResponse(ctx, {
 				data: updatedDisease,
 				message: "Disease updated successfully",
-				routeSchemaKey: "@patch/diseases/update",
+				schema: backendApiSchemaRoutes["@patch/diseases/update"],
 			});
 		}
 	)
@@ -155,7 +155,7 @@ const diseasesRoutes = new Hono()
 			return AppJsonResponse(ctx, {
 				data: null,
 				message: "Disease deleted successfully",
-				routeSchemaKey: "@delete/diseases/delete",
+				schema: backendApiSchemaRoutes["@delete/diseases/delete"],
 			});
 		}
 	);

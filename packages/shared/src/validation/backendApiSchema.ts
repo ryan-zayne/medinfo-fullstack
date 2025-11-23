@@ -204,6 +204,12 @@ const authRoutes = () => {
 	});
 
 	return defineSchemaRoutes({
+		"@get/auth/google": {
+			query: UserDataSchema.pick({ role: true }).refine((data) => data.role !== "doctor", {
+				error: "Doctors cannot signup with google",
+			}),
+		},
+
 		"@get/auth/session": {
 			data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
 		},
@@ -217,7 +223,6 @@ const authRoutes = () => {
 				email: z.email("Please enter a valid email"),
 				password: PasswordSchema,
 			}),
-
 			data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
 		},
 

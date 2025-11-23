@@ -1,27 +1,24 @@
-import {
-	backendApiSchemaRoutes,
-	type BackendApiSchemaRoutes,
-	type RouteSchemaKeys,
-} from "@medinfo/shared/validation/backendApiSchema";
+import type { BackendApiSchemaRoutes, RouteSchemaKeys } from "@medinfo/shared/validation/backendApiSchema";
 import type { Context } from "hono";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { z } from "zod";
 import { getValidatedValue } from "./validation";
 
-const AppJsonResponse = async <TRouteSchemaKey extends RouteSchemaKeys>(
+const AppJsonResponse = <
+	TSchema extends Extract<BackendApiSchemaRoutes[RouteSchemaKeys], { data: z.ZodObject }>,
+	TDataSchema extends TSchema["data"]["shape"]["data"],
+>(
 	ctx: Context,
 	extra: {
 		code?: ContentfulStatusCode;
-		data: z.infer<BackendApiSchemaRoutes[TRouteSchemaKey]["data"]["shape"]["data"]>;
+		data: z.infer<TDataSchema>;
 		message: string;
-		routeSchemaKey?: TRouteSchemaKey;
+		schema: TSchema;
 	}
 ) => {
-	const { code: statusCode = 200, data, message, routeSchemaKey } = extra;
+	const { code: statusCode = 200, data, message, schema } = extra;
 
-	const routeSchema = routeSchemaKey && backendApiSchemaRoutes[routeSchemaKey];
-
-	const validatedData = await getValidatedValue(data, routeSchema?.data.shape.data, "data");
+	const validatedData = getValidatedValue(data, schema.data.shape.data as TDataSchema, "data");
 
 	/* eslint-disable perfectionist/sort-objects */
 	const jsonBody = {

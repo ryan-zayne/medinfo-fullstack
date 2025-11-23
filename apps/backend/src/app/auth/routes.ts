@@ -7,10 +7,16 @@ import { backendApiSchemaRoutes, SignUpSchema } from "@medinfo/shared/validation
 import { differenceInHours } from "date-fns";
 import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
+import { z } from "zod";
 import { authMiddleware } from "./middleware/authMiddleware";
 import { getNecessaryUserDetails } from "./services/common";
-import { getCookie, removeCookie, setCookie } from "./services/cookie";
+import { deleteCookie, getCookie, setCookie } from "./services/cookie";
 import { hashValue, verifyHashedValue } from "./services/hash";
+import {
+	createGoogleAuthURL,
+	findOrCreateUserFromGoogle,
+	getUserInfoFromGoogleAuthClaims,
+} from "./services/oauth";
 import { generateAccessToken, generateRefreshToken, getUpdatedTokenArray } from "./services/token";
 
 const authRoutes = new Hono()
@@ -29,7 +35,7 @@ const authRoutes = new Hono()
 			password,
 			role,
 			specialty,
-		} = getValidatedValue(formDataBody, SignUpSchema);
+		} = getValidatedValue(formDataBody as z.infer<typeof SignUpSchema>, SignUpSchema);
 
 		const uploadResult = await uploadStreamToCloudinary(medicalLicense, {
 			folder: "medicalCerts",
@@ -91,7 +97,7 @@ const authRoutes = new Hono()
 		return AppJsonResponse(ctx, {
 			data: { user: getNecessaryUserDetails(newUser) },
 			message: "Account created successfully",
-			routeSchemaKey: "@post/auth/signup",
+			schema: backendApiSchemaRoutes["@post/auth/signup"],
 		});
 	})
 	.post(
@@ -106,6 +112,13 @@ const authRoutes = new Hono()
 				throw new AppError({
 					code: 401,
 					message: "Email or password is incorrect",
+				});
+			}
+
+			if (!currentUser.passwordHash) {
+				throw new AppError({
+					code: 401,
+					message: "No password provided for this account",
 				});
 			}
 
@@ -183,7 +196,7 @@ const authRoutes = new Hono()
 			return AppJsonResponse(ctx, {
 				data: { user: getNecessaryUserDetails(updatedUser) },
 				message: "Signed in successfully",
-				routeSchemaKey: "@post/auth/signin",
+				schema: backendApiSchemaRoutes["@post/auth/signin"],
 			});
 		}
 	)
@@ -199,24 +212,112 @@ const authRoutes = new Hono()
 			.set({ refreshTokenArray: updatedTokenArray })
 			.where(eq(users.id, currentUser.id));
 
-		removeCookie(ctx, "zayneAccessToken");
+		deleteCookie(ctx, "zayneAccessToken");
 
-		removeCookie(ctx, "zayneRefreshToken");
+		deleteCookie(ctx, "zayneRefreshToken");
 
 		return AppJsonResponse(ctx, {
 			data: null,
 			message: "Signed out successfully",
-			routeSchemaKey: "@get/auth/signout",
+			schema: backendApiSchemaRoutes["@get/auth/signout"],
 		});
 	})
-	.get("/session", authMiddleware, async (ctx) => {
+	.get("/session", authMiddleware, (ctx) => {
 		const currentUser = ctx.get("currentUser");
 
 		return AppJsonResponse(ctx, {
 			data: { user: getNecessaryUserDetails(currentUser) },
 			message: "Session fetched successfully",
-			routeSchemaKey: "@get/auth/session",
+			schema: backendApiSchemaRoutes["@get/auth/session"],
 		});
-	});
+	})
+	.get(
+		"/google",
+		validateWithZodMiddleware("query", backendApiSchemaRoutes["@get/auth/google"].query),
+		(ctx) => {
+			const { authURL, codeVerifier, cookiesExpireAt, state } = createGoogleAuthURL();
+
+			setCookie(ctx, "google_code_verifier", codeVerifier, {
+				expires: cookiesExpireAt,
+				sameSite: "lax",
+			});
+
+			setCookie(ctx, "google_oauth_state", state, { expires: cookiesExpireAt, sameSite: "lax" });
+
+			return ctx.redirect(authURL);
+		}
+	)
+	.get(
+		"/google/callback",
+		validateWithZodMiddleware("query", z.object({ code: z.string(), state: z.string() })),
+		async (ctx) => {
+			const { code, state } = ctx.req.valid("query");
+
+			const codeVerifier = getCookie(ctx, "google_code_verifier");
+
+			const stateCookie = getCookie(ctx, "google_oauth_state");
+
+			if (!code || !state || !codeVerifier || !stateCookie) {
+				throw new AppError({
+					code: 400,
+					message: "Invalid Request. Please restart the process",
+				});
+			}
+
+			if (state !== stateCookie) {
+				throw new AppError({
+					code: 400,
+					message: "Invalid State",
+				});
+			}
+
+			const userInfo = await getUserInfoFromGoogleAuthClaims(code, codeVerifier);
+
+			const { redirectURL, user, variant } = await findOrCreateUserFromGoogle(userInfo);
+
+			deleteCookie(ctx, "google_oauth_state");
+
+			deleteCookie(ctx, "google_code_verifier");
+
+			const newZayneRefreshTokenResult = generateRefreshToken(user);
+
+			const newZayneAccessTokenResult = generateAccessToken(user);
+
+			if (variant === "existingUser") {
+				const currentUser = user;
+
+				const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
+
+				const updatedTokenArray = getUpdatedTokenArray({ currentUser, zayneRefreshToken });
+
+				await db
+					.update(users)
+					.set({
+						lastLoginAt: new Date(),
+						refreshTokenArray: [...updatedTokenArray, newZayneRefreshTokenResult.token],
+					})
+					.where(eq(users.id, currentUser.id));
+			}
+
+			if (variant === "newUser") {
+				const newUser = user;
+
+				await db
+					.update(users)
+					.set({ refreshTokenArray: [newZayneRefreshTokenResult.token] })
+					.where(eq(users.id, newUser.id));
+			}
+
+			setCookie(ctx, "zayneAccessToken", newZayneAccessTokenResult.token, {
+				expires: newZayneAccessTokenResult.expiresAt,
+			});
+
+			setCookie(ctx, "zayneRefreshToken", newZayneRefreshTokenResult.token, {
+				expires: newZayneRefreshTokenResult.expiresAt,
+			});
+
+			return ctx.redirect(redirectURL);
+		}
+	);
 
 export { authRoutes };
