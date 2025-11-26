@@ -38,6 +38,7 @@ function OAuthSection(props: { userRole: z.infer<typeof SignUpSchema>["role"] })
 
 			<div className="flex gap-8">
 				<Button
+					disabled={googleAuthMutationResult.isPending}
 					isLoading={googleAuthMutationResult.isPending}
 					size="icon"
 					theme="secondary"

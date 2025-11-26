@@ -1,9 +1,9 @@
 "use client";
 
+import { Slot } from "@/components/common/slot";
 import type { InferProps, PolymorphicProps } from "@zayne-labs/toolkit-react/utils";
 import type { Prettify } from "@zayne-labs/toolkit-type-helpers";
 import { tv, type VariantProps } from "tailwind-variants";
-import { Slot } from "@/components/common/slot";
 import { WhiteSpinnerIcon } from "../icons";
 
 export type ButtonProps = InferProps<"button">
@@ -102,7 +102,7 @@ function Button<TElement extends React.ElementType>(props: PolymorphicProps<TEle
 		asChild,
 		children,
 		className,
-		disabled,
+		disabled = false,
 		isDisabled = disabled,
 		isLoading = false,
 		size,
@@ -131,10 +131,10 @@ function Button<TElement extends React.ElementType>(props: PolymorphicProps<TEle
 	const withIcon = (
 		<>
 			<Slot.Slottable>
-				<div className="invisible [grid-area:1/1]">{children}</div>
+				<div className="invisible [grid-area:1]">{children}</div>
 			</Slot.Slottable>
 
-			<span className="flex justify-center [grid-area:1/1]">
+			<span className="flex justify-center [grid-area:1]">
 				<WhiteSpinnerIcon />
 			</span>
 		</>
@@ -142,7 +142,12 @@ function Button<TElement extends React.ElementType>(props: PolymorphicProps<TEle
 
 	// == This technique helps prevents content shift when replacing children with spinner icon
 	return (
-		<Component type={type} className={BTN_CLASSES} disabled={disabled} {...extraButtonProps}>
+		<Component
+			type={type}
+			className={BTN_CLASSES}
+			disabled={disabled || isDisabled}
+			{...extraButtonProps}
+		>
 			{isLoading ? withIcon : children}
 		</Component>
 	);
