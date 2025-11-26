@@ -1,0 +1,97 @@
+meta {
+  name: google
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseURL-dev}}/auth/google?role=patient
+  body: none
+  auth: inherit
+}
+
+params:query {
+  role: patient
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  # Google OAuth - Initiate
+
+  Initiates the Google OAuth flow by generating an authorization URL. The client should redirect the user to this URL.
+
+  ## Query Parameters
+
+  - `role` (enum, required): The role for the new user. Must be "patient".
+    - **Note**: Doctors cannot use Google OAuth due to medical license requirements
+
+  ## Success Response (200 OK)
+
+  ```json
+  {
+    "status": "success",
+    "message": "Google Oauth initialized successfully",
+    "data": {
+      "authURL": "https://accounts.google.com/o/oauth2/v2/auth?client_id=...&redirect_uri=...&response_type=code&scope=openid%20profile%20email%20...&state=...&code_challenge=...&code_challenge_method=S256"
+    }
+  }
+  ```
+
+  **Note**:
+  - Sets `google_code_verifier` cookie (for PKCE verification)
+  - Sets `google_oauth_state` cookie (for CSRF protection)
+  - Both cookies expire in 10 minutes
+  - Requested scopes include: openid, profile, email, gender, birthday
+
+  ## Client Implementation
+
+  ```javascript
+  const { data } = await callBackendApi("@get/auth/google", {
+    query: { role: "patient" }
+  });
+
+  // Redirect user to Google
+  window.location.href = data.authURL;
+  ```
+
+  ## Error Response (422 Validation Error)
+
+  If role is "doctor":
+
+  ```json
+  {
+    "status": "error",
+    "message": "Validation Error: ✖ Doctors cannot signup with google due to requirements like license and specialty",
+    "errors": {
+      "role": ["Doctors cannot signup with google due to requirements like license and specialty"]
+    }
+  }
+  ```
+
+  If role is missing or invalid:
+
+  ```json
+  {
+    "status": "error",
+    "message": "Validation Error: ✖ Required → at role",
+    "errors": {
+      "role": ["Required"]
+    }
+  }
+  ```
+
+  ## OAuth Flow Overview
+
+  1. Client calls this endpoint with `role=patient`
+  2. Backend generates auth URL with state and code verifier
+  3. Client redirects user to Google
+  4. User authorizes the application
+  5. Google redirects to `/auth/google/callback` with code and state
+  6. Backend validates state, exchanges code for tokens
+  7. Backend creates/updates user and sets JWT cookies
+  8. User is redirected to dashboard
+}

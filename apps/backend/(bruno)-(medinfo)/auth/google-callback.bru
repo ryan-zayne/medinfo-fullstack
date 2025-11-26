@@ -1,0 +1,120 @@
+meta {
+  name: google-callback
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseURL-dev}}/auth/google/callback?code=4/0AQSTgQG...&state=abc123...
+  body: none
+  auth: inherit
+}
+
+params:query {
+  code: 4/0AQSTgQG...
+  state: abc123...
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  # Google OAuth - Callback
+
+  Handles the OAuth callback from Google. This endpoint is called by Google after user authorization.
+
+  **Note**: This endpoint is typically not called directly. Google redirects here after user authorization.
+
+  ## Query Parameters
+
+  - `code` (string, required): Authorization code from Google
+  - `state` (string, required): State parameter for CSRF validation
+
+  ## Required Cookies
+
+  - `google_code_verifier`: PKCE code verifier (set by `/auth/google`)
+  - `google_oauth_state`: State for CSRF validation (set by `/auth/google`)
+
+  ## Success Response (302 Redirect)
+
+  On success, redirects to the frontend dashboard:
+
+  ```
+  Location: http://localhost:3000/dashboard/patient
+  ```
+
+  **Note**:
+  - Sets `zayneAccessToken` cookie (15 min expiry)
+  - Sets `zayneRefreshToken` cookie (7 day expiry)
+  - Clears `google_code_verifier` cookie
+  - Clears `google_oauth_state` cookie
+
+  ## User Creation/Update Logic
+
+  1. **Existing user with Google ID**: Signs in, updates last login
+  2. **Existing user with same email**: Links Google account, signs in
+  3. **New user**: Creates account with data from Google (name, email, avatar, gender, DOB)
+
+  ## Error Response (400 Bad Request)
+
+  If code, state, or cookies are missing:
+
+  ```json
+  {
+    "status": "error",
+    "message": "Invalid Request. Please restart the process"
+  }
+  ```
+
+  ## Error Response (400 Bad Request - Invalid State)
+
+  If state doesn't match cookie (possible CSRF attack):
+
+  ```json
+  {
+    "status": "error",
+    "message": "Invalid State"
+  }
+  ```
+
+  ## Error Response (400 Bad Request - Google Validation Failed)
+
+  If Google authorization code is invalid:
+
+  ```json
+  {
+    "status": "error",
+    "message": "Failed to validate Google authorization. Please restart the process"
+  }
+  ```
+
+  ## Error Response (400 Bad Request - Missing User Info)
+
+  If user's Google account is missing required info:
+
+  ```json
+  {
+    "status": "error",
+    "message": "Failed to get user's date of birth. Please ensure you set this info on your google account"
+  }
+  ```
+
+  Or:
+
+  ```json
+  {
+    "status": "error",
+    "message": "Failed to get user's gender. Please ensure you set this info on your google account"
+  }
+  ```
+
+  ## Google Scopes Used
+
+  - `openid` - OpenID Connect
+  - `profile` - Basic profile (name, picture)
+  - `email` - Email address
+  - `https://www.googleapis.com/auth/user.gender.read` - Gender
+  - `https://www.googleapis.com/auth/user.birthday.read` - Birthday
+}

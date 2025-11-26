@@ -3,7 +3,7 @@ import { zayne } from "@zayne-labs/eslint-config";
 export default zayne(
 	{
 		type: "app-strict",
-		ignores: [".next/**", "eslint.config.js", "apps/frontend/next-env.d.ts"],
+		ignores: [".next/**", "eslint.config.js", "apps/frontend/next-env.d.ts", "DEV-GUIDE.md"],
 		react: {
 			nextjs: {
 				overrides: {

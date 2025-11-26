@@ -6,23 +6,21 @@ meta {
 
 post {
   url: {{baseURL-dev}}/auth/signup
-  body: json
+  body: multipartForm
   auth: inherit
 }
 
-body:json {
-  {
-    "email": "doctor@example.com",
-    "password": "SecurePass123!",
-    "firstName": "John",
-    "lastName": "Doe",
-    "gender": "male",
-    "dob": "1990-01-15T00:00:00Z",
-    "country": "United States",
-    "role": "doctor",
-    "specialty": "Cardiology",
-    "medicalLicense": "MD-12345-2020"
-  }
+body:multipart-form {
+  email: doctor@example.com
+  password: SecurePass123!
+  firstName: John
+  lastName: Doe
+  gender: male
+  dob: 1990-01-15
+  country: Nigeria
+  role: doctor
+  specialty: Cardiology
+  medicalLicense: @file(/path/to/medical-license.pdf)
 }
 
 settings {
@@ -35,7 +33,9 @@ docs {
 
   Creates a new user account. Supports both doctor and patient roles with role-specific validation.
 
-  ## Request Body
+  **Content-Type**: `multipart/form-data`
+
+  ## Request Body (Form Fields)
 
   ### Common Fields (Required for all users)
 
@@ -44,45 +44,41 @@ docs {
   - `firstName` (string, required): User's first name
   - `lastName` (string, required): User's last name
   - `gender` (enum, required): Either "male" or "female"
-  - `dob` (string, required): Date of birth in ISO 8601 format
+  - `dob` (string, required): Date of birth (YYYY-MM-DD format)
   - `country` (string, required): User's country
   - `role` (enum, required): Either "doctor" or "patient"
 
   ### Doctor-Specific Fields (Required when role is "doctor")
 
   - `specialty` (string, required): Medical specialty (e.g., "Cardiology", "Pediatrics")
-  - `medicalLicense` (string, required): Medical license/certificate number
+  - `medicalLicense` (file, required): Medical license/certificate file (JPG, PNG, or PDF, max 4MB)
 
-  ### Patient Example
+  ### Patient Example (Form Data)
 
-  ```json
-  {
-    "email": "patient@example.com",
-    "password": "SecurePass123!",
-    "firstName": "Jane",
-    "lastName": "Smith",
-    "gender": "female",
-    "dob": "1995-06-20T00:00:00Z",
-    "country": "Canada",
-    "role": "patient"
-  }
+  ```
+  email: patient@example.com
+  password: SecurePass123!
+  firstName: Jane
+  lastName: Smith
+  gender: female
+  dob: 1995-06-20
+  country: Nigeria
+  role: patient
   ```
 
-  ### Doctor Example
+  ### Doctor Example (Form Data)
 
-  ```json
-  {
-    "email": "doctor@example.com",
-    "password": "SecurePass123!",
-    "firstName": "John",
-    "lastName": "Doe",
-    "gender": "male",
-    "dob": "1990-01-15T00:00:00Z",
-    "country": "United States",
-    "role": "doctor",
-    "specialty": "Cardiology",
-    "medicalLicense": "MD-12345-2020"
-  }
+  ```
+  email: doctor@example.com
+  password: SecurePass123!
+  firstName: John
+  lastName: Doe
+  gender: male
+  dob: 1990-01-15
+  country: Nigeria
+  role: doctor
+  specialty: Cardiology
+  medicalLicense: [File: medical-license.pdf]
   ```
 
   ## Success Response (200 OK)
@@ -92,18 +88,23 @@ docs {
     "status": "success",
     "message": "Account created successfully",
     "data": {
-      "email": "doctor@example.com",
-      "firstName": "John",
-      "lastName": "Doe",
-      "role": "doctor",
-      "avatar": "https://avatar.iran.liara.run/public/boy"
+      "user": {
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "doctor@example.com",
+        "avatar": "https://avatar.iran.liara.run/public/boy",
+        "role": "doctor",
+        "medicalLicense": "https://res.cloudinary.com/.../medical-cert.pdf",
+        "specialty": "Cardiology"
+      }
     }
   }
   ```
 
   **Note**:
   - Sets `zayneAccessToken` and `zayneRefreshToken` cookies
-  - Avatar is auto-generated based on gender
+  - Avatar is auto-generated based on gender (boy/girl)
+  - Medical license is uploaded to Cloudinary (doctors only)
   - Verification email will be sent (TODO)
 
   ## Error Response (400 Bad Request)
