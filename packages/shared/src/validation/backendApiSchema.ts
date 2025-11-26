@@ -158,12 +158,12 @@ const diseaseRoutes = defineSchemaRoutes({
 const PasswordSchema = z.string().min(8, "Password must be at least 8 characters long");
 
 export const SignUpSchema = InsertUserSchema.pick({
-	country: true,
 	dob: true,
 	gender: true,
 	role: true,
 })
 	.extend({
+		country: z.string(),
 		email: z.email("Please enter a valid email"),
 		firstName: z.string().min(1, "First name is required"),
 		lastName: z.string().min(1, "Last name is required"),
