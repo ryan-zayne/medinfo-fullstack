@@ -38,11 +38,11 @@ function OAuthSection(props: { userRole: z.infer<typeof SignUpSchema>["role"] })
 
 			<div className="flex gap-8">
 				<Button
-					disabled={googleAuthMutationResult.isPending}
-					isLoading={googleAuthMutationResult.isPending}
 					size="icon"
 					theme="secondary"
 					className="rounded-[8px]"
+					disabled={googleAuthMutationResult.isPending}
+					isLoading={googleAuthMutationResult.isPending}
 					onClick={onGoogleOAuthRequest}
 				>
 					<IconBox icon="icon-park-outline:google" className="size-[18px] lg:size-6" />
