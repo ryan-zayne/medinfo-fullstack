@@ -20,7 +20,7 @@ const LOCAL_BACKEND_HOST = "http://localhost:8000";
 const BACKEND_HOST = process.env.NODE_ENV === "development" ? LOCAL_BACKEND_HOST : REMOTE_BACKEND_HOST;
 // const BACKEND_HOST = REMOTE_BACKEND_HOST;
 
-const BASE_API_URL = `${BACKEND_HOST}/api/v1`;
+export const BASE_API_URL = `${BACKEND_HOST}/api/v1`;
 
 export const sharedBaseConfig = defineBaseConfig({
 	baseURL: BASE_API_URL,

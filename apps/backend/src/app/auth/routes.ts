@@ -97,7 +97,7 @@ const authRoutes = new Hono()
 		return AppJsonResponse(ctx, {
 			data: { user: getNecessaryUserDetails(newUser) },
 			message: "Account created successfully",
-			schema: backendApiSchemaRoutes["@post/auth/signup"],
+			schema: backendApiSchemaRoutes["@post/auth/signup"].data,
 		});
 	})
 	.post(
@@ -110,15 +110,22 @@ const authRoutes = new Hono()
 
 			if (!currentUser) {
 				throw new AppError({
+					cause: "No user found",
 					code: 401,
 					message: "Email or password is incorrect",
 				});
 			}
 
 			if (!currentUser.passwordHash) {
+				let message = "No password provided for this account. Try resetting the password";
+
+				currentUser.googleId
+					&& (message =
+						"This account uses Google sign-in. Please use 'Continue with Google' button.");
+
 				throw new AppError({
 					code: 401,
-					message: "No password provided for this account",
+					message,
 				});
 			}
 
@@ -129,6 +136,7 @@ const authRoutes = new Hono()
 				await db.update(users).set({ loginRetryCount: sql`${users.loginRetryCount} + 1` });
 
 				throw new AppError({
+					cause: "Invalid password",
 					code: 401,
 					message: "Email or password is incorrect",
 				});
@@ -196,7 +204,7 @@ const authRoutes = new Hono()
 			return AppJsonResponse(ctx, {
 				data: { user: getNecessaryUserDetails(updatedUser) },
 				message: "Signed in successfully",
-				schema: backendApiSchemaRoutes["@post/auth/signin"],
+				schema: backendApiSchemaRoutes["@post/auth/signin"].data,
 			});
 		}
 	)
@@ -219,7 +227,7 @@ const authRoutes = new Hono()
 		return AppJsonResponse(ctx, {
 			data: null,
 			message: "Signed out successfully",
-			schema: backendApiSchemaRoutes["@get/auth/signout"],
+			schema: backendApiSchemaRoutes["@get/auth/signout"].data,
 		});
 	})
 	.get("/session", authMiddleware, (ctx) => {
@@ -228,7 +236,7 @@ const authRoutes = new Hono()
 		return AppJsonResponse(ctx, {
 			data: { user: getNecessaryUserDetails(currentUser) },
 			message: "Session fetched successfully",
-			schema: backendApiSchemaRoutes["@get/auth/session"],
+			schema: backendApiSchemaRoutes["@get/auth/session"].data,
 		});
 	})
 	.get(
@@ -242,14 +250,21 @@ const authRoutes = new Hono()
 				sameSite: "lax",
 			});
 
-			setCookie(ctx, "google_oauth_state", state, { expires: cookiesExpireAt, sameSite: "lax" });
+			setCookie(ctx, "google_oauth_state", state, {
+				expires: cookiesExpireAt,
+				sameSite: "lax",
+			});
 
-			return ctx.redirect(authURL);
+			return AppJsonResponse(ctx, {
+				data: { authURL },
+				message: "Google Oauth initialized successfully",
+				schema: backendApiSchemaRoutes["@get/auth/google"].data,
+			});
 		}
 	)
 	.get(
 		"/google/callback",
-		validateWithZodMiddleware("query", z.object({ code: z.string(), state: z.string() })),
+		validateWithZodMiddleware("query", backendApiSchemaRoutes["@get/auth/google/callback"].query),
 		async (ctx) => {
 			const { code, state } = ctx.req.valid("query");
 
@@ -273,33 +288,37 @@ const authRoutes = new Hono()
 
 			const userInfo = await getUserInfoFromGoogleAuthClaims(code, codeVerifier);
 
-			const { redirectURL, user, variant } = await findOrCreateUserFromGoogle(userInfo);
-
 			deleteCookie(ctx, "google_oauth_state");
 
 			deleteCookie(ctx, "google_code_verifier");
+
+			const { redirectURL, user, userVariant } = await findOrCreateUserFromGoogle(userInfo);
 
 			const newZayneRefreshTokenResult = generateRefreshToken(user);
 
 			const newZayneAccessTokenResult = generateAccessToken(user);
 
-			if (variant === "existingUser") {
-				const currentUser = user;
+			if (userVariant === "existing") {
+				const existingUser = user;
 
 				const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
 
-				const updatedTokenArray = getUpdatedTokenArray({ currentUser, zayneRefreshToken });
+				const updatedTokenArray = getUpdatedTokenArray({
+					currentUser: existingUser,
+					zayneRefreshToken,
+				});
 
 				await db
 					.update(users)
 					.set({
 						lastLoginAt: new Date(),
+						loginRetryCount: 0,
 						refreshTokenArray: [...updatedTokenArray, newZayneRefreshTokenResult.token],
 					})
-					.where(eq(users.id, currentUser.id));
+					.where(eq(users.id, existingUser.id));
 			}
 
-			if (variant === "newUser") {
+			if (userVariant === "new") {
 				const newUser = user;
 
 				await db

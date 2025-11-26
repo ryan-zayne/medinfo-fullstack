@@ -15,11 +15,11 @@ import { callBackendApi } from "@/lib/api/callBackendApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignUpSchema as SignUpSchemaPrimitive } from "@medinfo/shared/validation/backendApiSchema";
 import { toFormData } from "@zayne-labs/callapi/utils";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { OAuthSection } from "../-components/OAuthSection";
 
 const SignUpSchema = SignUpSchemaPrimitive.safeExtend({
 	confirmPassword: z.string().min(1, "Confirm password is required"),
@@ -33,13 +33,11 @@ function SignUpPage(props: PageProps<"/signup">) {
 
 	const searchParams = use(searchParamsPromise);
 
-	const user = searchParams.user as "doctor" | "patient" | undefined;
-
-	const resolvedRole = user ?? "patient";
+	const userRole = (searchParams.user as z.infer<typeof SignUpSchema>["role"] | undefined) ?? "patient";
 
 	const form = useForm({
 		defaultValues: {
-			role: resolvedRole,
+			role: userRole,
 		},
 		mode: "onTouched",
 		resolver: zodResolver(SignUpSchema),
@@ -55,7 +53,7 @@ function SignUpPage(props: PageProps<"/signup">) {
 			meta: { toast: { success: true } },
 
 			onSuccess: () => {
-				router.push(`/dashboard/${resolvedRole}`);
+				router.push(`/dashboard/${userRole}`);
 			},
 		});
 	});
@@ -272,7 +270,7 @@ function SignUpPage(props: PageProps<"/signup">) {
 								<Form.ErrorMessage />
 							</Form.Field>
 
-							<Show.Root when={user === "doctor"}>
+							<Show.Root when={userRole === "doctor"}>
 								<Form.Field
 									control={control}
 									name="specialty"
@@ -460,31 +458,8 @@ function SignUpPage(props: PageProps<"/signup">) {
 							</Form.Field>
 
 							<article className="flex flex-col items-center gap-[14px] md:mt-[14px] md:gap-7">
-								<Show.Root when={user === "patient"}>
-									<p className="font-roboto text-medinfo-dark-4 md:text-[20px]">Or</p>
-
-									<div className="flex gap-8">
-										<Button
-											size="icon"
-											theme="secondary"
-											className="rounded-[8px]"
-											asChild={true}
-										>
-											<Link href="https://medinfo-backend-xie7.onrender.com/auth/google">
-												<IconBox
-													icon="icon-park-outline:google"
-													className="size-[18px] lg:size-6"
-												/>
-											</Link>
-										</Button>
-
-										<Button size="icon" theme="secondary" className="rounded-[8px]">
-											<IconBox
-												icon="basil:facebook-outline"
-												className="size-[18px] lg:size-6"
-											/>
-										</Button>
-									</div>
+								<Show.Root when={userRole === "patient"}>
+									<OAuthSection userRole={userRole} />
 								</Show.Root>
 
 								<Form.WatchFormState
@@ -504,11 +479,11 @@ function SignUpPage(props: PageProps<"/signup">) {
 									<NavLink
 										transitionType="regular"
 										href={{
-											query: { user: user === "doctor" ? "patient" : "doctor" },
+											query: { user: userRole === "doctor" ? "patient" : "doctor" },
 										}}
 										className="text-medinfo-primary-main md:text-[20px]"
 									>
-										{user === "doctor" ? "Register as a patient" : "Register as a doctor"}
+										{userRole === "doctor" ? "Register as a patient" : "Register as a doctor"}
 									</NavLink>
 
 									<p className="md:hidden">
@@ -517,7 +492,7 @@ function SignUpPage(props: PageProps<"/signup">) {
 											transitionType="regular"
 											href={{
 												pathname: "/signin",
-												query: { user: user === "doctor" ? "doctor" : "patient" },
+												query: { user: userRole === "doctor" ? "doctor" : "patient" },
 											}}
 											className="text-medinfo-primary-main"
 										>
@@ -544,7 +519,7 @@ function SignUpPage(props: PageProps<"/signup">) {
 						<NavLink
 							href={{
 								pathname: "/signin",
-								query: { user: user === "doctor" ? "doctor" : "patient" },
+								query: { user: userRole === "doctor" ? "doctor" : "patient" },
 							}}
 						>
 							Sign in

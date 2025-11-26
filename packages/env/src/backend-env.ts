@@ -18,6 +18,7 @@ export const envSchema = z.object({
 	DATABASE_URL_PROD: z.string(),
 	DB_MIGRATING: stringBoolean.default(false),
 	DB_SEEDING: stringBoolean.default(false),
+	GOOGLE_AUTH_API_KEY: z.string(),
 	GOOGLE_CLIENT_ID: z.string(),
 	GOOGLE_CLIENT_SECRET: z.string(),
 	LOG_LEVEL: z.literal(["debug", "info", "warn", "error", "fatal", "silent"]).default("info"),

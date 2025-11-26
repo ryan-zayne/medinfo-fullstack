@@ -5,20 +5,20 @@ import { z } from "zod";
 import { getValidatedValue } from "./validation";
 
 const AppJsonResponse = <
-	TSchema extends Extract<BackendApiSchemaRoutes[RouteSchemaKeys], { data: z.ZodObject }>,
-	TDataSchema extends TSchema["data"]["shape"]["data"],
+	TSchema extends Extract<BackendApiSchemaRoutes[RouteSchemaKeys], { data: z.ZodObject }>["data"],
+	TDataSchema extends TSchema["shape"]["data"],
 >(
 	ctx: Context,
-	extra: {
+	options: {
 		code?: ContentfulStatusCode;
 		data: z.infer<TDataSchema>;
 		message: string;
 		schema: TSchema;
 	}
 ) => {
-	const { code: statusCode = 200, data, message, schema } = extra;
+	const { code: statusCode = 200, data, message, schema } = options;
 
-	const validatedData = getValidatedValue(data, schema.data.shape.data as TDataSchema, "data");
+	const validatedData = getValidatedValue(data, schema.shape.data as TDataSchema, "data");
 
 	/* eslint-disable perfectionist/sort-objects */
 	const jsonBody = {

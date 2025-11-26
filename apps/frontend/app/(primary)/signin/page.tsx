@@ -5,11 +5,12 @@ import { IconBox, Logo, NavLink, Show } from "@/components/common";
 import { Button, Form } from "@/components/ui";
 import { callBackendApi } from "@/lib/api/callBackendApi";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
-import Link from "next/link";
+import { backendApiSchemaRoutes, type SignUpSchema } from "@medinfo/shared/validation/backendApiSchema";
 import { useRouter } from "next/navigation";
 import { use } from "react";
 import { useForm } from "react-hook-form";
+import type { z } from "zod";
+import { OAuthSection } from "../-components/OAuthSection";
 
 const SignInSchema = backendApiSchemaRoutes["@post/auth/signin"].body;
 
@@ -18,7 +19,7 @@ function SignInPage(props: PageProps<"/signin">) {
 
 	const searchParams = use(searchParamsPromise);
 
-	const user = searchParams.user as "doctor" | "patient" | undefined;
+	const userRole = (searchParams.user as z.infer<typeof SignUpSchema>["role"] | undefined) ?? "patient";
 
 	const methods = useForm({
 		defaultValues: {
@@ -38,9 +39,7 @@ function SignInPage(props: PageProps<"/signin">) {
 			meta: { toast: { success: true } },
 
 			onSuccess: () => {
-				const resolvedUser = user ?? "patient";
-
-				router.push(`/dashboard/${resolvedUser}`);
+				router.push(`/dashboard/${userRole}`);
 			},
 		});
 	});
@@ -121,31 +120,8 @@ function SignInPage(props: PageProps<"/signin">) {
 							</Form.Field>
 
 							<article className="flex flex-col items-center gap-[14px] md:mt-[14px] md:gap-7">
-								<Show.Root when={user !== "doctor"}>
-									<p className="text-medinfo-dark-4 md:text-[20px]">Or</p>
-
-									<div className="flex gap-8">
-										<Button
-											asChild={true}
-											size="icon"
-											theme="secondary"
-											className="rounded-[8px]"
-										>
-											<Link href="https://medinfo-backend-xie7.onrender.com/auth/google">
-												<IconBox
-													icon="icon-park-outline:google"
-													className="size-[18px] lg:size-6"
-												/>
-											</Link>
-										</Button>
-
-										<Button size="icon" theme="secondary" className="rounded-[8px]">
-											<IconBox
-												icon="basil:facebook-outline"
-												className="size-[18px] lg:size-6"
-											/>
-										</Button>
-									</div>
+								<Show.Root when={userRole === "patient"}>
+									<OAuthSection userRole={userRole} />
 								</Show.Root>
 
 								<Form.WatchFormState
@@ -165,11 +141,11 @@ function SignInPage(props: PageProps<"/signin">) {
 									<NavLink
 										transitionType="regular"
 										href={{
-											query: { user: user === "doctor" ? "patient" : "doctor" },
+											query: { user: userRole === "doctor" ? "patient" : "doctor" },
 										}}
 										className="text-medinfo-primary-main md:text-[20px]"
 									>
-										{user === "doctor" ? "Sign in as a patient" : "Sign in as a doctor"}
+										{userRole === "doctor" ? "Sign in as a patient" : "Sign in as a doctor"}
 									</NavLink>
 
 									<p className="md:hidden">
@@ -178,7 +154,7 @@ function SignInPage(props: PageProps<"/signin">) {
 											transitionType="regular"
 											href={{
 												pathname: "/signup",
-												query: { user: user === "doctor" ? "doctor" : "patient" },
+												query: { user: userRole === "doctor" ? "doctor" : "patient" },
 											}}
 											className="text-medinfo-primary-main"
 										>
@@ -203,7 +179,7 @@ function SignInPage(props: PageProps<"/signin">) {
 						<NavLink
 							href={{
 								pathname: "/signup",
-								query: { user: user === "doctor" ? "doctor" : "patient" },
+								query: { user: userRole === "doctor" ? "doctor" : "patient" },
 							}}
 						>
 							Sign up

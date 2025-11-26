@@ -25,7 +25,7 @@ const healthTipsRoutes = new Hono()
 			return AppJsonResponse(ctx, {
 				data,
 				message: "Health tips retrieved successfully",
-				schema: backendApiSchemaRoutes["@get/health-tips/all"],
+				schema: backendApiSchemaRoutes["@get/health-tips/all"].data,
 			});
 		}
 	)
@@ -40,7 +40,7 @@ const healthTipsRoutes = new Hono()
 			return AppJsonResponse(ctx, {
 				data: result.data,
 				message: "Health tip retrieved successfully",
-				schema: backendApiSchemaRoutes["@get/health-tips/one/:id"],
+				schema: backendApiSchemaRoutes["@get/health-tips/one/:id"].data,
 			});
 		}
 	);

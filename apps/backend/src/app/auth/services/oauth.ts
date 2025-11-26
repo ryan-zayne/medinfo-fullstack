@@ -2,24 +2,27 @@ import { ENVIRONMENT } from "@/config/env";
 import { AppError, getValidatedValue } from "@/lib/utils";
 import { db } from "@medinfo/backend-db";
 import { users, type SelectUserType } from "@medinfo/backend-db/schema/auth";
+import { callApi } from "@zayne-labs/callapi";
 import * as arctic from "arctic";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
-const BASE_BACKEND_URL = `${ENVIRONMENT.BASE_BACKEND_HOST}api/v1`;
-
-const BASE_FRONTEND_URL = ENVIRONMENT.BASE_BACKEND_HOST;
-
 export const google = new arctic.Google(
 	ENVIRONMENT.GOOGLE_CLIENT_ID,
 	ENVIRONMENT.GOOGLE_CLIENT_SECRET,
-	`${BASE_BACKEND_URL}/auth/google/callback`
+	`${ENVIRONMENT.BASE_BACKEND_HOST}/api/v1/auth/google/callback`
 );
 
 export const createGoogleAuthURL = () => {
 	const state = arctic.generateState();
 	const codeVerifier = arctic.generateCodeVerifier();
-	const scopes = ["openid", "profile", "email", "gender.read", "birthday.read"];
+	const scopes = [
+		"openid",
+		"profile",
+		"email",
+		"https://www.googleapis.com/auth/user.gender.read",
+		"https://www.googleapis.com/auth/user.birthday.read",
+	];
 
 	const authUrlObject = google.createAuthorizationURL(state, codeVerifier, scopes);
 
@@ -29,13 +32,10 @@ export const createGoogleAuthURL = () => {
 };
 
 const OAuthClaimsSchema = z.object({
-	birthdays: z.array(z.object({ day: z.int(), month: z.int(), year: z.int() }).partial()).optional(),
 	email: z.string(),
 	email_verified: z.boolean(),
 	family_name: z.string(),
-	genders: z.array(z.object({ value: z.literal(["male", "female"]) })).optional(),
 	given_name: z.string(),
-	locale: z.string().optional(),
 	name: z.string(),
 	picture: z.string().optional(),
 	sub: z.string(),
@@ -45,24 +45,22 @@ const OAuthUserInfoSchema = z.object({
 	dob: z.date().or(z.null()),
 	email: z.string(),
 	emailVerified: z.boolean(),
+	firstName: z.string(),
 	gender: z.literal(["male", "female"]).or(z.undefined()),
-	locale: z.string().or(z.undefined()),
-	name: z.string(),
+	lastName: z.string(),
 	picture: z.string().or(z.undefined()),
 	provider: z.literal(["google", "github"]),
 	providerId: z.string(),
 });
 
-const googleDateToJSDate = (googleDate?: { day?: number; month?: number; year?: number }): Date | null => {
+const googleDateToJSDate = (
+	googleDate: { day: number; month: number; year: number } | undefined
+): Date | null => {
 	if (!googleDate) {
 		return null;
 	}
 
-	if (!googleDate.month || !googleDate.day || !googleDate.year) {
-		return null;
-	}
-
-	// Subtract 1 from the month to convert from 1-based (Google) to 0-based (JS)
+	// == Subtract 1 from the month to convert from 1-based (Google) to 0-based (JS)
 	const monthIndex = googleDate.month - 1;
 
 	return new Date(googleDate.year, monthIndex, googleDate.day);
@@ -82,14 +80,44 @@ export const getUserInfoFromGoogleAuthClaims = async (code: string, codeVerifier
 		OAuthClaimsSchema
 	);
 
+	const { data, error } = await callApi("https://people.googleapis.com/v1/people/me", {
+		auth: tokens.accessToken(),
+		query: {
+			key: ENVIRONMENT.GOOGLE_AUTH_API_KEY,
+			personFields: "genders,birthdays",
+		},
+		schema: {
+			data: z.object({
+				birthdays: z.array(
+					z.object({
+						date: z.object({
+							day: z.int(),
+							month: z.int(),
+							year: z.int(),
+						}),
+					})
+				),
+				genders: z.array(z.object({ value: z.literal(["male", "female"]) })),
+			}),
+		},
+	});
+
+	if (error) {
+		throw new AppError({
+			cause: error.originalError,
+			code: 400,
+			message: "Failed to fetch user info from Google",
+		});
+	}
+
 	const userInfo = getValidatedValue(
 		{
-			dob: googleDateToJSDate(claims.birthdays?.[0]),
+			dob: googleDateToJSDate(data.birthdays[0]?.date),
 			email: claims.email,
 			emailVerified: claims.email_verified,
-			gender: claims.genders?.[0]?.value,
-			locale: claims.locale,
-			name: claims.name,
+			firstName: claims.given_name,
+			gender: data.genders[0]?.value,
+			lastName: claims.family_name,
 			picture: claims.picture,
 			provider: "google",
 			providerId: claims.sub,
@@ -122,13 +150,17 @@ type UserResult =
 	| {
 			redirectURL: string;
 			user: SelectUserType;
-			variant: "existingUser";
+			userVariant: "existing";
 	  }
 	| {
 			redirectURL: string;
 			user: SelectUserType;
-			variant: "newUser";
+			userVariant: "new";
 	  };
+
+const getRedirectURL = (role: SelectUserType["role"]) => {
+	return `${ENVIRONMENT.BASE_FRONTEND_HOST}/dashboard/${role}`;
+};
 
 export const findOrCreateUserFromGoogle = async (
 	userInfo: z.infer<typeof OAuthUserInfoSchema>
@@ -148,9 +180,9 @@ export const findOrCreateUserFromGoogle = async (
 
 	if (existingUserWithGoogleId) {
 		return {
-			redirectURL: BASE_FRONTEND_URL,
+			redirectURL: getRedirectURL(existingUserWithGoogleId.role),
 			user: existingUserWithGoogleId,
-			variant: "existingUser",
+			userVariant: "existing",
 		};
 	}
 
@@ -164,9 +196,9 @@ export const findOrCreateUserFromGoogle = async (
 		const updatedUser = await linkUserToGoogleAccount(existingUserWithEmail, userInfo);
 
 		return {
-			redirectURL: BASE_FRONTEND_URL,
+			redirectURL: getRedirectURL(existingUserWithEmail.role),
 			user: updatedUser ?? existingUserWithEmail,
-			variant: "existingUser",
+			userVariant: "existing",
 		};
 	}
 
@@ -193,14 +225,13 @@ export const findOrCreateUserFromGoogle = async (
 		.insert(users)
 		.values({
 			avatar,
-			country: userInfo.locale?.split("-")[1] as string,
 			dob: userInfo.dob.toISOString(),
 			email: userInfo.email,
 			emailVerifiedAt: userInfo.emailVerified ? new Date() : null,
-			firstName: userInfo.name.split(" ")[0] as string,
+			firstName: userInfo.firstName,
 			gender: userInfo.gender,
 			googleId: userInfo.providerId,
-			lastName: userInfo.name.split(" ")[1] as string,
+			lastName: userInfo.lastName,
 			role: "patient",
 		})
 		.returning();
@@ -213,8 +244,8 @@ export const findOrCreateUserFromGoogle = async (
 	}
 
 	return {
-		redirectURL: BASE_FRONTEND_URL,
+		redirectURL: getRedirectURL(newUser.role),
 		user: newUser,
-		variant: "newUser",
+		userVariant: "new",
 	};
 };

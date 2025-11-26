@@ -84,7 +84,12 @@ const healthTipRoutes = defineSchemaRoutes({
 		data: withBaseSuccessResponse(
 			z.array(HealthTipSchema.omit({ lastUpdated: true, mainContent: true }))
 		),
-		query: z.object({ limit: stringWithNumberValidation() }).partial().optional(),
+		query: z
+			.object({
+				limit: stringWithNumberValidation(),
+			})
+			.partial()
+			.optional(),
 	},
 
 	"@get/health-tips/one/:id": {
@@ -205,8 +210,22 @@ const authRoutes = () => {
 
 	return defineSchemaRoutes({
 		"@get/auth/google": {
-			query: UserDataSchema.pick({ role: true }).refine((data) => data.role !== "doctor", {
-				error: "Doctors cannot signup with google",
+			data: withBaseSuccessResponse(z.object({ authURL: z.url() })),
+			query: UserDataSchema.pick({ role: true }).superRefine((data, ctx) => {
+				if (data.role === "doctor") {
+					ctx.addIssue({
+						code: "custom",
+						message:
+							"Doctors cannot signup with google due to requirements like license and specialty",
+					});
+				}
+			}),
+		},
+
+		"@get/auth/google/callback": {
+			query: z.object({
+				code: z.string(),
+				state: z.string(),
 			}),
 		},
 
