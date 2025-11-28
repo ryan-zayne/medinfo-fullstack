@@ -1,6 +1,8 @@
 import type { cors } from "hono/cors";
 
-export const corsOptions: Parameters<typeof cors>[0] = {
+const corsOptions = {
 	credentials: true,
 	origin: ["http://localhost:3000", "https://medical-info.vercel.app"],
-};
+} satisfies Parameters<typeof cors>[0];
+
+export { corsOptions };

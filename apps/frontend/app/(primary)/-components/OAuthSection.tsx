@@ -23,13 +23,7 @@ function OAuthSection(props: { userRole: z.infer<typeof SignUpSchema>["role"] })
 			}
 		);
 
-		// == OR
-		// void callBackendApi("@get/auth/google", {
-		// 	onSuccess: (ctx) => {
-		// 		router.push(ctx.data.data.authURL);
-		// 	},
-		// 	query: { role: userRole },
-		// });
+
 	};
 
 	return (
@@ -57,3 +51,4 @@ function OAuthSection(props: { userRole: z.infer<typeof SignUpSchema>["role"] })
 }
 
 export { OAuthSection };
+
