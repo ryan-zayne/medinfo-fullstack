@@ -22,8 +22,6 @@ function OAuthSection(props: { userRole: z.infer<typeof SignUpSchema>["role"] })
 				},
 			}
 		);
-
-
 	};
 
 	return (
@@ -51,4 +49,3 @@ function OAuthSection(props: { userRole: z.infer<typeof SignUpSchema>["role"] })
 }
 
 export { OAuthSection };
-
