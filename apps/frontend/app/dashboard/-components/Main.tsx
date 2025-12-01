@@ -1,6 +1,7 @@
 import { cnMerge } from "@/lib/utils/cn";
+import type { InferProps } from "@zayne-labs/toolkit-react/utils";
 
-function Main(props: React.ComponentPropsWithoutRef<"main">) {
+function Main(props: InferProps<"main">) {
 	const { children, className, ...restOfProps } = props;
 
 	return (
@@ -13,4 +14,4 @@ function Main(props: React.ComponentPropsWithoutRef<"main">) {
 	);
 }
 
-export default Main;
+export { Main };

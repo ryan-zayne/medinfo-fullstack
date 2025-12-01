@@ -13,30 +13,30 @@ A comprehensive guide to the MedInfo codebase - a full-stack healthcare platform
 7. [Authentication System](#authentication-system)
 8. [API Patterns](#api-patterns)
 9. [Code Conventions](#code-conventions)
-10. [Common Workflows](#common-workflows)
+10.   [Common Workflows](#common-workflows)
 
 ---
 
 ## Project Overview
 
 MedInfo Nigeria is a healthcare platform that:
+
 - Connects patients with certified doctors for virtual consultations
 - Provides a free medical information library (diseases, health tips)
 - Supports appointment scheduling and messaging
 
 ### Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Monorepo | Turborepo + pnpm workspaces |
-| Backend | Hono.js on Node.js |
-| Frontend | Next.js 16 (App Router) + React 19 |
-| Database | PostgreSQL + Drizzle ORM |
-| Validation | Zod (shared across stack) |
-| Styling | TailwindCSS 4 + tailwind-variants |
-| State | TanStack Query + Zustand |
-| Auth | JWT (access + refresh tokens) + Google OAuth |
-
+| Layer      | Technology                                   |
+| ---------- | -------------------------------------------- |
+| Monorepo   | Turborepo + pnpm workspaces                  |
+| Backend    | Hono.js on Node.js                           |
+| Frontend   | Next.js 16 (App Router) + React 19           |
+| Database   | PostgreSQL + Drizzle ORM                     |
+| Validation | Zod (shared across stack)                    |
+| Styling    | TailwindCSS 4 + tailwind-variants            |
+| State      | TanStack Query + Zustand                     |
+| Auth       | JWT (access + refresh tokens) + Google OAuth |
 
 ---
 
@@ -95,7 +95,6 @@ medinfo-fullstack/
 
 **Rule**: Code flows from `packages/` to `apps/`, never the reverse.
 
-
 ---
 
 ## Getting Started
@@ -103,7 +102,7 @@ medinfo-fullstack/
 ### Prerequisites
 
 - Node.js 18+
-- pnpm 10.19.0 (`corepack enable && corepack prepare pnpm@10.19.0 --activate`)
+- pnpm 10.24.0 (`corepack enable`)
 - PostgreSQL database
 
 ### Installation
@@ -145,7 +144,6 @@ pnpm db:push              # Push schema (dev)
 pnpm db:studio            # Open Drizzle Studio GUI
 ```
 
-
 ---
 
 ## Backend Deep Dive
@@ -157,19 +155,19 @@ The app is created using a factory pattern in `src/lib/factory/createHonoApp.ts`
 ```typescript
 // Creates a configured Hono instance with global middleware
 const createHonoApp = () => {
-  const app = new Hono();
+	const app = new Hono();
 
-  // Security
-  app.use(cors(corsOptions));  // Configured in config/corsOptions.ts
+	// Security
+	app.use(cors(corsOptions)); // Configured in config/corsOptions.ts
 
-  // Logging
-  app.use(requestId(), pinoLoggerMiddleware());
+	// Logging
+	app.use(requestId(), pinoLoggerMiddleware());
 
-  // Error handling
-  app.notFound(notFoundHandler);
-  app.onError(errorHandler);
+	// Error handling
+	app.notFound(notFoundHandler);
+	app.onError(errorHandler);
 
-  return app;
+	return app;
 };
 ```
 
@@ -185,10 +183,10 @@ app.get("/", (c) => c.json({ status: "success", message: "Server is up!" }));
 
 // API v1 routes
 app.basePath("/api/v1")
-  .route("", healthTipsRoutes)
-  .route("", diseasesRoutes)
-  .route("", authRoutes)
-  .route("", appointmentsRoutes);
+	.route("", healthTipsRoutes)
+	.route("", diseasesRoutes)
+	.route("", authRoutes)
+	.route("", appointmentsRoutes);
 ```
 
 ### Feature Module Structure
@@ -217,32 +215,32 @@ src/app/auth/
 ```typescript
 // src/app/auth/routes.ts
 const authRoutes = new Hono()
-  .basePath("/auth")
-  .post(
-    "/signin",
-    validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/auth/signin"].body),
-    async (ctx) => {
-      const { email, password } = ctx.req.valid("json");
+	.basePath("/auth")
+	.post(
+		"/signin",
+		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/auth/signin"].body),
+		async (ctx) => {
+			const { email, password } = ctx.req.valid("json");
 
-      // Business logic...
-      const [currentUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+			// Business logic...
+			const [currentUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
-      if (!currentUser) {
-        throw new AppError({
-          cause: "No user found",
-          code: 401,
-          message: "Email or password is incorrect",
-        });
-      }
+			if (!currentUser) {
+				throw new AppError({
+					cause: "No user found",
+					code: 401,
+					message: "Email or password is incorrect",
+				});
+			}
 
-      // Return standardized response
-      return AppJsonResponse(ctx, {
-        data: { user: getNecessaryUserDetails(currentUser) },
-        message: "Signed in successfully",
-        schema: backendApiSchemaRoutes["@post/auth/signin"].data,
-      });
-    }
-  );
+			// Return standardized response
+			return AppJsonResponse(ctx, {
+				data: { user: getNecessaryUserDetails(currentUser) },
+				message: "Signed in successfully",
+				schema: backendApiSchemaRoutes["@post/auth/signin"].data,
+			});
+		}
+	);
 ```
 
 ### Error Handling with AppError
@@ -250,32 +248,32 @@ const authRoutes = new Hono()
 ```typescript
 // src/lib/utils/AppError.ts
 class AppError extends Error {
-  errors?: unknown;
-  errorStatus: string;
-  statusCode: ContentfulStatusCode;
+	errors?: unknown;
+	errorStatus: string;
+	statusCode: ContentfulStatusCode;
 
-  constructor(options: { code: ContentfulStatusCode; errors?: unknown; message: string }) {
-    super(options.message, { cause: options.cause });
-    this.statusCode = options.code;
-    this.errorStatus = String(options.code).startsWith("5") ? "Failed" : "Error";
-    this.errors = options.errors;
-  }
+	constructor(options: { code: ContentfulStatusCode; errors?: unknown; message: string }) {
+		super(options.message, { cause: options.cause });
+		this.statusCode = options.code;
+		this.errorStatus = String(options.code).startsWith("5") ? "Failed" : "Error";
+		this.errors = options.errors;
+	}
 
-  static isError(error: unknown): error is AppError {
-    return error instanceof AppError;
-  }
+	static isError(error: unknown): error is AppError {
+		return error instanceof AppError;
+	}
 }
 
 // Usage
 throw new AppError({
-  code: 404,
-  message: "User not found",
+	code: 404,
+	message: "User not found",
 });
 
 throw new AppError({
-  code: 422,
-  message: "Validation failed",
-  errors: { email: ["Invalid email format"] },
+	code: 422,
+	message: "Validation failed",
+	errors: { email: ["Invalid email format"] },
 });
 ```
 
@@ -284,31 +282,33 @@ throw new AppError({
 ```typescript
 // src/constants/common.ts
 export const errorCodes = defineEnum({
-  BAD_REQUEST: 400,
-  UNAUTHORIZED: 401,
-  PAYMENT_REQUIRED: 402,
-  FORBIDDEN: 403,
-  NOT_FOUND: 404,
-  REQUEST_TIMEOUT: 408,
-  CONFLICT: 409,
-  VALIDATION_ERROR: 422,
-  SERVER_ERROR: 500,
+	BAD_REQUEST: 400,
+	UNAUTHORIZED: 401,
+	PAYMENT_REQUIRED: 402,
+	FORBIDDEN: 403,
+	NOT_FOUND: 404,
+	REQUEST_TIMEOUT: 408,
+	CONFLICT: 409,
+	VALIDATION_ERROR: 422,
+	SERVER_ERROR: 500,
 });
 ```
-
 
 ### Validation Middleware
 
 ```typescript
 // src/middleware/validateWithZodMiddleware.ts
-export const validateWithZodMiddleware = <TTarget extends keyof ValidationTargets, TSchema extends z.ZodType>(
-  target: TTarget,  // "json" | "query" | "param"
-  schema: TSchema
+export const validateWithZodMiddleware = <
+	TTarget extends keyof ValidationTargets,
+	TSchema extends z.ZodType,
+>(
+	target: TTarget, // "json" | "query" | "param"
+	schema: TSchema
 ) => {
-  return validator(target, (value) => {
-    const validatedValue = getValidatedValue(value, schema, target);
-    return validatedValue;
-  });
+	return validator(target, (value) => {
+		const validatedValue = getValidatedValue(value, schema, target);
+		return validatedValue;
+	});
 };
 
 // getValidatedValue throws AppError with formatted messages on failure
@@ -320,21 +320,24 @@ export const validateWithZodMiddleware = <TTarget extends keyof ValidationTarget
 ```typescript
 // src/lib/utils/AppJsonResponse.ts
 const AppJsonResponse = <TSchema, TDataSchema>(
-  ctx: Context,
-  options: {
-    code?: ContentfulStatusCode;  // Default: 200
-    data: z.infer<TDataSchema>;
-    message: string;
-    schema: TSchema;              // Validates response data
-  }
+	ctx: Context,
+	options: {
+		code?: ContentfulStatusCode; // Default: 200
+		data: z.infer<TDataSchema>;
+		message: string;
+		schema: TSchema; // Validates response data
+	}
 ) => {
-  const validatedData = getValidatedValue(data, schema.shape.data, "data");
+	const validatedData = getValidatedValue(data, schema.shape.data, "data");
 
-  return ctx.json({
-    status: "success",
-    message,
-    data: validatedData,
-  }, statusCode);
+	return ctx.json(
+		{
+			status: "success",
+			message,
+			data: validatedData,
+		},
+		statusCode
+	);
 };
 ```
 
@@ -343,21 +346,26 @@ const AppJsonResponse = <TSchema, TDataSchema>(
 ```typescript
 // src/app/auth/services/cookie.ts
 type PossibleCookieNames =
-  | "google_code_verifier"
-  | "google_oauth_state"
-  | "zayneAccessToken"
-  | "zayneRefreshToken";
+	| "google_code_verifier"
+	| "google_oauth_state"
+	| "zayneAccessToken"
+	| "zayneRefreshToken";
 
-export const setCookie = (ctx: Context, name: PossibleCookieNames, value: string, options?: CookieOptions) => {
-  const isProduction = ENVIRONMENT.NODE_ENV === "production";
+export const setCookie = (
+	ctx: Context,
+	name: PossibleCookieNames,
+	value: string,
+	options?: CookieOptions
+) => {
+	const isProduction = ENVIRONMENT.NODE_ENV === "production";
 
-  cookieHelpers.setCookie(ctx, name, value, {
-    httpOnly: true,
-    partitioned: isProduction,
-    sameSite: isProduction ? "none" : "lax",
-    secure: isProduction,
-    ...options,
-  });
+	cookieHelpers.setCookie(ctx, name, value, {
+		httpOnly: true,
+		partitioned: isProduction,
+		sameSite: isProduction ? "none" : "lax",
+		secure: isProduction,
+		...options,
+	});
 };
 ```
 
@@ -368,40 +376,39 @@ export const setCookie = (ctx: Context, name: PossibleCookieNames, value: string
 
 // Encode with validation
 export const encodeJwtToken = <TSchema>(payload: z.infer<TSchema>, options: JwtOptions) => {
-  const validPayload = getValidatedValue(payload, schema);
-  return jwt.sign(validPayload, secretKey, restOfOptions);
+	const validPayload = getValidatedValue(payload, schema);
+	return jwt.sign(validPayload, secretKey, restOfOptions);
 };
 
 // Generate access token (short-lived)
 export const generateAccessToken = (user: SelectUserType) => {
-  const payload = pickKeys(user, ["id"]);
-  const accessToken = encodeJwtToken(payload, {
-    expiresIn: ENVIRONMENT.ACCESS_JWT_EXPIRES_IN,
-    secretKey: ENVIRONMENT.ACCESS_SECRET,
-  });
-  return { token: accessToken, expiresAt: new Date(Date.now() + expiresIn) };
+	const payload = pickKeys(user, ["id"]);
+	const accessToken = encodeJwtToken(payload, {
+		expiresIn: ENVIRONMENT.ACCESS_JWT_EXPIRES_IN,
+		secretKey: ENVIRONMENT.ACCESS_SECRET,
+	});
+	return { token: accessToken, expiresAt: new Date(Date.now() + expiresIn) };
 };
 
 // Generate refresh token (long-lived)
 export const generateRefreshToken = (user: SelectUserType) => {
-  // Similar to access token but with REFRESH_SECRET and longer expiry
+	// Similar to access token but with REFRESH_SECRET and longer expiry
 };
 
 // Token whitelist management (for refresh token rotation)
 export const getUpdatedTokenArray = (options: {
-  currentUser: SelectUserType;
-  zayneRefreshToken: string | undefined;
+	currentUser: SelectUserType;
+	zayneRefreshToken: string | undefined;
 }): string[] => {
-  // If token not in whitelist, possible reuse attack - clear all tokens
-  if (!isTokenInWhitelist(currentUser.refreshTokenArray, zayneRefreshToken)) {
-    warnAboutTokenReuse({ compromisedToken: zayneRefreshToken, currentUser });
-    return [];  // Logs out from all devices
-  }
-  // Remove used token from array
-  return currentUser.refreshTokenArray.filter((token) => token !== zayneRefreshToken);
+	// If token not in whitelist, possible reuse attack - clear all tokens
+	if (!isTokenInWhitelist(currentUser.refreshTokenArray, zayneRefreshToken)) {
+		warnAboutTokenReuse({ compromisedToken: zayneRefreshToken, currentUser });
+		return []; // Logs out from all devices
+	}
+	// Remove used token from array
+	return currentUser.refreshTokenArray.filter((token) => token !== zayneRefreshToken);
 };
 ```
-
 
 ---
 
@@ -478,23 +485,23 @@ const BACKEND_HOST = process.env.NODE_ENV === "development" ? LOCAL_BACKEND_HOST
 export const BASE_API_URL = `${BACKEND_HOST}/api/v1`;
 
 export const sharedBaseConfig = defineBaseConfig({
-  baseURL: BASE_API_URL,
-  credentials: "include",  // Send cookies with requests
+	baseURL: BASE_API_URL,
+	credentials: "include", // Send cookies with requests
 
-  // Request deduplication
-  dedupe: {
-    cacheScope: "global",
-    cacheScopeKey: (ctx) => ctx.options.baseURL,
-  },
+	// Request deduplication
+	dedupe: {
+		cacheScope: "global",
+		cacheScopeKey: (ctx) => ctx.options.baseURL,
+	},
 
-  // Plugins for cross-cutting concerns
-  plugins: [
-    toastPlugin({ errorAndSuccess: true, errorsToSkip: ["AbortError"] }),
-    loggerPlugin({ enabled: { onError: true } }),
-  ],
+	// Plugins for cross-cutting concerns
+	plugins: [
+		toastPlugin({ errorAndSuccess: true, errorsToSkip: ["AbortError"] }),
+		loggerPlugin({ enabled: { onError: true } }),
+	],
 
-  resultMode: "withoutResponse",
-  schema: backendApiSchema,  // Type-safe routes from shared package
+	resultMode: "withoutResponse",
+	schema: backendApiSchema, // Type-safe routes from shared package
 });
 
 // Standard client - returns { data, error }
@@ -502,9 +509,9 @@ export const callBackendApi = createFetchClient(sharedBaseConfig);
 
 // For React Query - throws on error, returns data directly
 export const callBackendApiForQuery = createFetchClient({
-  ...sharedBaseConfig,
-  resultMode: "onlyData",
-  throwOnError: true,
+	...sharedBaseConfig,
+	resultMode: "onlyData",
+	throwOnError: true,
 });
 ```
 
@@ -513,78 +520,75 @@ export const callBackendApiForQuery = createFetchClient({
 ```typescript
 // lib/api/callBackendApi/plugins/toastPlugin.ts
 export type ToastPluginMeta = {
-  toast?: {
-    endpointsToSkip?: { error?: string[]; success?: string[] };
-    error?: boolean;
-    errorAndSuccess?: boolean;
-    errorsToSkip?: Array<string>;
-    success?: boolean;
-  };
+	toast?: {
+		endpointsToSkip?: { error?: string[]; success?: string[] };
+		error?: boolean;
+		errorAndSuccess?: boolean;
+		errorsToSkip?: Array<string>;
+		success?: boolean;
+	};
 };
 
 export const toastPlugin = (toastOptions?: ToastPluginMeta["toast"]) => {
-  return definePlugin({
-    id: "toast-plugin",
-    hooks: (setupCtx) => ({
-      onError: (ctx) => {
-        // Skip if configured
-        if (shouldSkipErrorToast) return;
+	return definePlugin({
+		id: "toast-plugin",
+		hooks: (setupCtx) => ({
+			onError: (ctx) => {
+				// Skip if configured
+				if (shouldSkipErrorToast) return;
 
-        // Show field errors individually
-        if (isHTTPError(ctx.error) && ctx.error.errorData.errors) {
-          Object.values(ctx.error.errorData.errors).forEach((message) => toast.error(message));
-          return;
-        }
-        toast.error(ctx.error.message);
-      },
+				// Show field errors individually
+				if (isHTTPError(ctx.error) && ctx.error.errorData.errors) {
+					Object.values(ctx.error.errorData.errors).forEach((message) => toast.error(message));
+					return;
+				}
+				toast.error(ctx.error.message);
+			},
 
-      onSuccess: (ctx) => {
-        if (shouldSkipSuccessToast) return;
-        toast.success(ctx.data.message);
-      },
-    }),
-  });
+			onSuccess: (ctx) => {
+				if (shouldSkipSuccessToast) return;
+				toast.success(ctx.data.message);
+			},
+		}),
+	});
 };
 ```
-
 
 ### React Query Patterns
 
 ```typescript
 // lib/react-query/queryOptions.ts
 export const healthTipsQuery = (options: { pageName?: string } = {}) => {
-  const { pageName = "home-page" } = options;
+	const { pageName = "home-page" } = options;
 
-  return queryOptions({
-    queryKey: ["health-tips", pageName],
-    queryFn: () => callBackendApiForQuery("@get/health-tips/all", {
-      meta: { toast: { success: false } },  // Don't toast on success
-      query: { limit: 8 },
-    }),
-    staleTime: Infinity,  // Cache forever
-  });
+	return queryOptions({
+		queryKey: ["health-tips", pageName],
+		queryFn: () =>
+			callBackendApiForQuery("@get/health-tips/all", {
+				meta: { toast: { success: false } }, // Don't toast on success
+				query: { limit: 8 },
+			}),
+		staleTime: Infinity, // Cache forever
+	});
 };
 
 // lib/react-query/mutationOptions.ts
 export const googleOAuthMutation = () => {
-  return mutationOptions({
-    mutationKey: ["auth", "google"],
-    mutationFn: (options: { role: "doctor" | "patient" }) => {
-      return callBackendApiForQuery("@get/auth/google", {
-        meta: { toast: { success: false } },
-        query: { role: options.role },
-      });
-    },
-  });
+	return mutationOptions({
+		mutationKey: ["auth", "google"],
+		mutationFn: (options: { role: "doctor" | "patient" }) => {
+			return callBackendApiForQuery("@get/auth/google", {
+				meta: { toast: { success: false } },
+				query: { role: options.role },
+			});
+		},
+	});
 };
 
 // Usage in component
 const googleAuthMutation = useMutation(googleOAuthMutation());
 
-googleAuthMutation.mutate(
-  { role: "patient" },
-  { onSuccess: (data) => router.push(data.data.authURL) }
-);
+googleAuthMutation.mutate({ role: "patient" }, { onSuccess: (data) => router.push(data.data.authURL) });
 ```
 
 ### Form Pattern with React Hook Form + Zod
@@ -643,6 +647,7 @@ function SignInPage() {
 ### Component Library
 
 **Common Components** (`components/common/`):
+
 - `Logo` - App logo with variants
 - `NavLink` - Next.js Link with transition support
 - `IconBox` - Iconify icon wrapper
@@ -654,6 +659,7 @@ function SignInPage() {
 - `DropZoneInput` - File upload with drag & drop
 
 **UI Components** (`components/ui/`):
+
 - `Button` - With loading state, themes, sizes
 - `Form` - React Hook Form integration
 - `Select` - Radix-based select
@@ -663,7 +669,6 @@ function SignInPage() {
 - `DateTimePicker` - Date selection
 - `DropdownMenu` - Context menus
 - `Popover` - Floating content
-
 
 ---
 
@@ -676,39 +681,43 @@ Database layer using Drizzle ORM with PostgreSQL.
 ```typescript
 // packages/db/src/schema/auth.ts
 export const users = pg.pgTable(
-  "users",
-  {
-    id: pg.uuid().defaultRandom().primaryKey(),
-    email: pg.text().notNull().unique(),
-    passwordHash: pg.text(),
-    firstName: pg.text().notNull(),
-    lastName: pg.text().notNull(),
-    avatar: pg.text().notNull(),
-    dob: pg.timestamp({ mode: "string", withTimezone: true }).notNull(),
-    gender: pg.text({ enum: ["male", "female"] }).notNull(),
-    role: pg.text({ enum: ["doctor", "patient"] }).notNull(),
-    country: pg.text(),
+	"users",
+	{
+		id: pg.uuid().defaultRandom().primaryKey(),
+		email: pg.text().notNull().unique(),
+		passwordHash: pg.text(),
+		firstName: pg.text().notNull(),
+		lastName: pg.text().notNull(),
+		avatar: pg.text().notNull(),
+		dob: pg.timestamp({ mode: "string", withTimezone: true }).notNull(),
+		gender: pg.text({ enum: ["male", "female"] }).notNull(),
+		role: pg.text({ enum: ["doctor", "patient"] }).notNull(),
+		country: pg.text(),
 
-    // Doctor-specific
-    medicalLicense: pg.text(),
-    specialty: pg.text(),
+		// Doctor-specific
+		medicalLicense: pg.text(),
+		specialty: pg.text(),
 
-    // OAuth
-    googleId: pg.text(),
+		// OAuth
+		googleId: pg.text(),
 
-    // Security
-    isSuspended: pg.boolean().notNull().default(false),
-    loginRetryCount: pg.integer().notNull().default(0),
-    refreshTokenArray: pg.jsonb().notNull().$type<string[]>().default([]),
+		// Security
+		isSuspended: pg.boolean().notNull().default(false),
+		loginRetryCount: pg.integer().notNull().default(0),
+		refreshTokenArray: pg.jsonb().notNull().$type<string[]>().default([]),
 
-    // Timestamps
-    emailVerifiedAt: pg.timestamp({ withTimezone: true }),
-    lastLoginAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
-    createdAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
-    updatedAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
-    deletedAt: pg.timestamp({ withTimezone: true }),
-  },
-  (table) => [pg.uniqueIndex("user_google_id_index").on(table.googleId)]
+		// Timestamps
+		emailVerifiedAt: pg.timestamp({ withTimezone: true }),
+		lastLoginAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
+		createdAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
+		updatedAt: pg
+			.timestamp({ withTimezone: true })
+			.notNull()
+			.defaultNow()
+			.$onUpdate(() => new Date()),
+		deletedAt: pg.timestamp({ withTimezone: true }),
+	},
+	(table) => [pg.uniqueIndex("user_google_id_index").on(table.googleId)]
 );
 
 // Auto-generate Zod schemas from Drizzle
@@ -721,6 +730,7 @@ export type SelectUserType = typeof users.$inferSelect;
 ```
 
 **Database Operations**:
+
 ```typescript
 // Query
 const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
@@ -742,39 +752,29 @@ Environment variable validation with Zod.
 ```typescript
 // packages/env/src/backend-env.ts
 export const envSchema = z.object({
-  ACCESS_JWT_EXPIRES_IN: z.string().transform((value) => evaluateString<number>(value)),
-  ACCESS_SECRET: z.string(),
-  BASE_BACKEND_HOST: z.url(),
-  BASE_FRONTEND_HOST: z.url(),
-  CLOUDINARY_API_KEY: z.string(),
-  CLOUDINARY_API_SECRET: z.string(),
-  CLOUDINARY_CLOUD_NAME: z.string(),
-  DATABASE_URL_DEV: z.string(),
-  DATABASE_URL_PROD: z.string(),
-  DB_MIGRATING: z.stringbool().default(false),
-  DB_SEEDING: z.stringbool().default(false),
-  GOOGLE_AUTH_API_KEY: z.string(),
-  GOOGLE_CLIENT_ID: z.string(),
-  GOOGLE_CLIENT_SECRET: z.string(),
-  LOG_LEVEL: z.literal(["debug", "info", "warn", "error", "fatal", "silent"]).default("info"),
-  NODE_ENV: z.literal(["development", "production"]).default("development"),
-  PORT: z.coerce.number().default(8000),
-  REFRESH_JWT_EXPIRES_IN: z.string().transform((value) => evaluateString<number>(value)),
-  REFRESH_SECRET: z.string(),
+	ACCESS_JWT_EXPIRES_IN: z.string().transform((value) => evaluateString<number>(value)),
+	ACCESS_SECRET: z.string(),
+	BASE_BACKEND_HOST: z.url(),
+	BASE_FRONTEND_HOST: z.url(),
+	CLOUDINARY_API_KEY: z.string(),
+	CLOUDINARY_API_SECRET: z.string(),
+	CLOUDINARY_CLOUD_NAME: z.string(),
+	DATABASE_URL_DEV: z.string(),
+	DATABASE_URL_PROD: z.string(),
+	// ...some more...
 });
 
 export const getBackendEnv = () => {
-  const result = envSchema.safeParse(process.env);
+	const result = envSchema.safeParse(process.env);
 
-  if (!result.success) {
-    const missingKeys = Object.keys(z.flattenError(result.error).fieldErrors);
-    throw new Error(`Missing required environment variable(s):\n → ${missingKeys.join("\n → ")}`);
-  }
+	if (!result.success) {
+		const missingKeys = Object.keys(z.flattenError(result.error).fieldErrors);
+		throw new Error(`Missing required environment variable(s):\n → ${missingKeys.join("\n → ")}`);
+	}
 
-  return result.data;
+	return result.data;
 };
 ```
-
 
 ### @medinfo/shared
 
@@ -785,67 +785,71 @@ Shared validation schemas that define the API contract between frontend and back
 
 // Response wrappers
 const withBaseSuccessResponse = <TSchema extends z.ZodType>(dataSchema: TSchema) =>
-  z.object({
-    status: z.literal("success"),
-    message: z.string(),
-    data: dataSchema,
-  });
+	z.object({
+		status: z.literal("success"),
+		message: z.string(),
+		data: dataSchema,
+	});
 
 const withBaseErrorResponse = <TSchema extends z.ZodType>(errorSchema?: TSchema) =>
-  z.object({
-    status: z.literal("error"),
-    message: z.string(),
-    errors: errorSchema ?? z.record(z.string(), z.array(z.string())).optional(),
-  });
+	z.object({
+		status: z.literal("error"),
+		message: z.string(),
+		errors: errorSchema ?? z.record(z.string(), z.array(z.string())).optional(),
+	});
 
 // Route definitions
 const authRoutes = defineSchemaRoutes({
-  "@post/auth/signin": {
-    body: z.object({
-      email: z.email("Please enter a valid email"),
-      password: z.string().min(8, "Password must be at least 8 characters"),
-    }),
-    data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
-  },
+	"@post/auth/signin": {
+		body: z.object({
+			email: z.email("Please enter a valid email"),
+			password: z.string().min(8, "Password must be at least 8 characters"),
+		}),
+		data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
+	},
 
-  "@post/auth/signup": {
-    body: z.instanceof(FormData),  // Multipart for file upload
-    data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
-  },
+	"@post/auth/signup": {
+		body: z.instanceof(FormData), // Multipart for file upload
+		data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
+	},
 
-  "@get/auth/session": {
-    data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
-  },
+	"@get/auth/session": {
+		data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
+	},
 
-  "@get/auth/google": {
-    query: UserDataSchema.pick({ role: true }).superRefine((data, ctx) => {
-      if (data.role === "doctor") {
-        ctx.addIssue({
-          code: "custom",
-          message: "Doctors cannot signup with google due to license requirements",
-        });
-      }
-    }),
-    data: withBaseSuccessResponse(z.object({ authURL: z.url() })),
-  },
+	"@get/auth/google": {
+		query: UserDataSchema.pick({ role: true }).superRefine((data, ctx) => {
+			if (data.role === "doctor") {
+				ctx.addIssue({
+					code: "custom",
+					message: "Doctors cannot signup with google due to license requirements",
+				});
+			}
+		}),
+		data: withBaseSuccessResponse(z.object({ authURL: z.url() })),
+	},
 
-  "@get/auth/google/callback": {
-    query: z.object({ code: z.string(), state: z.string() }),
-  },
+	"@get/auth/google/callback": {
+		query: z.object({ code: z.string(), state: z.string() }),
+	},
 });
 
 // Combine all routes
-export const backendApiSchema = defineSchema({
-  ...defaultSchemaRoute,  // Fallback error schema
-  ...diseaseRoutes,
-  ...healthTipRoutes,
-  ...authRoutes(),
-}, { strict: true });
+export const backendApiSchema = defineSchema(
+	{
+		...defaultSchemaRoute, // Fallback error schema
+		...diseaseRoutes,
+		...healthTipRoutes,
+		...authRoutes(),
+	},
+	{ strict: true }
+);
 
 export const backendApiSchemaRoutes = backendApiSchema.routes;
 ```
 
 **Route Naming Convention**:
+
 ```
 @{method}/{resource}/{action}/:param
 
@@ -856,7 +860,6 @@ export const backendApiSchemaRoutes = backendApiSchema.routes;
 @patch/diseases/update     # PATCH /api/v1/diseases/update
 @delete/diseases/delete    # DELETE /api/v1/diseases/delete
 ```
-
 
 ---
 
@@ -897,28 +900,28 @@ const authMiddleware = createMiddleware<HonoAppBindings>(async (ctx, next) => {
 ```typescript
 // src/app/auth/middleware/authMiddleware/validateUserSession.ts
 const validateUserSession = async (tokens: TokenPairFromCookies) => {
-  const { zayneAccessToken, zayneRefreshToken } = tokens;
+	const { zayneAccessToken, zayneRefreshToken } = tokens;
 
-  // No refresh token = unauthorized
-  if (!zayneRefreshToken) {
-    throw new AppError({ code: 401, message: "Unauthorized" });
-  }
+	// No refresh token = unauthorized
+	if (!zayneRefreshToken) {
+		throw new AppError({ code: 401, message: "Unauthorized" });
+	}
 
-  // No access token = try refresh
-  if (!zayneAccessToken) {
-    return await refreshUserSession(zayneRefreshToken);
-  }
+	// No access token = try refresh
+	if (!zayneAccessToken) {
+		return await refreshUserSession(zayneRefreshToken);
+	}
 
-  try {
-    // Validate access token
-    return await getExistingSession({ zayneAccessToken, zayneRefreshToken });
-  } catch (error) {
-    // Access token expired/invalid = try refresh
-    if (error instanceof jwt.JsonWebTokenError || error instanceof jwt.TokenExpiredError) {
-      return await refreshUserSession(zayneRefreshToken);
-    }
-    throw error;
-  }
+	try {
+		// Validate access token
+		return await getExistingSession({ zayneAccessToken, zayneRefreshToken });
+	} catch (error) {
+		// Access token expired/invalid = try refresh
+		if (error instanceof jwt.JsonWebTokenError || error instanceof jwt.TokenExpiredError) {
+			return await refreshUserSession(zayneRefreshToken);
+		}
+		throw error;
+	}
 };
 ```
 
@@ -931,11 +934,11 @@ const validateUserSession = async (tokens: TokenPairFromCookies) => {
 // - Log the incident
 
 if (!isTokenInWhitelist(currentUser.refreshTokenArray, zayneRefreshToken)) {
-  warnAboutTokenReuse({ compromisedToken: zayneRefreshToken, currentUser });
+	warnAboutTokenReuse({ compromisedToken: zayneRefreshToken, currentUser });
 
-  await db.update(users).set({ refreshTokenArray: [] }).where(eq(users.id, userId));
+	await db.update(users).set({ refreshTokenArray: [] }).where(eq(users.id, userId));
 
-  throw new AppError({ code: 401, message: "Invalid session. Please log in again!" });
+	throw new AppError({ code: 401, message: "Invalid session. Please log in again!" });
 }
 ```
 
@@ -948,14 +951,14 @@ router.push(data.authURL);
 
 // 2. Backend creates auth URL (src/app/auth/services/oauth.ts)
 export const createGoogleAuthURL = () => {
-  const state = arctic.generateState();
-  const codeVerifier = arctic.generateCodeVerifier();
-  const scopes = ["openid", "profile", "email", "..."];
+	const state = arctic.generateState();
+	const codeVerifier = arctic.generateCodeVerifier();
+	const scopes = ["openid", "profile", "email", "..."];
 
-  const authUrlObject = google.createAuthorizationURL(state, codeVerifier, scopes);
+	const authUrlObject = google.createAuthorizationURL(state, codeVerifier, scopes);
 
-  // Store state/verifier in cookies for callback validation
-  return { authURL: authUrlObject.toString(), codeVerifier, state, cookiesExpireAt };
+	// Store state/verifier in cookies for callback validation
+	return { authURL: authUrlObject.toString(), codeVerifier, state, cookiesExpireAt };
 };
 
 // 3. Google redirects to /auth/google/callback
@@ -970,51 +973,31 @@ export const createGoogleAuthURL = () => {
 ```typescript
 // src/app/auth/services/constants.ts
 export const necessaryUserDetails = defineEnum([
-  "firstName",
-  "lastName",
-  "email",
-  "avatar",
-  "role",
-  "medicalLicense",
-  "specialty",
+	"firstName",
+	"lastName",
+	"email",
+	"avatar",
+	"role",
+	"medicalLicense",
+	"specialty",
 ] satisfies Array<keyof SelectUserType>);
 
 // src/app/auth/services/common.ts
 export const getNecessaryUserDetails = (user: SelectUserType, keys: Array<keyof SelectUserType> = []) => {
-  return pickKeys(user, [...necessaryUserDetails, ...keys]);
+	return pickKeys(user, [...necessaryUserDetails, ...keys]);
 };
 
 // Never expose: passwordHash, refreshTokenArray, googleId, etc.
 ```
 
-
 ---
 
 ## API Patterns
 
-### Current API Endpoints
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/auth/signup` | Register new user | No |
-| POST | `/auth/signin` | Login user | No |
-| GET | `/auth/signout` | Logout user | Yes |
-| GET | `/auth/session` | Get current user | Yes |
-| GET | `/auth/google` | Initiate Google OAuth | No |
-| GET | `/auth/google/callback` | Google OAuth callback | No |
-| GET | `/health-tips/all` | List health tips | No |
-| GET | `/health-tips/one/:id` | Get single health tip | No |
-| GET | `/diseases/all` | List diseases (paginated) | No |
-| GET | `/diseases/one/:name` | Get disease details | No |
-| POST | `/diseases/add` | Add new disease | No* |
-| PATCH | `/diseases/update` | Update disease | No* |
-| DELETE | `/diseases/delete` | Delete disease | No* |
-
-*Should probably require auth in production
-
 ### Request/Response Examples
 
 **Sign In**:
+
 ```typescript
 // Request
 POST /api/v1/auth/signin
@@ -1047,6 +1030,7 @@ Content-Type: application/json
 ```
 
 **Sign Up (Multipart)**:
+
 ```typescript
 // Request
 POST /api/v1/auth/signup
@@ -1067,6 +1051,7 @@ medicalLicense: [File]
 ```
 
 **Paginated List**:
+
 ```typescript
 // Request
 GET /api/v1/diseases/all?page=1&limit=10&random=false
@@ -1090,53 +1075,56 @@ GET /api/v1/diseases/all?page=1&limit=10&random=false
 ### Adding a New API Route
 
 1. **Define schema** in `packages/shared/src/validation/backendApiSchema.ts`:
+
 ```typescript
 const newFeatureRoutes = defineSchemaRoutes({
-  "@get/feature/list": {
-    query: z.object({ limit: z.number().optional() }),
-    data: withBaseSuccessResponse(z.array(FeatureSchema)),
-  },
-  "@post/feature/create": {
-    body: CreateFeatureSchema,
-    data: withBaseSuccessResponse(FeatureSchema),
-  },
+	"@get/feature/list": {
+		query: z.object({ limit: z.number().optional() }),
+		data: withBaseSuccessResponse(z.array(FeatureSchema)),
+	},
+	"@post/feature/create": {
+		body: CreateFeatureSchema,
+		data: withBaseSuccessResponse(FeatureSchema),
+	},
 });
 
 // Add to backendApiSchema
 export const backendApiSchema = defineSchema({
-  ...existingRoutes,
-  ...newFeatureRoutes,
+	...existingRoutes,
+	...newFeatureRoutes,
 });
 ```
 
 2. **Create feature module** in `apps/backend/src/app/feature/`:
+
 ```typescript
 // routes.ts
 const featureRoutes = new Hono()
-  .basePath("/feature")
-  .get("/list", validateWithZodMiddleware("query", schema.query), async (ctx) => {
-    // Implementation
-    return AppJsonResponse(ctx, { data, message, schema: schema.data });
-  });
+	.basePath("/feature")
+	.get("/list", validateWithZodMiddleware("query", schema.query), async (ctx) => {
+		// Implementation
+		return AppJsonResponse(ctx, { data, message, schema: schema.data });
+	});
 
 export { featureRoutes };
 ```
 
 3. **Register route** in `apps/backend/src/app.ts`:
+
 ```typescript
 app.basePath("/api/v1")
-  .route("", featureRoutes)  // Add here
-  .route("", existingRoutes);
+	.route("", featureRoutes) // Add here
+	.route("", existingRoutes);
 ```
 
 4. **Use in frontend** - types are automatically available:
+
 ```typescript
 const { data } = await callBackendApi("@get/feature/list", {
-  query: { limit: 10 },
+	query: { limit: 10 },
 });
 // data is fully typed!
 ```
-
 
 ---
 
@@ -1144,14 +1132,14 @@ const { data } = await callBackendApi("@get/feature/list", {
 
 ### File Naming
 
-| Type | Convention | Example |
-|------|------------|---------|
-| Components | PascalCase | `UserProfile.tsx` |
-| Utilities | camelCase | `formatDate.ts` |
-| Constants | camelCase file, UPPER_SNAKE values | `errorCodes.ts` |
-| Types | PascalCase with suffix | `SelectUserType` |
-| Private folders | Prefix with `-` | `-components/` |
-| Index exports | `index.ts` | Re-export from folder |
+| Type            | Convention                         | Example               |
+| --------------- | ---------------------------------- | --------------------- |
+| Components      | PascalCase                         | `UserProfile.tsx`     |
+| Utilities       | camelCase                          | `formatDate.ts`       |
+| Constants       | camelCase file, UPPER_SNAKE values | `errorCodes.ts`       |
+| Types           | PascalCase with suffix             | `SelectUserType`      |
+| Private folders | Prefix with `-`                    | `-components/`        |
+| Index exports   | `index.ts`                         | Re-export from folder |
 
 ### Import Order
 
@@ -1177,31 +1165,34 @@ import { hashValue } from "./services/hash";
 ```typescript
 // Use Zod for runtime validation + type inference
 const SignInSchema = z.object({
-  email: z.email(),
-  password: z.string().min(8),
+	email: z.email(),
+	password: z.string().min(8),
 });
 type SignInData = z.infer<typeof SignInSchema>;
 
 // Use defineEnum for type-safe constants
-export const errorCodes = defineEnum({
-  BAD_REQUEST: 400,
-  UNAUTHORIZED: 401,
-}, { unionVariant: "values" });
+export const errorCodes = defineEnum(
+	{
+		BAD_REQUEST: 400,
+		UNAUTHORIZED: 401,
+	},
+	{ unionVariant: "values" }
+);
 
-type ErrorCodesUnion = typeof errorCodes.$inferUnion;  // 400 | 401
+type ErrorCodesUnion = typeof errorCodes.$inferUnion; // 400 | 401
 
 // Use pickKeys for safe object subsetting
 const userDetails = pickKeys(user, ["firstName", "lastName", "email"]);
 
 // Prefer explicit return types for public functions
-export const generateAccessToken = (user: SelectUserType): { expiresAt: Date; token: string; } => {
-  // ...
+export const generateAccessToken = (user: SelectUserType): { expiresAt: Date; token: string } => {
+	// ...
 };
 ```
 
 ### Component Patterns
 
-```typescript
+```tsx
 // Server Component (default)
 async function ServerPage() {
   const data = await fetchData();
@@ -1244,31 +1235,31 @@ function ClientComponent() {
 ```typescript
 // Backend: Always use AppError
 throw new AppError({
-  code: 404,
-  message: "User not found",
-  cause: originalError,  // Optional, for logging
+	code: 404,
+	message: "User not found",
+	cause: originalError, // Optional, for logging
 });
 
 // With validation errors
 throw new AppError({
-  code: 422,
-  message: "Validation failed",
-  errors: { email: ["Invalid format"], password: ["Too short"] },
+	code: 422,
+	message: "Validation failed",
+	errors: { email: ["Invalid format"], password: ["Too short"] },
 });
 
 // Frontend: Let toast plugin handle errors
 await callBackendApi("@post/auth/signin", {
-  body: data,
-  meta: { toast: { errorAndSuccess: true } },  // Auto-toast
+	body: data,
+	meta: { toast: { errorAndSuccess: true } }, // Auto-toast
 });
 
 // Or handle manually
 const { data, error } = await callBackendApi("@post/auth/signin", { body });
+
 if (error) {
-  // Custom error handling
+	// Custom error handling
 }
 ```
-
 
 ---
 
@@ -1277,15 +1268,22 @@ if (error) {
 ### Adding a New Database Table
 
 1. **Define schema** in `packages/db/src/schema/`:
+
 ```typescript
 // packages/db/src/schema/appointments.ts
 export const appointments = pg.pgTable("appointments", {
-  id: pg.uuid().defaultRandom().primaryKey(),
-  patientId: pg.uuid().references(() => users.id).notNull(),
-  doctorId: pg.uuid().references(() => users.id).notNull(),
-  scheduledAt: pg.timestamp({ withTimezone: true }).notNull(),
-  status: pg.text({ enum: ["pending", "confirmed", "cancelled"] }).notNull(),
-  createdAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
+	id: pg.uuid().defaultRandom().primaryKey(),
+	patientId: pg
+		.uuid()
+		.references(() => users.id)
+		.notNull(),
+	doctorId: pg
+		.uuid()
+		.references(() => users.id)
+		.notNull(),
+	scheduledAt: pg.timestamp({ withTimezone: true }).notNull(),
+	status: pg.text({ enum: ["pending", "confirmed", "cancelled"] }).notNull(),
+	createdAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
 });
 
 export const InsertAppointmentSchema = createInsertSchema(appointments);
@@ -1295,6 +1293,7 @@ export type SelectAppointmentType = typeof appointments.$inferSelect;
 ```
 
 2. **Export from index**:
+
 ```typescript
 // packages/db/src/schema/index.ts
 export * from "./auth";
@@ -1302,6 +1301,7 @@ export * from "./appointments";
 ```
 
 3. **Generate and run migration**:
+
 ```bash
 pnpm db:generate   # Creates migration file
 pnpm db:migrate    # Applies migration
@@ -1310,59 +1310,63 @@ pnpm db:migrate    # Applies migration
 ### Adding a New Frontend Page
 
 1. **Create page file**:
-```typescript
+
+```tsx
 // app/(primary)/new-page/page.tsx
 import { Main } from "../-components";
 
 function NewPage() {
-  return (
-    <Main>
-      <h1>New Page</h1>
-    </Main>
-  );
+	return (
+		<Main>
+			<h1>New Page</h1>
+		</Main>
+	);
 }
 
 export default NewPage;
 ```
 
 2. **For client interactivity**:
-```typescript
+
+```tsx
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
 import { healthTipsQuery } from "@/lib/react-query/queryOptions";
 
 function NewPage() {
-  const { data, isLoading } = useQuery(healthTipsQuery());
+	const { data, isLoading } = useQuery(healthTipsQuery());
 
-  if (isLoading) return <Spinner />;
+	if (isLoading) return <Spinner />;
 
-  return <div>{/* Use data */}</div>;
+	return <div>{/* Use data */}</div>;
 }
 ```
 
 ### Adding Protected Routes
 
 1. **Check session in layout or page**:
-```typescript
+
+```tsx
 // app/dashboard/layout.tsx
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth";  // Your session helper
+import { getSession } from "@/lib/auth"; // Your session helper
 
 async function DashboardLayout({ children }) {
-  const session = await getSession();
+	const session = await getSession();
 
-  if (!session) {
-    redirect("/signin");
-  }
+	if (!session) {
+		redirect("/signin");
+	}
 
-  return <div>{children}</div>;
+	return <div>{children}</div>;
 }
 ```
 
 ### Debugging Tips
 
 **Backend**:
+
 ```bash
 # Check logs with pino-pretty formatting
 pnpm dev:backend
@@ -1372,6 +1376,7 @@ pnpm dev:backend
 ```
 
 **Frontend**:
+
 ```bash
 # React Query Devtools (bottom-left button)
 # Shows all queries, cache state, refetch status
@@ -1382,42 +1387,13 @@ pnpm dev:backend
 
 **Common Issues**:
 
-| Issue | Solution |
-|-------|----------|
-| CORS errors | Check `corsOptions.ts` includes frontend origin |
-| Cookies not sent | Ensure `credentials: "include"` in fetch |
-| Type errors after schema change | Run `pnpm db:generate` |
-| Auth middleware fails | Check both cookies exist, tokens not expired |
-| Google OAuth fails | Verify callback URL matches Google Console |
-
----
-
-## Deployment Checklist
-
-- [ ] Set `NODE_ENV=production`
-- [ ] Use production database URL
-- [ ] Generate strong JWT secrets (32+ chars)
-- [ ] Configure CORS for production domain
-- [ ] Set up Cloudinary production account
-- [ ] Enable Google OAuth production credentials
-- [ ] Run database migrations
-- [ ] Set up logging/monitoring
-- [ ] Configure SSL/HTTPS
-
-### Build Commands
-
-```bash
-# Build all
-pnpm build
-
-# Build specific package
-pnpm --filter=@medinfo/backend build
-pnpm --filter=@medinfo/frontend build
-
-# Start production
-pnpm --filter=@medinfo/backend start
-pnpm --filter=@medinfo/frontend start
-```
+| Issue                           | Solution                                        |
+| ------------------------------- | ----------------------------------------------- |
+| CORS errors                     | Check `corsOptions.ts` includes frontend origin |
+| Cookies not sent                | Ensure `credentials: "include"` in fetch        |
+| Type errors after schema change | Run `pnpm db:generate`                          |
+| Auth middleware fails           | Check both cookies exist, tokens not expired    |
+| Google OAuth fails              | Verify callback URL matches Google Console      |
 
 ---
 
@@ -1425,17 +1401,15 @@ pnpm --filter=@medinfo/frontend start
 
 ### Key Libraries
 
-| Package | Purpose | Docs |
-|---------|---------|------|
-| `hono` | Backend framework | [hono.dev](https://hono.dev) |
-| `drizzle-orm` | Database ORM | [orm.drizzle.team](https://orm.drizzle.team) |
-| `zod` | Schema validation | [zod.dev](https://zod.dev) |
-| `@tanstack/react-query` | Data fetching | [tanstack.com/query](https://tanstack.com/query) |
-| `@zayne-labs/callapi` | Type-safe fetch client | Internal |
-| `arctic` | OAuth library | [arctic.js.org](https://arctic.js.org) |
-| `react-hook-form` | Form management | [react-hook-form.com](https://react-hook-form.com) |
-| `tailwind-variants` | Variant styling | [tailwind-variants.org](https://tailwind-variants.org) |
+| Package                 | Purpose                | Docs                                                   |
+| ----------------------- | ---------------------- | ------------------------------------------------------ |
+| `hono`                  | Backend framework      | [hono.dev](https://hono.dev)                           |
+| `drizzle-orm`           | Database ORM           | [orm.drizzle.team](https://orm.drizzle.team)           |
+| `zod`                   | Schema validation      | [zod.dev](https://zod.dev)                             |
+| `@tanstack/react-query` | Data fetching          | [tanstack.com/query](https://tanstack.com/query)       |
+| `@zayne-labs/callapi`   | Type-safe fetch client | Internal                                               |
+| `arctic`                | OAuth library          | [arctic.js.org](https://arctic.js.org)                 |
+| `react-hook-form`       | Form management        | [react-hook-form.com](https://react-hook-form.com)     |
+| `tailwind-variants`     | Variant styling        | [tailwind-variants.org](https://tailwind-variants.org) |
 
 ---
-
-**Last Updated**: November 2025

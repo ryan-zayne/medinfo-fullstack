@@ -1,10 +1,10 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import MessageImage from "@/public/assets/images/message.png";
-import ViewIcon from "@/components/icons/ViewIcon";
 import CommentIcon from "@/components/icons/CommentIcon";
+import ViewIcon from "@/components/icons/ViewIcon";
+import MessageImage from "@/public/assets/images/message.png";
+import { useRouter } from "@bprogress/next";
+import Image from "next/image";
 
 function Page() {
 	const router = useRouter();

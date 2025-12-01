@@ -14,5 +14,6 @@
 		"source.organizeImports.biome": "explicit"
 	},
 
-	"cSpell.words": ["dotenvx", "heroui", "medinfo"]
+	"cSpell.words": ["dotenvx", "heroui", "medinfo"],
+	"typescript.autoClosingTags": false
 }

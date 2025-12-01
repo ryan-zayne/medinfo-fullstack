@@ -2,7 +2,7 @@ import { IconBox } from "@/components/common";
 import { getElementList } from "@/components/common/for";
 import { Button, Card } from "@/components/ui";
 import { cnJoin, tw } from "@/lib/utils/cn";
-import { Main } from "../../-components";
+import { Main } from "../../-components/Main";
 
 const pricing = [
 	{
@@ -81,7 +81,7 @@ function PricingCard(props: PricingCardProps) {
 			className={cnJoin(
 				`relative flex min-h-[436px] max-w-[342px] flex-col justify-between rounded-[16px] border
 				border-medinfo-light-1 bg-white p-6
-				shadow-[0_4px_4px_hsl(152,17%,79%,0.12),_0_4px_4px_hsl(152,17%,79%,0.12)]`,
+				shadow-[0_4px_4px_hsl(152,17%,79%,0.12),0_4px_4px_hsl(152,17%,79%,0.12)]`,
 				banner
 					&& `[--banner-height:29px] [--half-banner-height:calc(var(--banner-height)/2)]
 					max-md:mt-(--half-banner-height)`

@@ -9,6 +9,7 @@ export const googleOAuthMutation = () => {
 			const { role } = options;
 
 			return callBackendApiForQuery("@get/auth/google", {
+				onSuccess: (ctx) => {},
 				meta: { toast: { success: false } },
 				query: { role },
 			});
