@@ -12,9 +12,7 @@ const prettifyPath = (path: z.core.$ZodIssue[][number]["path"] | undefined) => {
 };
 
 const prettifyValidationIssues = (issues: z.core.$ZodIssue[]) => {
-	const issuesString = issues
-		.map((issue) => `✖ ${issue.message}${prettifyPath(issue.path)}`)
-		.join(" | ");
+	const issuesString = issues.map((issue) => `✖ ${issue.message}${prettifyPath(issue.path)}`).join(" | ");
 
 	return issuesString;
 };
