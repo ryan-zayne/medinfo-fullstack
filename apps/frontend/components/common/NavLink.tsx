@@ -2,7 +2,7 @@
 
 import { cnMerge } from "@/lib/utils/cn";
 import type { InferProps } from "@zayne-labs/toolkit-react/utils";
-import { isString } from "@zayne-labs/toolkit-type-helpers";
+import { isString, type AnyString } from "@zayne-labs/toolkit-type-helpers";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { UrlObject } from "node:url";
@@ -11,8 +11,14 @@ const isRelativeLink = (value: string | UrlObject | null | undefined): value is 
 	return isString(value) && !value.startsWith("/");
 };
 
+export type MainAppRoutes<TAppRoutes extends AppRoutes = AppRoutes> =
+	TAppRoutes extends `${infer TPrefix}/[${string}]` ? `${TPrefix}/${AnyString}` : TAppRoutes;
+
+type ModifiedHref = (Omit<UrlObject, "pathname"> & { pathname?: MainAppRoutes }) | MainAppRoutes;
+
 function NavLink(
-	props: InferProps<typeof Link> & {
+	props: Omit<InferProps<typeof Link>, "href"> & {
+		href: ModifiedHref;
 		relative?: boolean;
 		transitionType?: "navbar" | "no-transition" | "regular";
 	}

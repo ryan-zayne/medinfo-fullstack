@@ -19,8 +19,8 @@
 		"@iconify/react": "6.0.2",
 		"@medinfo/shared": "workspace:*",
 		"@tanstack/react-query": "5.90.11",
-		"@zayne-labs/callapi": "1.11.30",
-		"@zayne-labs/callapi-plugins": "^4.0.30",
+		"@zayne-labs/callapi": "1.11.31",
+		"@zayne-labs/callapi-plugins": "^4.0.31",
 		"@zayne-labs/toolkit-core": "0.12.15",
 		"@zayne-labs/toolkit-react": "0.12.15",
 		"@zayne-labs/toolkit-type-helpers": "0.12.15",
@@ -43,7 +43,7 @@
 		"zustand": "5.0.9"
 	},
 	"devDependencies": {
-		"@eslint-react/eslint-plugin": "2.3.9",
+		"@eslint-react/eslint-plugin": "2.3.12",
 		"@iconify-icon/react": "3.0.3",
 		"@next/eslint-plugin-next": "16.0.6",
 		"@tailwindcss/postcss": "4.1.17",

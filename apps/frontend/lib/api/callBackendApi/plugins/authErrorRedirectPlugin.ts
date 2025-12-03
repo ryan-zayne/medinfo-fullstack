@@ -1,0 +1,92 @@
+import type { RequestContext, ResponseErrorContext } from "@zayne-labs/callapi";
+import { definePlugin } from "@zayne-labs/callapi/utils";
+import type { Awaitable, CallbackFn } from "@zayne-labs/toolkit-type-helpers";
+import type { BaseApiErrorResponse } from "../apiSchema";
+import type { ToastPluginMeta } from "./toastPlugin";
+import { isAuthError, isPathnameMatchingRoute, redirectTo } from "./utils/common";
+
+export type AuthErrorRedirectPluginMeta = {
+	auth?: {
+		redirectErrorMessage?: string;
+		redirectFn?: CallbackFn<AppRoutes, Awaitable<void>>;
+		redirectRoute?: AppRoutes;
+		routesToExemptFromErrorRedirect?: Array<`${string}/**` | AppRoutes>;
+		skipErrorRedirect?: boolean;
+	};
+};
+
+const defaultRedirectRoute =
+	"/auth/signin" satisfies Required<AuthErrorRedirectPluginMeta>["auth"]["redirectRoute"];
+
+const defaultRedirectErrorMessage = "Session is invalid or expired! Redirecting to login...";
+
+export const authErrorRedirectPlugin = (authOptions?: AuthErrorRedirectPluginMeta["auth"]) => {
+	const getAuthMetaAndDerivatives = (
+		ctx: RequestContext<{ Meta: AuthErrorRedirectPluginMeta & ToastPluginMeta }>
+	) => {
+		const authMeta =
+			authOptions ? { ...authOptions, ...ctx.options.meta?.auth } : ctx.options.meta?.auth;
+
+		const redirectFn = authMeta?.redirectFn ?? redirectTo;
+
+		const turnOffErrorToast = () => {
+			ctx.options.meta ??= {};
+			ctx.options.meta.toast ??= {};
+			ctx.options.meta.toast.error = false;
+		};
+
+		const signInRoute = authMeta?.redirectRoute ?? defaultRedirectRoute;
+
+		const redirectErrorMessage = authMeta?.redirectErrorMessage ?? defaultRedirectErrorMessage;
+
+		const isExemptedRouteFromRedirect = Boolean(
+			authMeta?.routesToExemptFromErrorRedirect?.some((route) => isPathnameMatchingRoute(route))
+		);
+
+		const shouldSkipRouteFromRedirect = isExemptedRouteFromRedirect || authMeta?.skipErrorRedirect;
+
+		return {
+			authMeta,
+			redirectErrorMessage,
+			redirectFn,
+			shouldSkipRouteFromRedirect,
+			signInRoute,
+			turnOffErrorToast,
+		};
+	};
+
+	return definePlugin({
+		id: "auth-error-redirect-plugin",
+		name: "authErrorRedirectPlugin",
+
+		// eslint-disable-next-line perfectionist/sort-objects
+		hooks: {
+			onResponseError: (
+				ctx: ResponseErrorContext<{
+					ErrorData: BaseApiErrorResponse;
+					Meta: AuthErrorRedirectPluginMeta & ToastPluginMeta;
+				}>
+			) => {
+				const {
+					redirectErrorMessage,
+					redirectFn,
+					shouldSkipRouteFromRedirect,
+					signInRoute,
+					turnOffErrorToast,
+				} = getAuthMetaAndDerivatives(ctx);
+
+				if (shouldSkipRouteFromRedirect) {
+					// == Turn off error toast if redirect is skipped
+					turnOffErrorToast();
+					return;
+				}
+
+				if (!isAuthError(ctx.error)) return;
+
+				void redirectFn(signInRoute);
+
+				throw new Error(redirectErrorMessage);
+			},
+		},
+	});
+};

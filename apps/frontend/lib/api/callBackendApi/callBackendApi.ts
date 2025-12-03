@@ -3,14 +3,18 @@ import { createFetchClientWithContext } from "@zayne-labs/callapi";
 import { loggerPlugin } from "@zayne-labs/callapi-plugins";
 import { defineBaseConfig } from "@zayne-labs/callapi/utils";
 import { toastPlugin, type ToastPluginMeta } from "./plugins";
+import {
+	authErrorRedirectPlugin,
+	type AuthErrorRedirectPluginMeta,
+} from "./plugins/authErrorRedirectPlugin";
 
-type GlobalMeta = ToastPluginMeta;
+type GlobalMeta = AuthErrorRedirectPluginMeta & ToastPluginMeta;
 
-declare module "@zayne-labs/callapi" {
-	// interface Register {
-	// 	meta: GlobalMeta;
-	// }
-}
+// declare module "@zayne-labs/callapi" {
+// interface Register {
+// 	meta: GlobalMeta;
+// }
+// }
 
 const REMOTE_BACKEND_HOST = "https://api-medical-info.onrender.com";
 
@@ -31,6 +35,10 @@ export const sharedBaseConfig = defineBaseConfig({
 	},
 
 	plugins: [
+		authErrorRedirectPlugin({
+			redirectRoute: "/auth/signin",
+			routesToExemptFromErrorRedirect: ["/", "/auth/**"],
+		}),
 		toastPlugin({
 			errorAndSuccess: true,
 			errorsToSkip: ["AbortError"],

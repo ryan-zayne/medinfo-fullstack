@@ -1,6 +1,15 @@
 import { type MatchDoctorsResponse, callBackendApiForQuery } from "@/lib/api/callBackendApi";
 import { queryOptions } from "@tanstack/react-query";
 import type { CallApiExtraOptions } from "@zayne-labs/callapi";
+import { checkUserSessionForQuery } from "../api/callBackendApi/plugins/utils/session";
+
+export const sessionQuery = () => {
+	return queryOptions({
+		queryFn: () => checkUserSessionForQuery(),
+		queryKey: ["session"],
+		staleTime: Infinity,
+	});
+};
 
 export const healthTipsQuery = (options: { pageName?: string } = {}) => {
 	const { pageName = "home-page" } = options;

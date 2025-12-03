@@ -21,7 +21,7 @@
 		"@medinfo/env": "workspace:*",
 		"@medinfo/shared": "workspace:*",
 		"@node-rs/argon2": "^2.0.2",
-		"@zayne-labs/callapi": "1.11.30",
+		"@zayne-labs/callapi": "1.11.31",
 		"@zayne-labs/toolkit-core": "0.12.15",
 		"@zayne-labs/toolkit-type-helpers": "0.12.15",
 		"@zayne-labs/tsconfig": "^0.11.5",
