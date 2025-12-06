@@ -17,9 +17,9 @@ export const usePageBlocker = (options: Options) => {
 	const router = useRouter();
 
 	useEffect(() => {
-		if (!condition) return;
-
 		const timeout = setTimeout(() => {
+			if (!condition) return;
+
 			toast.error(message);
 
 			router.replace(redirectPath);
