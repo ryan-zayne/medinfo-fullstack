@@ -7,10 +7,15 @@ import * as arctic from "arctic";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
+const BASE_BACKEND_HOST =
+	ENVIRONMENT.NODE_ENV === "development" ?
+		ENVIRONMENT.BASE_BACKEND_HOST_DEV
+	:	ENVIRONMENT.BASE_BACKEND_HOST_PROD;
+
 export const google = new arctic.Google(
 	ENVIRONMENT.GOOGLE_CLIENT_ID,
 	ENVIRONMENT.GOOGLE_CLIENT_SECRET,
-	`${ENVIRONMENT.BASE_BACKEND_HOST}/api/v1/auth/google/callback`
+	`${BASE_BACKEND_HOST}/api/v1/auth/google/callback`
 );
 
 export const createGoogleAuthURL = () => {
@@ -158,8 +163,13 @@ type UserResult =
 			userVariant: "new";
 	  };
 
+const BASE_FRONTEND_HOST =
+	ENVIRONMENT.NODE_ENV === "development" ?
+		ENVIRONMENT.BASE_FRONTEND_HOST_DEV
+	:	ENVIRONMENT.BASE_FRONTEND_HOST_PROD;
+
 const getRedirectURL = (role: SelectUserType["role"]) => {
-	return `${ENVIRONMENT.BASE_FRONTEND_HOST}/dashboard/${role}`;
+	return `${BASE_FRONTEND_HOST}/dashboard/${role}`;
 };
 
 export const findOrCreateUserFromGoogle = async (
