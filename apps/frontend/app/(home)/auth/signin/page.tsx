@@ -157,7 +157,7 @@ function SignInPage(props: PageProps<"/auth/signin">) {
 										<NavLink
 											transitionType="regular"
 											href={{
-												pathname: "/auth/signin",
+												pathname: "/auth/signup",
 												query: { user: userRole === "doctor" ? "doctor" : "patient" },
 											}}
 											className="text-medinfo-primary-main"
