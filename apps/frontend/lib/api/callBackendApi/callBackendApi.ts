@@ -37,7 +37,7 @@ export const sharedBaseConfig = defineBaseConfig({
 	plugins: [
 		authErrorRedirectPlugin({
 			redirectRoute: "/auth/signin",
-			routesToExemptFromErrorRedirect: ["/", "/auth/**"],
+			routesToExemptFromErrorRedirect: ["/", "/library/**", "/daily-tips/**", "/auth/**"],
 		}),
 		toastPlugin({
 			errorAndSuccess: true,

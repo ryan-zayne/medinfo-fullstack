@@ -75,7 +75,7 @@ export const authErrorRedirectPlugin = (authOptions?: AuthErrorRedirectPluginMet
 					turnOffErrorToast,
 				} = getAuthMetaAndDerivatives(ctx);
 
-				// == Turn off error toast if redirect is skipped and auth error needs redirect
+				// == Turn off error toast in the case where redirect is skipped and auth error needs redirect
 				if (shouldSkipRouteFromRedirect && isAuthErrorThatNeedsRedirect(ctx.error)) {
 					turnOffErrorToast();
 				}
