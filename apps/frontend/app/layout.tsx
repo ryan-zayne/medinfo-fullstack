@@ -1,6 +1,7 @@
 import { cnJoin } from "@/lib/utils/cn";
 import type { Metadata } from "next";
 import { Roboto, Work_Sans } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SonnerToaster } from "@/components/common";
 import { Providers } from "./Providers";
 import "../tailwind.css";
@@ -33,6 +34,7 @@ function RootLayout({ children }: RootLayoutProps) {
 				<Providers>{children}</Providers>
 
 				<SonnerToaster />
+				<SpeedInsights />
 			</body>
 		</html>
 	);
