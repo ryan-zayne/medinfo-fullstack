@@ -1,11 +1,12 @@
 "use client";
 
 import { Logo, NavLink } from "@/components/common";
-import { getElementList } from "@/components/common/for";
+import { ForWithWrapper } from "@/components/common/for";
 import { HamburgerIcon, SearchIcon, XIcon } from "@/components/icons";
 import { Button } from "@/components/ui";
 import { cnMerge } from "@/lib/utils/cn";
 import { useToggle } from "@zayne-labs/toolkit-react";
+import { CallToActionLink } from "./CallToActionLink";
 
 function NavBar() {
 	const [isNavShow, toggleNavShow] = useToggle(false);
@@ -31,7 +32,7 @@ function NavBar() {
 	);
 }
 
-export default NavBar;
+export { NavBar };
 
 const linkItems = [
 	{ href: "/", title: "Home" },
@@ -40,12 +41,12 @@ const linkItems = [
 	{ href: "/contact" as never, title: "Contact us" },
 ] satisfies Array<{ href: AppRoutes; title: string }>;
 
-const [NavList] = getElementList();
+function DesktopNavigation(props: { className?: string }) {
+	const { className } = props;
 
-function DesktopNavigation({ className }: { className?: string }) {
 	return (
 		<section className={cnMerge("flex w-full items-center", className)}>
-			<NavList
+			<ForWithWrapper
 				as="nav"
 				className="mx-auto flex min-w-fit gap-14 text-[22px] font-medium"
 				each={linkItems}
@@ -62,7 +63,7 @@ function DesktopNavigation({ className }: { className?: string }) {
 				</Button>
 
 				<Button asChild={true}>
-					<NavLink href={{ pathname: "/auth/signup", query: { user: "patient" } }}>Join Us</NavLink>
+					<CallToActionLink />
 				</Button>
 			</div>
 		</section>
@@ -94,7 +95,7 @@ function MobileNavigation(props: MobileNavProps) {
 		>
 			<Logo type="footer" className="h-[46px] w-[60px]" />
 
-			<NavList
+			<ForWithWrapper
 				as="nav"
 				className="flex flex-col items-center gap-5 font-medium text-nowrap"
 				each={linkItems}
@@ -111,7 +112,7 @@ function MobileNavigation(props: MobileNavProps) {
 				</Button>
 
 				<Button theme="secondary-inverted" asChild={true}>
-					<NavLink href={{ pathname: "/auth/signup", query: { user: "patient" } }}>Join Us</NavLink>
+					<CallToActionLink />
 				</Button>
 			</div>
 		</section>

@@ -21,7 +21,11 @@ export const users = pg.pgTable(
 		loginRetryCount: pg.integer().notNull().default(0),
 		medicalLicense: pg.text(),
 		passwordHash: pg.text(),
-		refreshTokenArray: pg.jsonb().notNull().$type<string[]>().default([]),
+		refreshTokenArray: pg
+			.jsonb()
+			.notNull()
+			.$type<Array<{ expiresAt: Date; token: string }>>()
+			.default([]),
 		role: pg.text({ enum: ["doctor", "patient"] }).notNull(),
 		specialty: pg.text(),
 		updatedAt: pg

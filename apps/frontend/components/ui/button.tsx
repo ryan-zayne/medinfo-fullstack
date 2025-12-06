@@ -66,18 +66,17 @@ export const buttonVariants = tv({
 		},
 
 		isLoading: {
-			true: "grid",
+			true: "grid content-center",
 		},
 
 		size: {
-			"full-width": "h-[48px] w-full text-base md:h-[64px] md:text-[20px] md:font-medium",
+			"full-width": "h-12 w-full text-base md:h-[64px] md:text-[20px] md:font-medium",
 
 			icon: "size-12 md:size-16",
 
-			large: "h-[48px] w-full text-base md:text-[20px] md:font-medium",
+			large: "h-12 w-full text-base md:text-[20px] md:font-medium",
 
-			medium: `h-[48px] w-fit min-w-[105px] text-base md:h-[64px] md:min-w-[135px] md:text-[20px]
-			md:font-medium`,
+			medium: "h-12 p-6 text-base md:h-[64px] md:p-8 md:text-[20px] md:font-medium",
 		},
 
 		theme: {
@@ -131,10 +130,10 @@ function Button<TElement extends React.ElementType>(props: PolymorphicProps<TEle
 	const withIcon = (
 		<>
 			<Slot.Slottable>
-				<div className="invisible [grid-area:1]">{children}</div>
+				<div className="invisible [grid-area:1/1]">{children}</div>
 			</Slot.Slottable>
 
-			<span className="flex justify-center [grid-area:1]">
+			<span className="flex justify-center [grid-area:1/1]">
 				<WhiteSpinnerIcon />
 			</span>
 		</>

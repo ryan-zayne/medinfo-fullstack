@@ -1,4 +1,4 @@
-export { default as NavBar } from "./NavBar";
-export { default as Footer } from "./Footer";
-export { default as AccordionFaqs } from "./AccordionFaqs";
-export { default as Main } from "./Main";
+export { AccordionFaqs } from "./AccordionFaqs";
+export { Footer } from "./Footer";
+export { Main } from "./Main";
+export { NavBar } from "./NavBar";

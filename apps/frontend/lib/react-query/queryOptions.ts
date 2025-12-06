@@ -11,6 +11,10 @@ export const sessionQuery = () => {
 	});
 };
 
+export type SessionQueryResultType = Awaited<
+	ReturnType<NonNullable<ReturnType<typeof sessionQuery>["select"]>>
+>;
+
 export const healthTipsQuery = (options: { pageName?: string } = {}) => {
 	const { pageName = "home-page" } = options;
 

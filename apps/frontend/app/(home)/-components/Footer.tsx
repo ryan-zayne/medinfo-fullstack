@@ -4,13 +4,13 @@ import { CopyrightIcon } from "@/components/icons";
 function Footer() {
 	return (
 		<footer
-			className="flex w-full flex-col gap-[44px] bg-medinfo-primary-main px-6 py-10 text-white
-				lg:flex-row lg:items-start lg:justify-between lg:px-[100px] lg:py-14"
+			className="flex w-full flex-col gap-11 bg-medinfo-primary-main px-6 py-10 text-white lg:flex-row
+				lg:items-start lg:justify-between lg:px-[100px] lg:py-14"
 		>
 			<div className="mt-5 flex flex-col">
 				<Logo type="footer" className="max-lg:h-[46px] max-lg:max-w-[60px]" />
 
-				<div className="mt-5 flex items-center gap-[4px] text-[14px] text-white lg:text-base">
+				<div className="mt-5 flex items-center gap-1 text-[14px] text-white lg:text-base">
 					<CopyrightIcon />
 					<p>2023 MedInfo Nigeria. All rights reserved.</p>
 				</div>
@@ -51,4 +51,4 @@ function Footer() {
 	);
 }
 
-export default Footer;
+export { Footer };

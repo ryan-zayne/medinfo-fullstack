@@ -60,7 +60,7 @@ function AccordionFaqs() {
 							<span
 								data-icon="true"
 								className="flex items-center justify-center rounded-full bg-medinfo-primary-main
-									p-[10px] md:p-4"
+									p-2.5 md:p-4"
 							>
 								<ChevronDownIcon className="size-4 md:size-6" />
 							</span>
@@ -69,7 +69,7 @@ function AccordionFaqs() {
 						<Accordion.Content
 							className="flex flex-col gap-4 border-medinfo-primary-darker px-6 pb-[15px] md:pb-6"
 						>
-							<hr className="h-[2px] border-none bg-medinfo-secondary-main" />
+							<hr className="h-0.5 border-none bg-medinfo-secondary-main" />
 
 							<p>{FAQ.answer}</p>
 						</Accordion.Content>
@@ -80,4 +80,4 @@ function AccordionFaqs() {
 	);
 }
 
-export default AccordionFaqs;
+export { AccordionFaqs };

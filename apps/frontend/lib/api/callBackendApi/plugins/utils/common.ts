@@ -6,6 +6,10 @@ export const isAuthError = (error: ResponseErrorContext["error"]) => {
 	return isHTTPError(error) && error.originalError.response.status === 401;
 };
 
+export const isAuthErrorThatNeedsRedirect = (error: ResponseErrorContext["error"]) => {
+	return isAuthError(error) && error.message.includes("log in");
+};
+
 export const redirectTo = (route: AppRoutes) => {
 	setTimeout(() => hardNavigate(route), 1500);
 };

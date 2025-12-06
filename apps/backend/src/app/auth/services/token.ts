@@ -42,7 +42,10 @@ export const encodeJwtToken = <
 	return encodedToken;
 };
 
-export const generateAccessToken = (user: SelectUserType, options?: { expiresIn?: number }) => {
+export const generateAccessToken = (
+	user: SelectUserType,
+	options?: { expiresIn?: number }
+): SelectUserType["refreshTokenArray"][number] => {
 	const { expiresIn = ENVIRONMENT.ACCESS_JWT_EXPIRES_IN } = options ?? {};
 
 	const payload = pickKeys(user, ["id"]);
@@ -54,7 +57,10 @@ export const generateAccessToken = (user: SelectUserType, options?: { expiresIn?
 	return { expiresAt, token: accessToken };
 };
 
-export const generateRefreshToken = (user: SelectUserType, options?: { expiresIn?: number }) => {
+export const generateRefreshToken = (
+	user: SelectUserType,
+	options?: { expiresIn?: number }
+): SelectUserType["refreshTokenArray"][number] => {
 	const { expiresIn = ENVIRONMENT.REFRESH_JWT_EXPIRES_IN } = options ?? {};
 
 	const payload = pickKeys(user, ["id"]);
@@ -66,8 +72,11 @@ export const generateRefreshToken = (user: SelectUserType, options?: { expiresIn
 	return { expiresAt, token: refreshToken };
 };
 
-export const isTokenInWhitelist = (refreshTokenArray: string[], zayneRefreshToken: string) => {
-	const whiteListSet = new Set(refreshTokenArray);
+export const isTokenInWhitelist = (
+	refreshTokenArray: SelectUserType["refreshTokenArray"],
+	zayneRefreshToken: string
+) => {
+	const whiteListSet = new Set(refreshTokenArray.map((item) => item.token));
 
 	return whiteListSet.has(zayneRefreshToken);
 };
@@ -103,7 +112,7 @@ export const warnAboutTokenReuse = (options: {
 export const getUpdatedTokenArray = (options: {
 	currentUser: SelectUserType;
 	zayneRefreshToken: string | undefined;
-}): string[] => {
+}): SelectUserType["refreshTokenArray"] => {
 	const { currentUser, zayneRefreshToken } = options;
 
 	if (!zayneRefreshToken) {
@@ -121,7 +130,9 @@ export const getUpdatedTokenArray = (options: {
 		return [];
 	}
 
-	const updatedTokenArray = currentUser.refreshTokenArray.filter((token) => token !== zayneRefreshToken);
+	const updatedTokenArray = currentUser.refreshTokenArray.filter(
+		(item) => item.token !== zayneRefreshToken
+	);
 
 	return updatedTokenArray;
 };

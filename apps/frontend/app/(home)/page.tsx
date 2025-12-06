@@ -1,10 +1,11 @@
-import { IconBox, NavLink } from "@/components/common";
-import { getElementList } from "@/components/common/for";
+import { IconBox } from "@/components/common";
+import { ForWithWrapper } from "@/components/common/for";
 import { Button } from "@/components/ui";
 import { cnJoin } from "@/lib/utils/cn";
 import { feature1, feature2, feature3, hero } from "@/public/assets/images/landing-page";
 import Image from "next/image";
 import { AccordionFaqs, Main } from "./-components";
+import { CallToActionLink } from "./-components/CallToActionLink";
 import { ScrollableTipCards } from "./daily-tips/DailyTipCard";
 
 const coreServices = [
@@ -56,10 +57,6 @@ const advantages = [
 	},
 ];
 
-const [CoreServiceList] = getElementList();
-const [FeatureList] = getElementList();
-const [AdvantageList] = getElementList();
-
 function HomePage() {
 	return (
 		<Main className="w-full gap-14 max-md:max-w-[400px] md:gap-[92px]">
@@ -82,10 +79,9 @@ function HomePage() {
 						professionals who are ready to help—no stress, no barriers. It's healthcare made simple,
 						just the way it should be.
 					</p>
+
 					<Button asChild={true} className="mt-6">
-						<NavLink href={{ pathname: "/auth/signup", query: { user: "patient" } }}>
-							Join Us
-						</NavLink>
+						<CallToActionLink />
 					</Button>
 				</div>
 
@@ -116,7 +112,7 @@ function HomePage() {
 					Our Core Services
 				</h2>
 
-				<CoreServiceList
+				<ForWithWrapper
 					className="mt-6 flex flex-col items-center gap-4 text-center md:mt-14 md:flex-row
 						md:justify-between md:gap-7"
 					each={coreServices}
@@ -162,7 +158,7 @@ function HomePage() {
 					Why MedInfo Nigeria?
 				</h2>
 
-				<FeatureList
+				<ForWithWrapper
 					className="mt-12 grid grid-cols-2 justify-center gap-x-5 gap-y-10 text-center md:mt-[88px]
 						md:grid-cols-[repeat(4,minmax(161px,248px))] md:justify-between md:gap-x-7"
 					each={features}
@@ -192,7 +188,8 @@ function HomePage() {
 				>
 					Advantages of Virtual Healthcare
 				</h2>
-				<AdvantageList
+
+				<ForWithWrapper
 					className="mt-6 flex flex-col gap-6 md:mt-14 md:flex-row md:gap-7"
 					each={advantages}
 					renderItem={(advantage, index) => (

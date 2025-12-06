@@ -1,6 +1,6 @@
 import { cnMerge } from "@/lib/utils/cn";
 
-function Main(props: React.ComponentPropsWithoutRef<"main">) {
+function Main(props: React.ComponentProps<"main">) {
 	const { children, className, ...restOfProps } = props;
 
 	return (
@@ -13,4 +13,4 @@ function Main(props: React.ComponentPropsWithoutRef<"main">) {
 	);
 }
 
-export default Main;
+export { Main };

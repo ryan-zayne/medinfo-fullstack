@@ -3,7 +3,7 @@ import { definePlugin } from "@zayne-labs/callapi/utils";
 import type { Awaitable, CallbackFn } from "@zayne-labs/toolkit-type-helpers";
 import type { BaseApiErrorResponse } from "../apiSchema";
 import type { ToastPluginMeta } from "./toastPlugin";
-import { isAuthError, isPathnameMatchingRoute, redirectTo } from "./utils/common";
+import { isAuthErrorThatNeedsRedirect, isPathnameMatchingRoute, redirectTo } from "./utils/common";
 
 export type AuthErrorRedirectPluginMeta = {
 	auth?: {
@@ -75,13 +75,12 @@ export const authErrorRedirectPlugin = (authOptions?: AuthErrorRedirectPluginMet
 					turnOffErrorToast,
 				} = getAuthMetaAndDerivatives(ctx);
 
-				if (shouldSkipRouteFromRedirect) {
-					// == Turn off error toast if redirect is skipped
+				// == Turn off error toast if redirect is skipped and auth error needs redirect
+				if (shouldSkipRouteFromRedirect && isAuthErrorThatNeedsRedirect(ctx.error)) {
 					turnOffErrorToast();
-					return;
 				}
 
-				if (!isAuthError(ctx.error)) return;
+				if (shouldSkipRouteFromRedirect || !isAuthErrorThatNeedsRedirect(ctx.error)) return;
 
 				void redirectFn(signInRoute);
 

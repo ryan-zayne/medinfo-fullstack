@@ -21,7 +21,7 @@
 		"@medinfo/env": "workspace:*",
 		"@zayne-labs/tsconfig": "0.11.5",
 		"cross-env": "^10.1.0",
-		"drizzle-orm": "0.44.7",
+		"drizzle-orm": "0.45.0",
 		"drizzle-zod": "0.8.3",
 		"pg": "8.16.3",
 		"tsx": "4.21.0",
@@ -30,7 +30,7 @@
 	"devDependencies": {
 		"@total-typescript/ts-reset": "0.6.1",
 		"@types/pg": "8.15.6",
-		"drizzle-kit": "0.31.7",
+		"drizzle-kit": "0.31.8",
 		"tsdown": "catalog:"
 	}
 }

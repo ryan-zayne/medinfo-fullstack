@@ -4,6 +4,6 @@ packages:
 
 catalog:
   '@dotenvx/dotenvx': 1.51.1
-  tsdown: 0.17.0-beta.6
+  tsdown: 0.17.0
   typescript: 5.9.3
   zod: 4.1.13

@@ -87,6 +87,8 @@ function SignInPage(props: PageProps<"/auth/signin">) {
 										className="placeholder:text-medinfo-dark-4 md:text-base"
 									/>
 								</Form.InputGroup>
+
+								<Form.ErrorMessage />
 							</Form.Field>
 
 							<Form.Field
@@ -110,6 +112,8 @@ function SignInPage(props: PageProps<"/auth/signin">) {
 										className="placeholder:text-medinfo-dark-4 md:text-base"
 									/>
 								</Form.InputGroup>
+
+								<Form.ErrorMessage />
 
 								<NavLink
 									href="/forgot-password"

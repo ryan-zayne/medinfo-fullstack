@@ -79,7 +79,7 @@ const authRoutes = new Hono()
 
 		await db
 			.update(users)
-			.set({ refreshTokenArray: [newZayneRefreshTokenResult.token] })
+			.set({ refreshTokenArray: [newZayneRefreshTokenResult] })
 			.where(eq(users.id, newUser.id));
 
 		const newZayneAccessTokenResult = generateAccessToken(newUser);
@@ -121,7 +121,7 @@ const authRoutes = new Hono()
 
 				currentUser.googleId
 					&& (message =
-						"This account uses Google sign-in. Please use 'Continue with Google' button.");
+						"This account uses Google sign-in. Please sign in with Google or reset your password");
 
 				throw new AppError({
 					code: 401,
@@ -179,7 +179,7 @@ const authRoutes = new Hono()
 					// == Update user loginRetries to 0 and lastLoginAt to current time
 					lastLoginAt: new Date(),
 					loginRetryCount: 0,
-					refreshTokenArray: [...updatedTokenArray, newZayneRefreshTokenResult.token],
+					refreshTokenArray: [...updatedTokenArray, newZayneRefreshTokenResult],
 				})
 				.where(eq(users.id, currentUser.id))
 				.returning();
@@ -313,7 +313,7 @@ const authRoutes = new Hono()
 					.set({
 						lastLoginAt: new Date(),
 						loginRetryCount: 0,
-						refreshTokenArray: [...updatedTokenArray, newZayneRefreshTokenResult.token],
+						refreshTokenArray: [...updatedTokenArray, newZayneRefreshTokenResult],
 					})
 					.where(eq(users.id, existingUser.id));
 			}
@@ -323,7 +323,7 @@ const authRoutes = new Hono()
 
 				await db
 					.update(users)
-					.set({ refreshTokenArray: [newZayneRefreshTokenResult.token] })
+					.set({ refreshTokenArray: [newZayneRefreshTokenResult] })
 					.where(eq(users.id, newUser.id));
 			}
 

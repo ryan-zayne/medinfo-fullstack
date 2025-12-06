@@ -9,7 +9,7 @@ import { ENVIRONMENT } from "@/config/env";
 import { AppError } from "@/lib/utils";
 import { db } from "@medinfo/backend-db";
 import { users, type SelectUserType } from "@medinfo/backend-db/schema/auth";
-import { defineEnum } from "@zayne-labs/toolkit-type-helpers";
+import { defineEnum, type UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
 import { eq } from "drizzle-orm";
 // eslint-disable-next-line import/default
 import jwt from "jsonwebtoken";
@@ -17,38 +17,40 @@ import jwt from "jsonwebtoken";
 const AUTH_ERROR_MESSAGES = defineEnum({
 	ACCOUNT_SUSPENDED: "Your account is currently suspended",
 	EMAIL_UNVERIFIED: "Your email is yet to be verified",
-	GENERIC_ERROR: "An error occurred, please log in again",
-	INVALID_SESSION: "Invalid session. Please log in again!",
-	SESSION_EXPIRED: "Session expired, please log in again",
-	UNAUTHORIZED: "Unauthorized",
-	USER_NOT_FOUND: "User not found or not logged in",
+	GENERIC_ERROR: "An error occurred. Please log in again",
+	INVALID_SESSION: "Invalid session. Please log in again",
+	SESSION_EXPIRED: "Session expired. Please log in again",
+	SESSION_NOT_EXIST: "Session doesn't exist. Please log in",
 });
 
-type VerifyOptions =
-	| {
+type VerifyOptions = UnionDiscriminator<
+	[
+		{
 			variant: "accessToken";
 			zayneAccessToken: string;
 			zayneRefreshToken: string;
-	  }
-	| {
+		},
+		{
 			variant: "refreshToken";
 			zayneRefreshToken: string;
-	  };
+		},
+	]
+>;
 
 const getAndVerifyUserFromToken = async (options: VerifyOptions) => {
-	const { variant, zayneRefreshToken } = options;
+	const { variant, zayneAccessToken, zayneRefreshToken } = options;
 
 	const decodedPayload =
 		variant === "accessToken" ?
-			decodeJwtToken(options.zayneAccessToken, { secretKey: ENVIRONMENT.ACCESS_SECRET })
+			decodeJwtToken(zayneAccessToken, { secretKey: ENVIRONMENT.ACCESS_SECRET })
 		:	decodeJwtToken(zayneRefreshToken, { secretKey: ENVIRONMENT.REFRESH_SECRET });
 
 	const [currentUser] = await db.select().from(users).where(eq(users.id, decodedPayload.id)).limit(1);
 
 	if (!currentUser) {
 		throw new AppError({
-			code: 404,
-			message: AUTH_ERROR_MESSAGES.USER_NOT_FOUND,
+			code: 401,
+			message: AUTH_ERROR_MESSAGES.SESSION_NOT_EXIST,
 		});
 	}
 
@@ -59,12 +61,7 @@ const getAndVerifyUserFromToken = async (options: VerifyOptions) => {
 	if (!isTokenInWhitelist(currentUser.refreshTokenArray, zayneRefreshToken)) {
 		warnAboutTokenReuse({ compromisedToken: zayneRefreshToken, currentUser });
 
-		await db
-			.update(users)
-			.set({
-				refreshTokenArray: [],
-			})
-			.where(eq(users.id, decodedPayload.id));
+		await db.update(users).set({ refreshTokenArray: [] }).where(eq(users.id, decodedPayload.id));
 
 		throw new AppError({
 			code: 401,
@@ -172,7 +169,7 @@ const validateUserSession = async (
 	if (!zayneRefreshToken) {
 		throw new AppError({
 			code: 401,
-			message: AUTH_ERROR_MESSAGES.UNAUTHORIZED,
+			message: AUTH_ERROR_MESSAGES.SESSION_NOT_EXIST,
 		});
 	}
 
