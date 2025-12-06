@@ -1,4 +1,4 @@
-import { type MatchDoctorsResponse, callBackendApiForQuery } from "@/lib/api/callBackendApi";
+import { callBackendApiForQuery } from "@/lib/api/callBackendApi";
 import { queryOptions } from "@tanstack/react-query";
 import type { CallApiExtraOptions } from "@zayne-labs/callapi";
 import { checkUserSessionForQuery } from "../api/callBackendApi/plugins/utils/session";
@@ -40,7 +40,7 @@ export const matchDoctorsQuery = (
 	return queryOptions({
 		enabled: Boolean(formData),
 		queryFn: () => {
-			return callBackendApiForQuery<MatchDoctorsResponse>("/appointments/match-doctors", {
+			return callBackendApiForQuery("/appointments/match-doctors", {
 				body: formData,
 				method: "POST",
 				onError,

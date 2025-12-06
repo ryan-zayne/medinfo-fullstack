@@ -14,7 +14,7 @@ const isRelativeLink = (value: string | UrlObject | null | undefined): value is 
 export type MainAppRoutes<TAppRoutes extends AppRoutes = AppRoutes> =
 	TAppRoutes extends `${infer TPrefix}/[${string}]` ? `${TPrefix}/${AnyString}` : TAppRoutes;
 
-type ModifiedHref = (Omit<UrlObject, "pathname"> & { pathname?: MainAppRoutes }) | MainAppRoutes;
+type ModifiedHref = "#" | (Omit<UrlObject, "pathname"> & { pathname?: MainAppRoutes }) | MainAppRoutes;
 
 function NavLink(
 	props: Omit<InferProps<typeof Link>, "href"> & {
