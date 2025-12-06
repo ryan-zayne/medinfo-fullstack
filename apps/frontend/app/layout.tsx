@@ -1,5 +1,6 @@
 import { SonnerToaster } from "@/components/common";
 import { cnJoin } from "@/lib/utils/cn";
+import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Roboto, Work_Sans } from "next/font/google";
@@ -34,6 +35,8 @@ function RootLayout({ children }: RootLayoutProps) {
 				<Providers>{children}</Providers>
 
 				<SonnerToaster />
+
+				<Analytics />
 				<SpeedInsights />
 			</body>
 		</html>
