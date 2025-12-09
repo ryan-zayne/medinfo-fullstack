@@ -4,74 +4,50 @@ import { IconBox, Show } from "@/components/common";
 import { getElementList } from "@/components/common/for";
 import { CloseIcon, GreenSpinnerIcon } from "@/components/icons";
 import { Button, DateTimePicker, Dialog, Form, Select } from "@/components/ui";
-import { bookAppointmentQuery, matchDoctorsQuery } from "@/lib/react-query/queryOptions";
+import { backendApiSchemaRoutes } from "@/lib/api/callBackendApi/apiSchema";
+import {
+	bookAppointmentMutation,
+	matchDoctorMutation,
+	type MatchDoctorMutationResultType,
+} from "@/lib/react-query/mutationOptions";
 import { capitalize } from "@/lib/utils";
 import { cnJoin, cnMerge } from "@/lib/utils/cn";
 import { appointmentPlaceholder, doctorAvatar } from "@/public/assets/images/dashboard";
 import { Steps, useStepsContext } from "@ark-ui/react/steps";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useMutationState } from "@tanstack/react-query";
 import { useDisclosure } from "@zayne-labs/toolkit-react";
+import { defineEnumDeep } from "@zayne-labs/toolkit-type-helpers";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import type { z } from "zod";
 import { Main } from "../../../-components/Main";
 
-const stepperItems = [
+const stepperItems = defineEnumDeep([
 	{
 		title: "Book appointment",
 	},
 	{
 		title: "Accept specialist",
 	},
-];
+]);
 
-type AppointmentFormData = {
-	agreeToPrivacyPolicy: string;
-	allergies: string;
-	allowEmailOrSMS: string;
-	allowInfoDisclosure: string;
-	allowTeleMedicine: string;
-	dateOfAppointment: string;
-	dob: string;
-	email: string;
-	gender: string;
-	healthInsurance: string;
-	language: string;
-	medicalConditions: string;
-	name: string;
-	phoneNumber: string;
-	reason: string;
-};
+const AppointmentFormSchema = backendApiSchemaRoutes["@post/appointments/book"].body.omit({
+	doctorId: true,
+});
 
 function AppointmentPage() {
-	const methods = useForm<AppointmentFormData>({
-		defaultValues: {
-			agreeToPrivacyPolicy: "",
-			allergies: "",
-			allowEmailOrSMS: "",
-			allowInfoDisclosure: "",
-			allowTeleMedicine: "",
-			dateOfAppointment: "",
-			dob: "",
-			email: "",
-			gender: "",
-			healthInsurance: "",
-			medicalConditions: "",
-			name: "",
-			phoneNumber: "",
-			reason: "",
-		},
+	const form = useForm({
+		defaultValues: {},
+		resolver: zodResolver(AppointmentFormSchema),
 	});
 
-	const [formData, setFormData] = useState<AppointmentFormData | null>(null);
+	const matchDoctorsMutationResult = useMutation(matchDoctorMutation());
 
-	const queryClient = useQueryClient();
-
-	const onSubmit = methods.handleSubmit((data) => {
-		setFormData(data);
-		const queryKey = matchDoctorsQuery({ formData: data }).queryKey;
-		void queryClient.refetchQueries({ queryKey });
+	const onSubmit = form.handleSubmit(async (data) => {
+		await matchDoctorsMutationResult.mutateAsync({ reason: data.reason });
 	});
 
 	return (
@@ -82,7 +58,7 @@ function AppointmentPage() {
 				</Button>
 			</header>
 
-			<Form.Root methods={methods} onSubmit={(event) => void onSubmit(event)}>
+			<Form.Root methods={form} onSubmit={(event) => void onSubmit(event)}>
 				<Steps.Root
 					count={stepperItems.length}
 					linear={true}
@@ -109,177 +85,12 @@ function AppointmentPage() {
 
 					<section className="flex flex-col gap-4">
 						<h2 className="text-[18px] font-medium text-medinfo-dark-1 md:text-[22px]">
-							Patient Information
-						</h2>
-
-						<div className="flex gap-2 md:gap-5">
-							<Form.Field name="info" className="flex-row-reverse items-center gap-2">
-								<Form.Label className="text-[14px] md:text-base">Use current profile</Form.Label>
-
-								<Form.InputPrimitive
-									type="radio"
-									value="manual"
-									className="size-5 accent-medinfo-primary-main"
-								/>
-							</Form.Field>
-
-							<Form.Field name="info" className="flex-row-reverse items-center gap-2">
-								<Form.Label className="text-[14px] md:text-base">Fill out manually</Form.Label>
-
-								<Form.InputPrimitive
-									defaultChecked={true}
-									type="radio"
-									value="manual"
-									className="size-5 accent-medinfo-primary-main"
-								/>
-							</Form.Field>
-						</div>
-
-						<article className="flex flex-col gap-4 md:flex-row md:gap-[92px]">
-							<div className="flex w-full flex-col gap-4">
-								<Form.Field
-									control={methods.control}
-									name="name"
-									className="gap-1 font-roboto font-medium"
-								>
-									<Form.Label className="md:text-[20px]">Name</Form.Label>
-
-									<Form.Input
-										type="text"
-										placeholder="enter full name"
-										className="h-12 gap-4 rounded-[8px] border-[1.4px]
-											border-medinfo-primary-main px-4 py-3 placeholder:text-medinfo-dark-4
-											md:h-[64px] md:py-5 md:text-base"
-									/>
-								</Form.Field>
-
-								<Form.Field
-									control={methods.control}
-									name="email"
-									className="gap-1 font-roboto font-medium"
-								>
-									<Form.Label className="md:text-[20px]">Email</Form.Label>
-
-									<Form.Input
-										type="email"
-										placeholder="enter email"
-										className="h-12 gap-4 rounded-[8px] border-[1.4px]
-											border-medinfo-primary-main px-4 py-3 placeholder:text-medinfo-dark-4
-											md:h-[64px] md:py-5 md:text-base"
-									/>
-								</Form.Field>
-
-								<Form.Field
-									control={methods.control}
-									name="phoneNumber"
-									className="gap-1 font-roboto font-medium"
-								>
-									<Form.Label className="md:text-[20px]">Phone Number</Form.Label>
-
-									<Form.Input
-										type="text"
-										placeholder="enter phone number"
-										className="h-12 gap-4 rounded-[8px] border-[1.4px]
-											border-medinfo-primary-main px-4 py-3 placeholder:text-medinfo-dark-4
-											md:h-[64px] md:py-5 md:text-base"
-									/>
-								</Form.Field>
-							</div>
-
-							<div className="flex w-full flex-col gap-4">
-								<Form.Field
-									control={methods.control}
-									name="gender"
-									className="gap-1 font-roboto font-medium"
-								>
-									<Form.Label className="md:text-[20px]">Gender</Form.Label>
-
-									<Form.FieldController
-										render={({ field }) => (
-											<Select.Root
-												name={field.name}
-												value={field.value}
-												onValueChange={field.onChange}
-											>
-												<Select.Trigger
-													classNames={{
-														base: `group h-12 gap-2 rounded-[8px] border-[1.4px]
-														border-medinfo-primary-main px-4 font-medium
-														data-placeholder:text-medinfo-dark-4 md:h-[64px] md:text-base`,
-														icon: `text-medinfo-body-color group-data-[state=open]:rotate-180
-														md:size-6`,
-													}}
-												>
-													<Select.Value placeholder="select gender" />
-												</Select.Trigger>
-
-												<Select.Content
-													classNames={{
-														base: `border-[1.4px] border-medinfo-primary-main bg-white/90 p-0
-														backdrop-blur-lg`,
-														viewport: "gap-1",
-													}}
-												>
-													<Select.Item
-														value="Male"
-														className="h-12 bg-medinfo-light-3 font-medium
-															text-medinfo-dark-4 focus:bg-medinfo-light-1
-															focus:text-medinfo-body-color
-															data-[state=checked]:bg-medinfo-light-1 md:h-[64px]
-															md:text-base"
-													>
-														Male
-													</Select.Item>
-													<Select.Item
-														value="Female"
-														className="h-12 bg-medinfo-light-3 font-medium
-															text-medinfo-dark-4 focus:bg-medinfo-light-1
-															focus:text-medinfo-body-color
-															data-[state=checked]:bg-medinfo-light-1 md:h-[64px]
-															md:text-base"
-													>
-														Female
-													</Select.Item>
-												</Select.Content>
-											</Select.Root>
-										)}
-									/>
-								</Form.Field>
-
-								<Form.Field
-									control={methods.control}
-									name="dob"
-									className="gap-1 font-roboto font-medium"
-								>
-									<Form.Label className="md:text-[20px]">Date of Birth</Form.Label>
-
-									<Form.FieldController
-										render={({ field }) => (
-											<DateTimePicker
-												className="h-12 gap-4 rounded-[8px] border-[1.4px]
-													border-medinfo-primary-main px-4 py-3 text-[14px] md:h-[64px]
-													md:py-5 md:text-base"
-												dateString={field.value}
-												placeholder="DD/MM/YYYY"
-												onDateStringChange={field.onChange}
-											/>
-										)}
-									/>
-								</Form.Field>
-							</div>
-						</article>
-					</section>
-
-					<hr className="h-[0.6px] bg-medinfo-light-1" />
-
-					<section className="flex flex-col gap-4">
-						<h2 className="text-[18px] font-medium text-medinfo-dark-1 md:text-[22px]">
 							Appointment details
 						</h2>
 
 						<article className="flex flex-col gap-4 md:flex-row md:gap-[92px]">
 							<Form.Field
-								control={methods.control}
+								control={form.control}
 								name="reason"
 								className="w-full gap-1 font-roboto font-medium"
 							>
@@ -295,7 +106,7 @@ function AppointmentPage() {
 							</Form.Field>
 
 							<div className="flex w-full flex-col gap-4">
-								<Form.Field control={methods.control} name="dateOfAppointment" className="gap-1">
+								<Form.Field control={form.control} name="dateOfAppointment" className="gap-1">
 									<Form.Label className="font-roboto font-medium md:text-[20px]">
 										Preferred date & time
 									</Form.Label>
@@ -320,7 +131,7 @@ function AppointmentPage() {
 								</Form.Field>
 
 								<Form.Field
-									control={methods.control}
+									control={form.control}
 									name="language"
 									className="gap-1 font-roboto font-medium"
 								>
@@ -330,7 +141,7 @@ function AppointmentPage() {
 										render={({ field }) => (
 											<Select.Root
 												disabled={true}
-												defaultValue="English"
+												defaultValue="english"
 												name={field.name}
 												value={field.value}
 												onValueChange={field.onChange}
@@ -400,8 +211,8 @@ function AppointmentPage() {
 						<article className="flex flex-col gap-4">
 							<div className="flex flex-col gap-4 md:flex-row md:gap-[92px]">
 								<Form.Field
-									control={methods.control}
-									name="medicalConditions"
+									control={form.control}
+									name="existingMedicalConditions"
 									className="w-full gap-1 font-roboto font-medium"
 								>
 									<Form.Label className="md:text-[20px]">Existing medical conditions</Form.Label>
@@ -416,7 +227,7 @@ function AppointmentPage() {
 								</Form.Field>
 
 								<Form.Field
-									control={methods.control}
+									control={form.control}
 									name="allergies"
 									className="w-full gap-1 font-roboto font-medium"
 								>
@@ -434,7 +245,7 @@ function AppointmentPage() {
 
 							<div className="flex flex-col gap-5 md:flex-row">
 								<Form.Field
-									control={methods.control}
+									control={form.control}
 									name="healthInsurance"
 									className="flex-row-reverse items-center justify-end gap-2"
 								>
@@ -442,13 +253,13 @@ function AppointmentPage() {
 
 									<Form.Input
 										type="radio"
-										value="true"
+										value="yes"
 										className="size-5 accent-medinfo-primary-main"
 									/>
 								</Form.Field>
 
 								<Form.Field
-									control={methods.control}
+									control={form.control}
 									name="healthInsurance"
 									className="flex-row-reverse items-center justify-end gap-2"
 								>
@@ -459,7 +270,7 @@ function AppointmentPage() {
 									<Form.Input
 										defaultChecked={true}
 										type="radio"
-										value="false"
+										value="no"
 										className="size-5 accent-medinfo-primary-main"
 									/>
 								</Form.Field>
@@ -476,7 +287,7 @@ function AppointmentPage() {
 
 						<article className="flex flex-col gap-3">
 							<Form.Field
-								control={methods.control}
+								control={form.control}
 								name="agreeToPrivacyPolicy"
 								className="flex-row-reverse items-center justify-end gap-2"
 							>
@@ -491,7 +302,7 @@ function AppointmentPage() {
 							</Form.Field>
 
 							<Form.Field
-								control={methods.control}
+								control={form.control}
 								name="allowTeleMedicine"
 								className="flex-row-reverse items-center justify-end gap-2"
 							>
@@ -506,7 +317,7 @@ function AppointmentPage() {
 							</Form.Field>
 
 							<Form.Field
-								control={methods.control}
+								control={form.control}
 								name="allowInfoDisclosure"
 								className="flex-row-reverse items-center justify-end gap-2"
 							>
@@ -524,7 +335,7 @@ function AppointmentPage() {
 							</Form.Field>
 
 							<Form.Field
-								control={methods.control}
+								control={form.control}
 								name="allowEmailOrSMS"
 								className="flex-row-reverse items-center justify-end gap-2"
 							>
@@ -541,10 +352,9 @@ function AppointmentPage() {
 					</section>
 
 					<AppointmentDialog
-						formData={formData}
-						onResetForm={() => {
-							methods.reset();
-							setFormData(null);
+						formData={form.getValues()}
+						onFormReset={() => {
+							form.reset();
 						}}
 					/>
 				</Steps.Root>
@@ -554,54 +364,54 @@ function AppointmentPage() {
 }
 
 type DialogMainContentProps = {
-	formData: AppointmentFormData | null;
-	onResetForm: () => void;
+	formData: z.infer<typeof AppointmentFormSchema>;
+	onFormReset: () => void;
 };
 
 function AppointmentDialog(props: DialogMainContentProps) {
-	const { formData, onResetForm } = props;
+	const { formData, onFormReset } = props;
 
 	const dialogCtx = useDisclosure();
-
-	const matchDoctorsQueryResult = useQuery(
-		matchDoctorsQuery({ formData, onError: () => dialogCtx.onClose() })
-	);
 
 	const [trialCount, setTrialCount] = useState(0);
 
 	const stepsCtx = useStepsContext();
 
-	const matchedDoctor = matchDoctorsQueryResult.data?.selectedDoctors[trialCount];
+	const [matchDoctorData] = useMutationState({
+		filters: { mutationKey: matchDoctorMutation().mutationKey },
+		select: (data) => data.state.data as MatchDoctorMutationResultType,
+	});
 
-	const [doctorId, setDoctorId] = useState("");
+	const matchedDoctor = matchDoctorData?.data.doctors[trialCount];
 
 	const onReset = () => {
 		dialogCtx.onClose();
 		stepsCtx.goToPrevStep();
-		onResetForm();
+		onFormReset();
 
 		setTimeout(() => setTrialCount(0), 500);
 	};
 
-	const bookAppointmentQueryResult = useQuery(
-		bookAppointmentQuery({
-			doctorId,
-			onError: () => {
-				dialogCtx.onClose();
-			},
-			onSuccess: () => {
-				onReset();
-				router.push("/patient");
-			},
-		})
-	);
+	const bookAppointmentMutationResult = useMutation(bookAppointmentMutation());
 
 	const router = useRouter();
 
 	const onAccept = () => {
-		const matchedDoctorId = matchedDoctor?._id ?? "";
-
-		setDoctorId(matchedDoctorId);
+		bookAppointmentMutationResult.mutate(
+			{
+				...formData,
+				doctorId: matchedDoctor?.id ?? "",
+			},
+			{
+				onError: () => {
+					dialogCtx.onClose();
+				},
+				onSuccess: () => {
+					onReset();
+					router.push("/patient");
+				},
+			}
+		);
 	};
 
 	return (
@@ -626,20 +436,20 @@ function AppointmentDialog(props: DialogMainContentProps) {
 				onEscapeKeyDown={() => stepsCtx.goToPrevStep()}
 				className={cnJoin(
 					"flex flex-col rounded-[16px]",
-					matchDoctorsQueryResult.data ?
+					matchDoctorData?.data ?
 						"max-w-[341px] gap-8 px-6 py-8 md:max-w-[650px] md:gap-9 md:px-10"
 					:	"w-[292px] gap-2 pt-6 pb-[56px] md:max-w-[372px]"
 				)}
 				withCloseBtn={false}
 			>
-				<Show.Root when={matchDoctorsQueryResult.data}>
+				<Show.Root when={matchDoctorData?.data}>
 					<Show.Content>
 						<StepperList className="mb-4 md:mb-6" />
 
 						<Dialog.Header className="flex flex-col items-center gap-2">
 							<figure className="flex flex-col items-center gap-2">
 								<Image
-									src={matchedDoctor?.picture ?? (doctorAvatar as string)}
+									src={matchedDoctor?.avatar ?? (doctorAvatar as string)}
 									className="size-[72px]"
 									width={72}
 									height={72}
@@ -667,8 +477,8 @@ function AppointmentDialog(props: DialogMainContentProps) {
 						<Dialog.Footer className="flex flex-col items-center gap-3 md:gap-5">
 							<div className="flex flex-col items-center gap-4 md:flex-row-reverse md:gap-6">
 								<Button
-									isLoading={bookAppointmentQueryResult.isFetching}
-									disabled={bookAppointmentQueryResult.isFetching}
+									isLoading={bookAppointmentMutationResult.isPending}
+									disabled={bookAppointmentMutationResult.isPending}
 									isDisabled={false}
 									theme="primary"
 									onClick={onAccept}
@@ -682,7 +492,7 @@ function AppointmentDialog(props: DialogMainContentProps) {
 									onClick={() => {
 										const newCount = trialCount + 1;
 
-										if (newCount === matchDoctorsQueryResult.data?.selectedDoctors.length) {
+										if (newCount === matchDoctorData?.data.doctors.length) {
 											onReset();
 
 											return;
@@ -698,7 +508,7 @@ function AppointmentDialog(props: DialogMainContentProps) {
 							<p className="text-[14px] text-medinfo-dark-4">
 								You have only{" "}
 								<span className="text-medinfo-dark-1">
-									{Number(matchDoctorsQueryResult.data?.selectedDoctors.length) - 1 - trialCount}
+									{Number(matchDoctorData?.data.doctors.length) - 1 - trialCount}
 								</span>{" "}
 								rematches left
 							</p>
@@ -739,7 +549,7 @@ function StepperList(props: { className?: string }) {
 					<Steps.Item key={index} index={index} className="flex items-center">
 						{index !== 0 && (
 							<Steps.Separator
-								className="h-[2px] w-[82px] bg-medinfo-light-2 data-current:bg-medinfo-primary-main
+								className="h-0.5 w-[82px] bg-medinfo-light-2 data-current:bg-medinfo-primary-main
 									md:h-1 md:w-[200px]"
 							/>
 						)}

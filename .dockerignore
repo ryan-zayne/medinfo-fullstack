@@ -1,0 +1,42 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Build outputs
+dist
+**/dist
+.turbo
+**/.turbo
+.next
+**/.next
+
+# Environment files (except example)
+.env
+**/.env
+.env.*
+!.env.example
+
+# IDE and OS
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Documentation (keep READMEs for context if needed)
+*.log
+
+# Frontend (not needed for backend build)
+apps/frontend
+
+# Test files
+**/testing*.ts
+**/test_*.txt
+
+# Bruno API client
+**/\(bruno\)-*

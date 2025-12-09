@@ -1,5 +1,5 @@
 import { createFeatureExtractionPipeline } from "@/services/ai/huggingFace";
-import type { SelectUserType } from "@medinfo/backend-db/schema/auth";
+import type { DoctorUserSchemaType } from "@medinfo/shared/validation/backendApiSchema";
 
 /**
  * @description Computes the dot product between two vectors.
@@ -67,20 +67,20 @@ const createPatientVectors = async (reason: string) => {
  * @description Creates embedding vectors for each doctor's specialty.
  * @returns a 2D array: one vector per doctor.
  */
-const createDoctorVectors = async (doctors: SelectUserType[]): Promise<number[][]> => {
+const createDoctorVectors = async (doctors: DoctorUserSchemaType[]): Promise<number[][]> => {
 	const extractor = await featureExtractionPipeline.getInstance();
 
-	const specialties = doctors.map((doctor) => doctor.specialty ?? "General Practice");
+	const specialties = doctors.map((doctor) => doctor.specialty);
 
 	const response = await extractor(specialties, { normalize: true, pooling: "mean" });
 
 	return response.tolist() as number[][];
 };
 
-type DoctorWithScore = SelectUserType & { similarityScore: number };
+type DoctorWithScore = DoctorUserSchemaType & { similarityScore: number };
 
 type GetTopDoctorsOptions = {
-	doctors: SelectUserType[];
+	doctors: DoctorUserSchemaType[];
 	limit?: number;
 	minScore?: number;
 	reason: string;

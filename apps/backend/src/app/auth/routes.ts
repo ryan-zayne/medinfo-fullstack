@@ -175,8 +175,8 @@ const authRoutes = new Hono()
 
 			const [updatedUser] = await db
 				.update(users)
+				// == Update user loginRetries to 0 and lastLoginAt to current time
 				.set({
-					// == Update user loginRetries to 0 and lastLoginAt to current time
 					lastLoginAt: new Date(),
 					loginRetryCount: 0,
 					refreshTokenArray: [...updatedTokenArray, newZayneRefreshTokenResult],
@@ -208,37 +208,6 @@ const authRoutes = new Hono()
 			});
 		}
 	)
-	.get("/signout", authMiddleware, async (ctx) => {
-		const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
-
-		const currentUser = ctx.get("currentUser");
-
-		const updatedTokenArray = getUpdatedTokenArray({ currentUser, zayneRefreshToken });
-
-		await db
-			.update(users)
-			.set({ refreshTokenArray: updatedTokenArray })
-			.where(eq(users.id, currentUser.id));
-
-		deleteCookie(ctx, "zayneAccessToken");
-
-		deleteCookie(ctx, "zayneRefreshToken");
-
-		return AppJsonResponse(ctx, {
-			data: null,
-			message: "Signed out successfully",
-			schema: backendApiSchemaRoutes["@get/auth/signout"].data,
-		});
-	})
-	.get("/session", authMiddleware, (ctx) => {
-		const currentUser = ctx.get("currentUser");
-
-		return AppJsonResponse(ctx, {
-			data: { user: getNecessaryUserDetails(currentUser) },
-			message: "Session fetched successfully",
-			schema: backendApiSchemaRoutes["@get/auth/session"].data,
-		});
-	})
 	.get(
 		"/google",
 		validateWithZodMiddleware("query", backendApiSchemaRoutes["@get/auth/google"].query),
@@ -337,6 +306,37 @@ const authRoutes = new Hono()
 
 			return ctx.redirect(redirectURL);
 		}
-	);
+	)
+	.get("/signout", authMiddleware, async (ctx) => {
+		const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
+
+		const currentUser = ctx.get("currentUser");
+
+		const updatedTokenArray = getUpdatedTokenArray({ currentUser, zayneRefreshToken });
+
+		await db
+			.update(users)
+			.set({ refreshTokenArray: updatedTokenArray })
+			.where(eq(users.id, currentUser.id));
+
+		deleteCookie(ctx, "zayneAccessToken");
+
+		deleteCookie(ctx, "zayneRefreshToken");
+
+		return AppJsonResponse(ctx, {
+			data: null,
+			message: "Signed out successfully",
+			schema: backendApiSchemaRoutes["@get/auth/signout"].data,
+		});
+	})
+	.get("/session", authMiddleware, (ctx) => {
+		const currentUser = ctx.get("currentUser");
+
+		return AppJsonResponse(ctx, {
+			data: { user: getNecessaryUserDetails(currentUser) },
+			message: "Session fetched successfully",
+			schema: backendApiSchemaRoutes["@get/auth/session"].data,
+		});
+	});
 
 export { authRoutes };

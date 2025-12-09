@@ -1,3 +1,4 @@
+import { InsertAppointmentSchema } from "@medinfo/backend-db/schema/appointments";
 import { InsertUserSchema, SelectUserSchema } from "@medinfo/backend-db/schema/auth";
 import { fallBackRouteSchemaKey, type FallBackRouteSchemaKey } from "@zayne-labs/callapi/constants";
 import { defineSchema, defineSchemaRoutes } from "@zayne-labs/callapi/utils";
@@ -79,6 +80,20 @@ const stringWithNumberValidation = () => {
 	return z.preprocess((value: string) => Number(value), z.int().positive());
 };
 
+const stringWithBooleanValidation = () => {
+	return z.preprocess((value: boolean) => {
+		const castValue = value as unknown;
+
+		if (castValue === "true") {
+			return true;
+		}
+		if (castValue === "false") {
+			return false;
+		}
+		return castValue;
+	}, z.boolean());
+};
+
 const healthTipRoutes = defineSchemaRoutes({
 	"@get/health-tips/all": {
 		data: withBaseSuccessResponse(
@@ -120,15 +135,7 @@ const diseaseRoutes = defineSchemaRoutes({
 			.object({
 				limit: stringWithNumberValidation(),
 				page: stringWithNumberValidation(),
-				random: z.preprocess((value: string) => {
-					if (value === "true") {
-						return true;
-					}
-					if (value === "false") {
-						return false;
-					}
-					return value;
-				}, z.boolean()),
+				random: stringWithBooleanValidation(),
 			})
 			.partial()
 			.optional(),
@@ -252,12 +259,58 @@ const authRoutes = () => {
 	});
 };
 
+export const DoctorUserSchema = SelectUserSchema.pick({
+	avatar: true,
+	country: true,
+	email: true,
+	firstName: true,
+	gender: true,
+	id: true,
+	lastName: true,
+	role: true,
+	specialty: true,
+}).extend({
+	role: SelectUserSchema.shape.role.extract(["doctor"]),
+	specialty: SelectUserSchema.shape.specialty.unwrap(),
+});
+
+const appointmentsRoutes = () => {
+	return defineSchemaRoutes({
+		"@post/appointments/book": {
+			body: InsertAppointmentSchema.pick({
+				allergies: true,
+				dateOfAppointment: true,
+				doctorId: true,
+				existingMedicalConditions: true,
+				healthInsurance: true,
+				language: true,
+				reason: true,
+			}).extend({
+				agreeToPrivacyPolicy: stringWithBooleanValidation(),
+				allowEmailOrSMS: stringWithBooleanValidation(),
+				allowInfoDisclosure: stringWithBooleanValidation(),
+				allowTeleMedicine: stringWithBooleanValidation(),
+				doctorId: z.string(),
+			}),
+		},
+
+		"@post/appointments/match-doctor": {
+			body: InsertAppointmentSchema.pick({ reason: true }),
+			data: withBaseSuccessResponse(
+				z.object({
+					doctors: z.array(DoctorUserSchema),
+				})
+			),
+		},
+	});
+};
 export const backendApiSchema = defineSchema(
 	{
 		...defaultSchemaRoute,
 		...diseaseRoutes,
 		...healthTipRoutes,
 		...authRoutes(),
+		...appointmentsRoutes(),
 	},
 	{ strict: true }
 );
@@ -271,3 +324,5 @@ export type BackendApiSchemaRoutes = Omit<typeof backendApiSchemaRoutes, FallBac
 export type DiseaseSchemaType = z.infer<typeof DiseaseSchema>;
 
 export type HealthTipSchemaType = z.infer<typeof HealthTipSchema>;
+
+export type DoctorUserSchemaType = z.infer<typeof DoctorUserSchema>;

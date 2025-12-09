@@ -1,5 +1,6 @@
 import { getTopDoctors } from "@/app/appointments/services/matchDoctorAlgorithm";
 import type { SelectUserType } from "@medinfo/backend-db/schema/auth";
+import type { DoctorUserSchemaType } from "@medinfo/shared/validation/backendApiSchema";
 
 // Comprehensive list of doctors across specialties
 const mockDoctors = [
@@ -65,7 +66,7 @@ const startTime = Date.now();
 for (const testCase of testCases) {
 	// eslint-disable-next-line no-await-in-loop
 	const topDoctors = await getTopDoctors({
-		doctors: mockDoctors as SelectUserType[],
+		doctors: mockDoctors as DoctorUserSchemaType[],
 		limit: 3,
 		reason: testCase.reason,
 	});

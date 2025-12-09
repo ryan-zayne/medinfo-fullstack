@@ -1,19 +1,48 @@
-import type { SignUpSchema } from "@medinfo/shared/validation/backendApiSchema";
+import type { backendApiSchemaRoutes, SignUpSchema } from "@/lib/api/callBackendApi/apiSchema";
 import { mutationOptions } from "@tanstack/react-query";
 import type { z } from "zod";
 import { callBackendApiForQuery } from "../api/callBackendApi";
 
 export const googleOAuthMutation = () => {
 	return mutationOptions({
-		mutationFn: (options: Pick<z.infer<typeof SignUpSchema>, "role">) => {
-			const { role } = options;
-
+		mutationFn: (queryData: Pick<z.infer<typeof SignUpSchema>, "role">) => {
 			return callBackendApiForQuery("@get/auth/google", {
-				onSuccess: (ctx) => {},
 				meta: { toast: { success: false } },
-				query: { role },
+				query: queryData,
 			});
 		},
-		mutationKey: ["auth", "google"],
+
+		mutationKey: ["oauth", "google"],
+	});
+};
+
+export const matchDoctorMutation = () => {
+	return mutationOptions({
+		mutationFn: (
+			bodyData: z.infer<(typeof backendApiSchemaRoutes)["@post/appointments/match-doctor"]["body"]>
+		) => {
+			return callBackendApiForQuery("@post/appointments/match-doctor", {
+				body: bodyData,
+			});
+		},
+
+		mutationKey: ["appointments", "match-doctor"],
+	});
+};
+
+export type MatchDoctorMutationResultType = Awaited<
+	ReturnType<NonNullable<ReturnType<typeof matchDoctorMutation>["mutationFn"]>>
+>;
+
+export const bookAppointmentMutation = () => {
+	return mutationOptions({
+		mutationFn: (
+			bodyData: z.infer<(typeof backendApiSchemaRoutes)["@post/appointments/book"]["body"]>
+		) => {
+			return callBackendApiForQuery("@post/appointments/book", {
+				body: bodyData,
+			});
+		},
+		mutationKey: ["appointments", "book"],
 	});
 };
