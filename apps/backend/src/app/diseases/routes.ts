@@ -1,12 +1,10 @@
 import { AppError, AppJsonResponse } from "@/lib/utils";
 import { validateWithZodMiddleware } from "@/middleware";
-import {
-	backendApiSchemaRoutes,
-	type DiseaseSchemaType,
-} from "@medinfo/shared/validation/backendApiSchema";
-import { pickKeys } from "@zayne-labs/toolkit-core";
+import { db } from "@medinfo/backend-db";
+import { diseases } from "@medinfo/backend-db/schema/diseases";
+import { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
+import { asc, count, eq, gt, sql } from "drizzle-orm";
 import { Hono } from "hono";
-import { readDiseases, shuffleArray, writeToDiseases } from "./services/common";
 
 const diseasesRoutes = new Hono()
 	.basePath("/diseases")
@@ -16,25 +14,29 @@ const diseasesRoutes = new Hono()
 		async (ctx) => {
 			const { limit = 6, page = 1, random = false } = ctx.req.valid("query") ?? {};
 
-			const diseasesResult = await readDiseases();
+			const baseQuery = db
+				.select({
+					description: diseases.description,
+					image: diseases.image,
+					name: diseases.name,
+				})
+				.from(diseases);
 
-			const shuffledDiseases = random ? shuffleArray(diseasesResult) : diseasesResult;
+			const offset = (page - 1) * limit;
 
-			const startIndex = (page - 1) * limit;
-			const endIndex = startIndex + limit;
-
-			const paginatedDiseases = shuffledDiseases.slice(startIndex, endIndex);
-
-			const diseases = paginatedDiseases.map((disease) =>
-				pickKeys(disease, ["name", "image", "description"])
-			);
+			const [diseasesResult, [totalCount]] = await Promise.all([
+				random ?
+					baseQuery.orderBy(sql`RANDOM()`).limit(limit)
+				:	baseQuery.orderBy(asc(diseases.id)).where(gt(diseases.id, offset)).limit(limit),
+				random ? [null] : db.select({ value: count(diseases.id) }).from(diseases),
+			]);
 
 			return AppJsonResponse(ctx, {
 				data: {
-					diseases,
+					diseases: diseasesResult,
 					limit,
-					page,
-					total: diseasesResult.length,
+					page: random ? 1 : page,
+					total: random ? diseasesResult.length : (totalCount?.value ?? 0),
 				},
 				message: "Diseases retrieved successfully",
 				schema: backendApiSchemaRoutes["@get/diseases/all"].data,
@@ -45,15 +47,11 @@ const diseasesRoutes = new Hono()
 		"/one/:name",
 		validateWithZodMiddleware("param", backendApiSchemaRoutes["@get/diseases/one/:name"].params),
 		async (ctx) => {
-			const { name: diseaseName } = ctx.req.valid("param");
+			const { name } = ctx.req.valid("param");
 
-			const diseaseResult = await readDiseases();
+			const [disease] = await db.select().from(diseases).where(eq(diseases.name, name)).limit(1);
 
-			const data = diseaseResult.find(
-				(disease) => disease.name.toLowerCase() === diseaseName.toLowerCase()
-			);
-
-			if (!data) {
+			if (!disease) {
 				throw new AppError({
 					code: 404,
 					message: "Disease not found",
@@ -61,7 +59,7 @@ const diseasesRoutes = new Hono()
 			}
 
 			return AppJsonResponse(ctx, {
-				data,
+				data: disease,
 				message: "Disease retrieved successfully",
 				schema: backendApiSchemaRoutes["@get/diseases/one/:name"].data,
 			});
@@ -71,28 +69,42 @@ const diseasesRoutes = new Hono()
 		"/add",
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/diseases/add"].body),
 		async (ctx) => {
-			const { details } = ctx.req.valid("json");
+			const { description, image, name, precautions, symptoms } = ctx.req.valid("json");
 
-			const diseaseResult = await readDiseases();
+			const [existingDisease] = await db
+				.select({ id: diseases.id })
+				.from(diseases)
+				.where(eq(diseases.name, name))
+				.limit(1);
 
-			const isExistingDisease = diseaseResult.some(
-				(item) => item.name.toLowerCase() === details.name.toLowerCase()
-			);
-
-			if (isExistingDisease) {
+			if (existingDisease) {
 				throw new AppError({
 					code: 409,
 					message: "Disease already exists",
 				});
 			}
 
-			diseaseResult.push(details);
+			const [newDisease] = await db
+				.insert(diseases)
+				.values({
+					description,
+					image,
+					name,
+					precautions,
+					symptoms,
+				})
+				.returning();
 
-			await writeToDiseases(diseaseResult);
+			if (!newDisease) {
+				throw new AppError({
+					code: 500,
+					message: "Failed to add disease",
+				});
+			}
 
 			return AppJsonResponse(ctx, {
-				data: details,
-				message: "Diseases add successfully",
+				data: newDisease,
+				message: "Disease added successfully",
 				schema: backendApiSchemaRoutes["@post/diseases/add"].data,
 			});
 		}
@@ -101,26 +113,26 @@ const diseasesRoutes = new Hono()
 		"/update",
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@patch/diseases/update"].body),
 		async (ctx) => {
-			const { details: diseaseDetails, name: diseaseName } = ctx.req.valid("json");
+			const { description, image, name, precautions, symptoms } = ctx.req.valid("json");
 
-			const diseasesResult = await readDiseases();
+			const [updatedDisease] = await db
+				.update(diseases)
+				.set({
+					description,
+					image,
+					name,
+					precautions,
+					symptoms,
+				})
+				.where(eq(diseases.name, name))
+				.returning();
 
-			const disease = diseasesResult.find(
-				(item) => item.name.toLowerCase() === diseaseName.toLowerCase()
-			);
-
-			if (!disease) {
+			if (!updatedDisease) {
 				throw new AppError({
 					code: 404,
 					message: "Disease not found",
 				});
 			}
-
-			const updatedDisease = { ...disease, ...diseaseDetails } as DiseaseSchemaType;
-
-			diseasesResult.splice(diseasesResult.indexOf(disease), 1, updatedDisease);
-
-			await writeToDiseases(diseasesResult);
 
 			return AppJsonResponse(ctx, {
 				data: updatedDisease,
@@ -133,24 +145,16 @@ const diseasesRoutes = new Hono()
 		"/delete",
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@delete/diseases/delete"].body),
 		async (ctx) => {
-			const { name: diseaseName } = ctx.req.valid("json");
+			const { name } = ctx.req.valid("json");
 
-			const result = await readDiseases();
+			const [deletedDisease] = await db.delete(diseases).where(eq(diseases.name, name)).returning();
 
-			const disease = result.find((item) => item.name.toLowerCase() === diseaseName.toLowerCase());
-
-			if (!disease) {
+			if (!deletedDisease) {
 				throw new AppError({
 					code: 404,
 					message: "Disease not found",
 				});
 			}
-
-			const diseaseIndex = result.indexOf(disease);
-
-			result.splice(diseaseIndex, 1);
-
-			await writeToDiseases(result);
 
 			return AppJsonResponse(ctx, {
 				data: null,

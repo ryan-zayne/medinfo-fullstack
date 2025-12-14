@@ -10,6 +10,7 @@
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "cross-env DB_MIGRATING=true drizzle-kit migrate",
 		"db:push": "drizzle-kit push",
+		"db:seed": "cross-env DB_MIGRATING=true tsx src/seed.ts",
 		"db:studio": "drizzle-kit studio",
 		"dev": "tsx watch src/db.ts",
 		"lint:eslint": "eslint . --max-warnings 0",
@@ -21,7 +22,8 @@
 		"@medinfo/env": "workspace:*",
 		"@zayne-labs/tsconfig": "0.11.5",
 		"cross-env": "^10.1.0",
-		"drizzle-orm": "0.45.0",
+		"drizzle-kit": "0.31.8",
+		"drizzle-orm": "0.45.1",
 		"drizzle-zod": "0.8.3",
 		"pg": "8.16.3",
 		"tsx": "4.21.0",
@@ -29,8 +31,7 @@
 	},
 	"devDependencies": {
 		"@total-typescript/ts-reset": "0.6.1",
-		"@types/pg": "8.15.6",
-		"drizzle-kit": "0.31.8",
+		"@types/pg": "8.16.0",
 		"tsdown": "catalog:"
 	}
 }

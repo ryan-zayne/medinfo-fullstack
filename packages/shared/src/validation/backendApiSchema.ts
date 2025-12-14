@@ -1,5 +1,6 @@
 import { InsertAppointmentSchema } from "@medinfo/backend-db/schema/appointments";
 import { InsertUserSchema, SelectUserSchema } from "@medinfo/backend-db/schema/auth";
+import { InsertDiseaseSchema } from "@medinfo/backend-db/schema/diseases";
 import { fallBackRouteSchemaKey, type FallBackRouteSchemaKey } from "@zayne-labs/callapi/constants";
 import { defineSchema, defineSchemaRoutes } from "@zayne-labs/callapi/utils";
 import { z } from "zod";
@@ -20,12 +21,10 @@ const HealthTipSchema = z.object({
 
 export const DiseaseSchema = z.object({
 	/* eslint-disable perfectionist/sort-objects */
-	name: z.string(),
-	description: z.string(),
+	name: InsertDiseaseSchema.shape.name,
+	description: InsertDiseaseSchema.shape.description,
 	/* eslint-enable perfectionist/sort-objects */
-	image: z.url(),
-	precautions: z.array(z.string()),
-	symptoms: z.array(z.string()),
+	...InsertDiseaseSchema.omit({ description: true, name: true }).shape,
 });
 
 const BaseSuccessResponseSchema = z.object({
@@ -115,9 +114,7 @@ const healthTipRoutes = defineSchemaRoutes({
 
 const diseaseRoutes = defineSchemaRoutes({
 	"@delete/diseases/delete": {
-		body: z.object({
-			name: z.string(),
-		}),
+		body: DiseaseSchema.pick({ name: true }),
 		data: withBaseSuccessResponse(z.null()),
 	},
 
@@ -147,17 +144,14 @@ const diseaseRoutes = defineSchemaRoutes({
 	},
 
 	"@patch/diseases/update": {
-		body: z.object({
-			details: DiseaseSchema,
-			name: z.string(),
+		body: DiseaseSchema.partial().extend({
+			name: DiseaseSchema.shape.name,
 		}),
 		data: withBaseSuccessResponse(DiseaseSchema),
 	},
 
 	"@post/diseases/add": {
-		body: z.object({
-			details: DiseaseSchema,
-		}),
+		body: DiseaseSchema,
 		data: withBaseSuccessResponse(DiseaseSchema),
 	},
 });

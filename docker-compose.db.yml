@@ -1,0 +1,24 @@
+services:
+   # PostgreSQL Database - Persists independently
+   postgres-db:
+      image: postgres:18-alpine
+      container_name: medinfo-postgres
+      restart: unless-stopped
+      environment:
+         POSTGRES_USER: postgres
+         POSTGRES_PASSWORD: postgres
+         POSTGRES_DB: medinfo
+      ports:
+         - "5432:5432"
+      volumes:
+         - postgres_data:/var/lib/postgresql/data
+      networks:
+         - medinfo-network
+
+volumes:
+   postgres_data:
+
+networks:
+   medinfo-network:
+      name: medinfo-global-network
+      driver: bridge

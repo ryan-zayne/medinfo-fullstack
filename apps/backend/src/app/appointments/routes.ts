@@ -15,7 +15,7 @@ const appointmentsRoutes = new Hono()
 	.basePath("/appointments")
 	.use(authMiddleware)
 	.post(
-		"/match-doctors",
+		"/match-doctor",
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/appointments/match-doctor"].body),
 		async (ctx) => {
 			const { reason } = ctx.req.valid("json");

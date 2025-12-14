@@ -1,0 +1,54 @@
+meta {
+  name: match-doctor
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseURL-dev}}/appointments/match-doctor
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "reason": "I have been experiencing a persistent headache for the past 3 days, accompanied by slight dizziness."
+  }
+}
+
+docs {
+  # Match Doctor
+
+  Matches the user with the most suitable doctors based on their reported symptoms/reason using an AI matching algorithm.
+
+  ## Request Body
+
+  - `reason` (string, required): A description of the user's symptoms or reason for seeking an appointment.
+
+  ## Success Response (200 OK)
+
+  Returns a list of top 3 recommended doctors properly sorted by relevance.
+
+  ```json
+  {
+    "status": "success",
+    "message": "Top doctors retrieved successfully",
+    "data": {
+      "doctors": [
+        {
+          "id": "uuid-...",
+          "firstName": "John",
+          "lastName": "Doe",
+          "email": "doctor@example.com",
+          "avatar": "...",
+          "role": "doctor",
+          "specialty": "Neurology",
+          "country": "Nigeria",
+          "gender": "male"
+        },
+        // ...
+      ]
+    }
+  }
+  ```
+}

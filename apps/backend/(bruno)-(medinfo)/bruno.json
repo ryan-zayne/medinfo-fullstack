@@ -1,6 +1,6 @@
 {
 	"version": "1",
-	"name": "MedInfo API",
+	"name": "(bruno)-(medinfo)",
 	"type": "collection",
 	"ignore": ["node_modules", ".git"]
 }

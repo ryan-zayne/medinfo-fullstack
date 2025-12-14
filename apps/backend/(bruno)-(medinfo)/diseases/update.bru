@@ -13,19 +13,19 @@ patch {
 body:json {
   {
     "name": "diabetes",
-    "details": {
-      "name": "Diabetes",
-      "image": "https://example.com/diabetes.jpg",
-      "description": "Updated description for diabetes",
-      "symptoms": ["Increased thirst", "Frequent urination", "Extreme fatigue"],
-      "precautions": ["Monitor blood sugar", "Healthy diet", "Exercise regularly"]
-    }
+    "image": "https://example.com/diabetes.jpg",
+    "description": "Updated description for diabetes",
+    "symptoms": [
+      "Increased thirst",
+      "Frequent urination",
+      "Extreme fatigue"
+    ],
+    "precautions": [
+      "Monitor blood sugar regularly",
+      "Maintain a healthy diet",
+      "Exercise regularly"
+    ]
   }
-}
-
-settings {
-  encodeUrl: true
-  timeout: 0
 }
 
 docs {
@@ -35,12 +35,10 @@ docs {
 
   ## Request Body
 
-  The body must contain both `name` and `details` fields.
-
   ### Request Structure
 
-  - `name` (string, required): The name of the disease to update (case-insensitive)
-  - `details` (object, required): Complete disease object with all fields
+  - `name` (string, required): The name of the disease to update (case-insensitive) - used to identify the record
+  - Other fields (`image`, `description`, `symptoms`, `precautions`) to update.
 
   ### Disease Object Fields (all required)
 
@@ -74,8 +72,6 @@ docs {
   }
   ```
 
-  Note: The details object is merged with existing data, so unchanged fields are preserved.
-
   ## Error Response (404 Not Found)
 
   ```json
@@ -87,26 +83,15 @@ docs {
 
   ## Error Response (422 Validation Error)
 
+  If disease fields are invalid:
+
   ```json
   {
     "status": "error",
-    "message": "Validation Error: ✖ Required → at name | ✖ Required → at details",
+    "message": "Validation Error: ✖ Required → at name | ✖ Invalid url → at image",
     "errors": {
       "name": ["Required"],
-      "details": ["Required"]
-    }
-  }
-  ```
-
-  Or if disease fields are invalid:
-
-  ```json
-  {
-    "status": "error",
-    "message": "Validation Error: ✖ Invalid url → at details.image | ✖ Expected array, received string → at details.symptoms",
-    "errors": {
-      "details.image": ["Invalid url"],
-      "details.symptoms": ["Expected array, received string"]
+      "image": ["Invalid url"]
     }
   }
   ```

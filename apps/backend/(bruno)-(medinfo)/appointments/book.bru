@@ -1,0 +1,42 @@
+meta {
+  name: book
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseURL-dev}}/appointments/book
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "reason": "Routine checkup for ongoing hypertension management.",
+    "doctorId": "replace-with-valid-doctor-uuid",
+    "existingMedicalConditions": ["Hypertension"],
+    "allergies": ["Peanuts"],
+    "dateOfAppointment": "2024-12-25T10:00:00.000Z",
+    "healthInsurance": "AXA Mansard",
+    "language": "English"
+  }
+}
+
+docs {
+  # Book Appointment
+
+  Books an appointment with a specific doctor.
+
+  ## Request Body
+
+  - `reason` (string, required): Reason for the appointment.
+  - `doctorId` (string, required): UUID of the doctor.
+  - `existingMedicalConditions` (array of strings, optional): List of existing conditions.
+  - `allergies` (array of strings, optional): List of allergies.
+  - `dateOfAppointment` (string/date, required): ISO 8601 date string for the appointment.
+  - `healthInsurance` (string, optional): Health insurance provider.
+  - `language` (string, optional): Preferred language.
+
+  ## Note
+  This endpoint implementation is currently a placeholder in the backend and may not persist data yet.
+}

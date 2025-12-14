@@ -12,19 +12,21 @@ post {
 
 body:json {
   {
-    "details": {
-      "name": "Madness",
-      "image": "https://example.com/hypertension.jpg",
-      "description": "High blood pressure condition",
-      "symptoms": ["Headaches", "Shortness of breath", "Nosebleeds"],
-      "precautions": ["Regular exercise", "Healthy diet", "Stress management", "Regular monitoring"]
-    }
+    "name": "Madness",
+    "image": "https://example.com/hypertension.jpg",
+    "description": "High blood pressure condition",
+    "symptoms": [
+      "Headaches",
+      "Shortness of breath",
+      "Nosebleeds"
+    ],
+    "precautions": [
+      "Regular exercise",
+      "Healthy diet",
+      "Stress management",
+      "Regular monitoring"
+    ]
   }
-}
-
-settings {
-  encodeUrl: true
-  timeout: 0
 }
 
 docs {
@@ -34,19 +36,15 @@ docs {
 
   ## Request Body
 
-  The body must contain a `details` field with a single disease object.
-
   ### Request Structure
 
   ```json
   {
-    "details": {
-      "name": "Disease Name",
-      "image": "https://example.com/image.jpg",
-      "description": "Disease description",
-      "symptoms": ["symptom1", "symptom2"],
-      "precautions": ["precaution1", "precaution2"]
-    }
+    "name": "Disease Name",
+    "image": "https://example.com/image.jpg",
+    "description": "Disease description",
+    "symptoms": ["symptom1", "symptom2"],
+    "precautions": ["precaution1", "precaution2"]
   }
   ```
 
@@ -63,7 +61,7 @@ docs {
   ```json
   {
     "status": "success",
-    "message": "Diseases add successfully",
+    "message": "Disease added successfully",
     "data": {
       "name": "Hypertension",
       "image": "https://example.com/hypertension.jpg",
@@ -87,25 +85,15 @@ docs {
 
   ## Error Response (422 Validation Error)
 
-  ```json
-  {
-    "status": "error",
-    "message": "Validation Error: ✖ Required → at details",
-    "errors": {
-      "details": ["Required"]
-    }
-  }
-  ```
-
-  Or if disease fields are invalid:
+  If disease fields are invalid:
 
   ```json
   {
     "status": "error",
-    "message": "Validation Error: ✖ Required → at details.name | ✖ Invalid url → at details.image",
+    "message": "Validation Error: ✖ Required → at name | ✖ Invalid url → at image",
     "errors": {
-      "details.name": ["Required"],
-      "details.image": ["Invalid url"]
+      "name": ["Required"],
+      "image": ["Invalid url"]
     }
   }
   ```

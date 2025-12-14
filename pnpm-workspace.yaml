@@ -3,7 +3,7 @@ packages:
   - packages/*
 
 catalog:
-  '@dotenvx/dotenvx': 1.51.1
-  tsdown: 0.17.0
+  '@dotenvx/dotenvx': 1.51.2
+  tsdown: 0.17.4
   typescript: 5.9.3
   zod: 4.1.13

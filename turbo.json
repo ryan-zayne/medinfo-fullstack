@@ -11,11 +11,21 @@
 			"outputs": ["dist/**", ".next/**", "!.next/cache/**", "build", ".vercel"]
 		},
 		"db:studio": {
+			"cache": false,
 			"persistent": true
 		},
-		"db:push": {},
-		"db:generate": {},
-		"db:migrate": {},
+		"db:push": {
+			"cache": false
+		},
+		"db:generate": {
+			"cache": false
+		},
+		"db:migrate": {
+			"cache": false
+		},
+		"db:seed": {
+			"cache": false
+		},
 		"lint:format": {},
 		"lint:eslint": {},
 		"lint:type-check": {},
