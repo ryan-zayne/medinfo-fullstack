@@ -85,7 +85,7 @@ export const getUserInfoFromGoogleAuthClaims = async (code: string, codeVerifier
 		OAuthClaimsSchema
 	);
 
-	const { data, error } = await callApi("https://people.googleapis.com/v1/people/me", {
+	const result = await callApi("https://people.googleapis.com/v1/people/me", {
 		auth: tokens.accessToken(),
 		query: {
 			key: ENVIRONMENT.GOOGLE_AUTH_API_KEY,
@@ -94,22 +94,16 @@ export const getUserInfoFromGoogleAuthClaims = async (code: string, codeVerifier
 		schema: {
 			data: z.object({
 				birthdays: z.array(
-					z.object({
-						date: z.object({
-							day: z.int(),
-							month: z.int(),
-							year: z.int(),
-						}),
-					})
+					z.object({ date: z.object({ day: z.int(), month: z.int(), year: z.int() }) })
 				),
 				genders: z.array(z.object({ value: z.literal(["male", "female"]) })),
 			}),
 		},
 	});
 
-	if (error) {
+	if (result.error) {
 		throw new AppError({
-			cause: error.originalError,
+			cause: result.error.originalError,
 			code: 400,
 			message: "Failed to fetch user info from Google",
 		});
@@ -117,11 +111,11 @@ export const getUserInfoFromGoogleAuthClaims = async (code: string, codeVerifier
 
 	const userInfo = getValidatedValue(
 		{
-			dob: googleDateToJSDate(data.birthdays[0]?.date),
+			dob: googleDateToJSDate(result.data.birthdays[0]?.date),
 			email: claims.email,
 			emailVerified: claims.email_verified,
 			firstName: claims.given_name,
-			gender: data.genders[0]?.value,
+			gender: result.data.genders[0]?.value,
 			lastName: claims.family_name,
 			picture: claims.picture,
 			provider: "google",

@@ -1,60 +1,55 @@
-# backend
+# @medinfo/backend
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines Hono, and more.
+The backend API server for MedInfo, built with **Hono** and **Node.js**.
 
-## Features
+## 🚀 Features
 
-- **TypeScript** - For type safety and improved developer experience
-- **Hono** - Lightweight, performant server framework
-- **Node.js** - Runtime environment
-- **Drizzle** - TypeScript-first ORM
-- **PostgreSQL** - Database engine
+- **Framework**: Hono (Lightweight & Fast)
+- **Database**: PostgreSQL with Drizzle ORM
+- **Authentication**: JWT & OAuth (Google)
+- **Validation**: Zod (Shared with frontend)
+- **AI Integration**: HuggingFace transformers for intelligent features
+- **Cloud Storage**: Cloudinary integration
+- **Logging**: Pino logger
 
-## Getting Started
+## 📂 Project Structure
 
-First, install the dependencies:
+```
+apps/backend/src/
+├── app/               # Feature-based modules (routes, services)
+│   ├── auth/          # Authentication logic
+│   ├── appointments/  # Appointment scheduling
+│   ├── diseases/      # Disease library
+│   └── health-tips/   # Daily health tips
+├── config/            # Configuration (CORS, Rate Limits)
+├── lib/               # Shared utilities & factory functions
+├── middleware/        # Global middleware (Auth, Error Handling)
+├── services/          # External services (AI, Cloudinary)
+└── server.ts          # Entry point
+```
+
+## 🛠️ Scripts
 
 ```bash
-pnpm install
+# Development
+pnpm dev          # Start server in watch mode (localhost:8000)
+
+# Build
+pnpm build        # Build using tsdown
+pnpm start        # Start production server
+
+# Code Quality
+pnpm lint:eslint  # Run ESLint
+pnpm lint:format  # Format code with Prettier
+pnpm lint:type-check # Run TypeScript type checking
 ```
 
-## Database Setup
+## 🧪 API Documentation
 
-This project uses PostgreSQL with Drizzle ORM.
+This project uses **Bruno** for API testing and documentation.
+You can find the collection in the root directory under `(bruno)-(medinfo)`.
 
-1. Make sure you have a PostgreSQL database set up.
-2. Update your `apps/server/.env` file with your PostgreSQL connection details.
+## 🧠 AI Services
 
-3. Apply the schema to your database:
-
-```bash
-pnpm db:push
-```
-
-Then, run the development server:
-
-```bash
-pnpm dev
-```
-
-The API is running at [http://localhost:3000](http://localhost:3000).
-
-## Project Structure
-
-```
-backend/
-├── apps/
-│   └── server/      # Backend API (Hono)
-├── packages/
-│   ├── api/         # API layer / business logic
-```
-
-## Available Scripts
-
-- `pnpm dev`: Start all applications in development mode
-- `pnpm build`: Build all applications
-- `pnpm dev:web`: Start only the web application
-- `pnpm dev:server`: Start only the server
-- `pnpm check-types`: Check TypeScript types across all apps
-- `pnpm db:push`: Push schema changes to database
-- `pnpm db:studio`: Open database studio UI
+The backend integrates with HuggingFace for AI capabilities.
+Configuration can be found in `src/services/ai/huggingFace.ts`.

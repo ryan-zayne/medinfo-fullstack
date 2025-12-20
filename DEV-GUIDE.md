@@ -37,6 +37,8 @@ MedInfo Nigeria is a healthcare platform that:
 | Styling    | TailwindCSS 4 + tailwind-variants            |
 | State      | TanStack Query + Zustand                     |
 | Auth       | JWT (access + refresh tokens) + Google OAuth |
+| AI         | HuggingFace Transformers                     |
+| Storage    | Cloudinary                                   |
 
 ---
 
@@ -47,42 +49,43 @@ medinfo-fullstack/
 ├── apps/
 │   ├── backend/                 # @medinfo/backend - Hono API server
 │   │   └── src/
-│   │       ├── app/            # Feature modules (auth, diseases, health-tips, appointments)
-│   │       ├── config/         # Environment, CORS settings
-│   │       ├── lib/            # Shared utilities, types, factory
-│   │       ├── middleware/     # Global middleware
-│   │       ├── services/       # Shared services (cloudinary)
-│   │       ├── app.ts          # Route composition
-│   │       └── server.ts       # Entry point
+│   │       ├── app/             # Feature modules (auth, diseases, health-tips, appointments)
+│   │       ├── config/          # Environment, CORS settings
+│   │       ├── lib/             # Shared utilities, types, factory
+│   │       ├── middleware/      # Global middleware
+│   │       ├── services/        # Shared services (ai, cloudinary)
+│   │       ├── app.ts           # Route composition
+│   │       └── server.ts        # Entry point
 │   │
-│   └── frontend/               # @medinfo/frontend - Next.js app
-│       ├── app/                # App Router pages
-│       │   ├── (primary)/      # Public routes (landing, auth, library)
-│       │   └── dashboard/      # Protected routes (patient, doctor)
-│       ├── components/         # Reusable components
-│       │   ├── common/         # Shared (Logo, NavLink, Show, For, etc.)
-│       │   ├── icons/          # SVG icon components
-│       │   └── ui/             # UI primitives (Button, Form, Select, etc.)
-│       └── lib/                # Utilities
-│           ├── api/            # API client (callBackendApi)
-│           ├── react-query/    # Query/mutation options
-│           ├── utils/          # Helpers (cn, common)
-│           └── zustand/        # State stores
+│   └── frontend/                # @medinfo/frontend - Next.js app
+│       ├── app/                 # App Router pages
+│       │   ├── (home)/          # Public routes (landing, auth, library)
+│       │   └── (protected)/     # Authenticated dashboard routes
+│       │       └── dashboard/   # Role-based dashboards (patient, doctor)
+│       ├── components/          # Reusable components
+│       │   ├── common/          # Shared (Logo, NavLink, Show, For, etc.)
+│       │   ├── icons/           # SVG icon components
+│       │   └── ui/              # UI primitives (Button, Form, Select, etc.)
+│       └── lib/                 # Utilities
+│           ├── api/             # API client (callBackendApi)
+│           ├── react-query/     # Query/mutation options
+│           ├── utils/           # Helpers (cn, common)
+│           └── zustand/         # State stores
 │
 └── packages/
-    ├── db/                     # @medinfo/backend-db - Drizzle ORM layer
+    ├── db/                      # @medinfo/backend-db - Drizzle ORM layer
     │   └── src/
-    │       ├── schema/         # Table definitions (auth.ts)
-    │       ├── migrations/     # SQL migrations
-    │       └── db.ts           # Database connection
+    │       ├── schema/          # Table definitions (auth.ts)
+    │       ├── migrations/      # SQL migrations
+    │       └── db.ts            # Database connection
     │
-    ├── env/                    # @medinfo/env - Environment validation
+    ├── env/                     # @medinfo/env - Environment validation
     │   └── src/
-    │       └── backend-env.ts  # Zod schema for env vars
+    │       └── backend-env.ts   # Zod schema for env vars
     │
-    └── shared/                 # @medinfo/shared - Shared code
+    └── shared/                  # @medinfo/shared - Shared code
         └── src/
-            └── validation/     # API schemas (backendApiSchema.ts)
+            └── validation/      # API schemas (backendApiSchema.ts)
 ```
 
 ### Package Dependencies
@@ -102,7 +105,7 @@ medinfo-fullstack/
 ### Prerequisites
 
 - Node.js 18+
-- pnpm 10.25.0 (`corepack enable`)
+- pnpm 10.26.0 (`corepack enable`)
 - PostgreSQL database
 
 ### Installation
@@ -209,6 +212,13 @@ src/app/auth/
     ├── oauth.ts           # Google OAuth logic
     └── token.ts           # JWT operations
 ```
+
+### AI and Cloud Services
+
+The backend now integrates with external services:
+
+- **AI**: HuggingFace transformers integration located in `src/services/ai/huggingFace.ts`.
+- **Storage**: Cloudinary SDK configuration in `src/services/cloudinary/`.
 
 ### Route Definition Pattern
 
@@ -418,31 +428,24 @@ export const getUpdatedTokenArray = (options: {
 
 ```
 app/
-├── (primary)/                    # Route group - public pages
+├── (home)/                       # Route group - public pages
 │   ├── -components/              # Private components (prefixed with -)
 │   │   ├── OAuthSection.tsx
 │   │   └── ...
-│   ├── signin/page.tsx
-│   ├── signup/page.tsx
+│   ├── auth/
+│   │   ├── signin/page.tsx
+│   │   └── signup/page.tsx
 │   ├── daily-tips/
 │   ├── library/
-│   ├── forgot-password/
 │   ├── layout.tsx               # Shared layout with navbar
 │   └── page.tsx                 # Landing page
 │
-├── dashboard/                    # Protected routes
-│   ├── -components/
-│   ├── patient/
-│   │   ├── -components/
-│   │   ├── appointment/
-│   │   ├── community/
-│   │   ├── messages/
-│   │   ├── profile/
-│   │   ├── settings/
-│   │   ├── layout.tsx
-│   │   └── page.tsx
-│   └── doctor/
-│       └── ...                  # Similar structure
+├── (protected)/                  # Authenticated routes
+│   ├── dashboard/
+│   │   ├── (role)/
+│   │       ├── patient/         # Patient dashboard
+│   │       └── doctor/          # Doctor dashboard
+│   └── template.tsx             # Dashboard layout template
 │
 ├── layout.tsx                   # Root layout
 ├── Providers.tsx                # Client providers wrapper
@@ -594,7 +597,7 @@ googleAuthMutation.mutate({ role: "patient" }, { onSuccess: (data) => router.pus
 ### Form Pattern with React Hook Form + Zod
 
 ```typescript
-// app/(primary)/signin/page.tsx
+// app/(home)/auth/signin/page.tsx
 "use client";
 
 const SignInSchema = backendApiSchemaRoutes["@post/auth/signin"].body;
@@ -728,688 +731,3 @@ export const SelectUserSchema = createSelectSchema(users);
 export type InsertUserType = typeof users.$inferInsert;
 export type SelectUserType = typeof users.$inferSelect;
 ```
-
-**Database Operations**:
-
-```typescript
-// Query
-const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
-
-// Insert with returning
-const [newUser] = await db.insert(users).values({ ... }).returning();
-
-// Update
-await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, userId));
-
-// Increment
-await db.update(users).set({ loginRetryCount: sql`${users.loginRetryCount} + 1` });
-```
-
-### @medinfo/env
-
-Environment variable validation with Zod.
-
-```typescript
-// packages/env/src/backend-env.ts
-export const envSchema = z.object({
-	ACCESS_JWT_EXPIRES_IN: z.string().transform((value) => evaluateString<number>(value)),
-	ACCESS_SECRET: z.string(),
-	BASE_BACKEND_HOST: z.url(),
-	BASE_FRONTEND_HOST: z.url(),
-	CLOUDINARY_API_KEY: z.string(),
-	CLOUDINARY_API_SECRET: z.string(),
-	CLOUDINARY_CLOUD_NAME: z.string(),
-	DATABASE_URL_DEV: z.string(),
-	DATABASE_URL_PROD: z.string(),
-	// ...some more...
-});
-
-export const getBackendEnv = () => {
-	const result = envSchema.safeParse(process.env);
-
-	if (!result.success) {
-		const missingKeys = Object.keys(z.flattenError(result.error).fieldErrors);
-		throw new Error(`Missing required environment variable(s):\n → ${missingKeys.join("\n → ")}`);
-	}
-
-	return result.data;
-};
-```
-
-### @medinfo/shared
-
-Shared validation schemas that define the API contract between frontend and backend.
-
-```typescript
-// packages/shared/src/validation/backendApiSchema.ts
-
-// Response wrappers
-const withBaseSuccessResponse = <TSchema extends z.ZodType>(dataSchema: TSchema) =>
-	z.object({
-		status: z.literal("success"),
-		message: z.string(),
-		data: dataSchema,
-	});
-
-const withBaseErrorResponse = <TSchema extends z.ZodType>(errorSchema?: TSchema) =>
-	z.object({
-		status: z.literal("error"),
-		message: z.string(),
-		errors: errorSchema ?? z.record(z.string(), z.array(z.string())).optional(),
-	});
-
-// Route definitions
-const authRoutes = defineSchemaRoutes({
-	"@post/auth/signin": {
-		body: z.object({
-			email: z.email("Please enter a valid email"),
-			password: z.string().min(8, "Password must be at least 8 characters"),
-		}),
-		data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
-	},
-
-	"@post/auth/signup": {
-		body: z.instanceof(FormData), // Multipart for file upload
-		data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
-	},
-
-	"@get/auth/session": {
-		data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
-	},
-
-	"@get/auth/google": {
-		query: UserDataSchema.pick({ role: true }).superRefine((data, ctx) => {
-			if (data.role === "doctor") {
-				ctx.addIssue({
-					code: "custom",
-					message: "Doctors cannot signup with google due to license requirements",
-				});
-			}
-		}),
-		data: withBaseSuccessResponse(z.object({ authURL: z.url() })),
-	},
-
-	"@get/auth/google/callback": {
-		query: z.object({ code: z.string(), state: z.string() }),
-	},
-});
-
-// Combine all routes
-export const backendApiSchema = defineSchema(
-	{
-		...defaultSchemaRoute, // Fallback error schema
-		...diseaseRoutes,
-		...healthTipRoutes,
-		...authRoutes(),
-	},
-	{ strict: true }
-);
-
-export const backendApiSchemaRoutes = backendApiSchema.routes;
-```
-
-**Route Naming Convention**:
-
-```
-@{method}/{resource}/{action}/:param
-
-@get/auth/session          # GET /api/v1/auth/session
-@post/auth/signin          # POST /api/v1/auth/signin
-@get/diseases/all          # GET /api/v1/diseases/all
-@get/diseases/one/:name    # GET /api/v1/diseases/one/diabetes
-@patch/diseases/update     # PATCH /api/v1/diseases/update
-@delete/diseases/delete    # DELETE /api/v1/diseases/delete
-```
-
----
-
-## Authentication System
-
-### Overview
-
-MedInfo uses a dual-token JWT system with refresh token rotation:
-
-- **Access Token**: Short-lived (15 min), stored in HTTP-only cookie
-- **Refresh Token**: Long-lived (7 days), stored in HTTP-only cookie + database whitelist
-
-### Auth Middleware Flow
-
-```typescript
-// src/app/auth/middleware/authMiddleware/authMiddleware.ts
-const authMiddleware = createMiddleware<HonoAppBindings>(async (ctx, next) => {
-  const zayneAccessToken = getCookie(ctx, "zayneAccessToken");
-  const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
-
-  const { currentUser, newZayneAccessTokenResult } = await validateUserSession({
-    zayneAccessToken,
-    zayneRefreshToken,
-  });
-
-  // Sil refresh access token if nef (newZayneAccessToken   setCookie(ctx, "zayneAccessToken", newZayneAccessTokenResult.token, {
-      expires: newZayneAccessTokenResult.expiresAt,
-    });
-  }
-
-  ctx.set("currentUser", currentUser);
-  await next();
-});
-```
-
-### Session Validation Logic
-
-```typescript
-// src/app/auth/middleware/authMiddleware/validateUserSession.ts
-const validateUserSession = async (tokens: TokenPairFromCookies) => {
-	const { zayneAccessToken, zayneRefreshToken } = tokens;
-
-	// No refresh token = unauthorized
-	if (!zayneRefreshToken) {
-		throw new AppError({ code: 401, message: "Unauthorized" });
-	}
-
-	// No access token = try refresh
-	if (!zayneAccessToken) {
-		return await refreshUserSession(zayneRefreshToken);
-	}
-
-	try {
-		// Validate access token
-		return await getExistingSession({ zayneAccessToken, zayneRefreshToken });
-	} catch (error) {
-		// Access token expired/invalid = try refresh
-		if (error instanceof jwt.JsonWebTokenError || error instanceof jwt.TokenExpiredError) {
-			return await refreshUserSession(zayneRefreshToken);
-		}
-		throw error;
-	}
-};
-```
-
-### Token Reuse Detection
-
-```typescript
-// If refresh token is valid but NOT in user's whitelist array:
-// - Possible token theft/reuse attack
-// - Clear ALL tokens (logout from all devices)
-// - Log the incident
-
-if (!isTokenInWhitelist(currentUser.refreshTokenArray, zayneRefreshToken)) {
-	warnAboutTokenReuse({ compromisedToken: zayneRefreshToken, currentUser });
-
-	await db.update(users).set({ refreshTokenArray: [] }).where(eq(users.id, userId));
-
-	throw new AppError({ code: 401, message: "Invalid session. Please log in again!" });
-}
-```
-
-### Google OAuth Flow
-
-```typescript
-// 1. Frontend initiates OAuth
-const { data } = await callBackendApi("@get/auth/google", { query: { role: "patient" } });
-router.push(data.authURL);
-
-// 2. Backend creates auth URL (src/app/auth/services/oauth.ts)
-export const createGoogleAuthURL = () => {
-	const state = arctic.generateState();
-	const codeVerifier = arctic.generateCodeVerifier();
-	const scopes = ["openid", "profile", "email", "..."];
-
-	const authUrlObject = google.createAuthorizationURL(state, codeVerifier, scopes);
-
-	// Store state/verifier in cookies for callback validation
-	return { authURL: authUrlObject.toString(), codeVerifier, state, cookiesExpireAt };
-};
-
-// 3. Google redirects to /auth/google/callback
-// 4. Backend validates state, exchanges code for tokens
-// 5. Get user info from Google People API (gender, birthday)
-// 6. Find existing user or create new one
-// 7. Generate JWT tokens, set cookies, redirect to dashboard
-```
-
-### User Details Filtering
-
-```typescript
-// src/app/auth/services/constants.ts
-export const necessaryUserDetails = defineEnum([
-	"firstName",
-	"lastName",
-	"email",
-	"avatar",
-	"role",
-	"medicalLicense",
-	"specialty",
-] satisfies Array<keyof SelectUserType>);
-
-// src/app/auth/services/common.ts
-export const getNecessaryUserDetails = (user: SelectUserType, keys: Array<keyof SelectUserType> = []) => {
-	return pickKeys(user, [...necessaryUserDetails, ...keys]);
-};
-
-// Never expose: passwordHash, refreshTokenArray, googleId, etc.
-```
-
----
-
-## API Patterns
-
-### Request/Response Examples
-
-**Sign In**:
-
-```typescript
-// Request
-POST /api/v1/auth/signin
-Content-Type: application/json
-
-{ "email": "user@example.com", "password": "password123" }
-
-// Success Response (200)
-{
-  "status": "success",
-  "message": "Signed in successfully",
-  "data": {
-    "user": {
-      "firstName": "John",
-      "lastName": "Doe",
-      "email": "user@example.com",
-      "avatar": "https://...",
-      "role": "patient",
-      "medicalLicense": null,
-      "specialty": null
-    }
-  }
-}
-
-// Error Response (401)
-{
-  "status": "error",
-  "message": "Email or password is incorrect"
-}
-```
-
-**Sign Up (Multipart)**:
-
-```typescript
-// Request
-POST /api/v1/auth/signup
-Content-Type: multipart/form-data
-
-firstName: John
-lastName: Doe
-email: doctor@example.com
-password: password123
-gender: male
-dob: 1990-01-15
-country: Nigeria
-role: doctor
-specialty: Cardiology
-medicalLicense: [File]
-
-// Response includes same user object
-```
-
-**Paginated List**:
-
-```typescript
-// Request
-GET /api/v1/diseases/all?page=1&limit=10&random=false
-
-// Response
-{
-  "status": "success",
-  "message": "Diseases retrieved successfully",
-  "data": {
-    "diseases": [
-      { "name": "Diabetes", "description": "...", "image": "https://..." },
-      // ...
-    ],
-    "page": 1,
-    "limit": 10,
-    "total": 150
-  }
-}
-```
-
-### Adding a New API Route
-
-1. **Define schema** in `packages/shared/src/validation/backendApiSchema.ts`:
-
-```typescript
-const newFeatureRoutes = defineSchemaRoutes({
-	"@get/feature/list": {
-		query: z.object({ limit: z.number().optional() }),
-		data: withBaseSuccessResponse(z.array(FeatureSchema)),
-	},
-	"@post/feature/create": {
-		body: CreateFeatureSchema,
-		data: withBaseSuccessResponse(FeatureSchema),
-	},
-});
-
-// Add to backendApiSchema
-export const backendApiSchema = defineSchema({
-	...existingRoutes,
-	...newFeatureRoutes,
-});
-```
-
-2. **Create feature module** in `apps/backend/src/app/feature/`:
-
-```typescript
-// routes.ts
-const featureRoutes = new Hono()
-	.basePath("/feature")
-	.get("/list", validateWithZodMiddleware("query", schema.query), async (ctx) => {
-		// Implementation
-		return AppJsonResponse(ctx, { data, message, schema: schema.data });
-	});
-
-export { featureRoutes };
-```
-
-3. **Register route** in `apps/backend/src/app.ts`:
-
-```typescript
-app.basePath("/api/v1")
-	.route("", featureRoutes) // Add here
-	.route("", existingRoutes);
-```
-
-4. **Use in frontend** - types are automatically available:
-
-```typescript
-const { data } = await callBackendApi("@get/feature/list", {
-	query: { limit: 10 },
-});
-// data is fully typed!
-```
-
----
-
-## Code Conventions
-
-### File Naming
-
-| Type            | Convention                         | Example               |
-| --------------- | ---------------------------------- | --------------------- |
-| Components      | PascalCase                         | `UserProfile.tsx`     |
-| Utilities       | camelCase                          | `formatDate.ts`       |
-| Constants       | camelCase file, UPPER_SNAKE values | `errorCodes.ts`       |
-| Types           | PascalCase with suffix             | `SelectUserType`      |
-| Private folders | Prefix with `-`                    | `-components/`        |
-| Index exports   | `index.ts`                         | Re-export from folder |
-
-### Import Order
-
-```typescript
-// 1. External packages
-import { Hono } from "hono";
-import { z } from "zod";
-
-// 2. Monorepo packages
-import { db } from "@medinfo/backend-db";
-import { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
-
-// 3. Path aliases (@/)
-import { AppError, AppJsonResponse } from "@/lib/utils";
-import { authMiddleware } from "@/app/auth/middleware/authMiddleware";
-
-// 4. Relative imports
-import { hashValue } from "./services/hash";
-```
-
-### TypeScript Patterns
-
-```typescript
-// Use Zod for runtime validation + type inference
-const SignInSchema = z.object({
-	email: z.email(),
-	password: z.string().min(8),
-});
-type SignInData = z.infer<typeof SignInSchema>;
-
-// Use defineEnum for type-safe constants
-export const errorCodes = defineEnum(
-	{
-		BAD_REQUEST: 400,
-		UNAUTHORIZED: 401,
-	},
-	{ unionVariant: "values" }
-);
-
-type ErrorCodesUnion = typeof errorCodes.$inferUnion; // 400 | 401
-
-// Use pickKeys for safe object subsetting
-const userDetails = pickKeys(user, ["firstName", "lastName", "email"]);
-
-// Prefer explicit return types for public functions
-export const generateAccessToken = (user: SelectUserType): { expiresAt: Date; token: string } => {
-	// ...
-};
-```
-
-### Component Patterns
-
-```tsx
-// Server Component (default)
-async function ServerPage() {
-  const data = await fetchData();
-  return <div>{data}</div>;
-}
-
-// Client Component
-"use client";
-function ClientComponent() {
-  const [state, setState] = useState();
-  return <button onClick={() => setState(...)}>Click</button>;
-}
-
-// Conditional rendering with Show
-<Show.Root when={isLoggedIn}>
-  <UserProfile />
-</Show.Root>
-
-// List rendering with For
-<For each={items} renderItem={(item, index) => (
-  <li key={item.id}>{item.name}</li>
-)} />
-
-// Form with loading state
-<Form.WatchFormState
-  render={(formState) => (
-    <Button
-      type="submit"
-      isLoading={formState.isSubmitting}
-      disabled={formState.isSubmitting}
-    >
-      Submit
-    </Button>
-  )}
-/>
-```
-
-### Error Handling
-
-```typescript
-// Backend: Always use AppError
-throw new AppError({
-	code: 404,
-	message: "User not found",
-	cause: originalError, // Optional, for logging
-});
-
-// With validation errors
-throw new AppError({
-	code: 422,
-	message: "Validation failed",
-	errors: { email: ["Invalid format"], password: ["Too short"] },
-});
-
-// Frontend: Let toast plugin handle errors
-await callBackendApi("@post/auth/signin", {
-	body: data,
-	meta: { toast: { errorAndSuccess: true } }, // Auto-toast
-});
-
-// Or handle manually
-const { data, error } = await callBackendApi("@post/auth/signin", { body });
-
-if (error) {
-	// Custom error handling
-}
-```
-
----
-
-## Common Workflows
-
-### Adding a New Database Table
-
-1. **Define schema** in `packages/db/src/schema/`:
-
-```typescript
-// packages/db/src/schema/appointments.ts
-export const appointments = pg.pgTable("appointments", {
-	id: pg.uuid().defaultRandom().primaryKey(),
-	patientId: pg
-		.uuid()
-		.references(() => users.id)
-		.notNull(),
-	doctorId: pg
-		.uuid()
-		.references(() => users.id)
-		.notNull(),
-	scheduledAt: pg.timestamp({ withTimezone: true }).notNull(),
-	status: pg.text({ enum: ["pending", "confirmed", "cancelled"] }).notNull(),
-	createdAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
-});
-
-export const InsertAppointmentSchema = createInsertSchema(appointments);
-export const SelectAppointmentSchema = createSelectSchema(appointments);
-export type InsertAppointmentType = typeof appointments.$inferInsert;
-export type SelectAppointmentType = typeof appointments.$inferSelect;
-```
-
-2. **Export from index**:
-
-```typescript
-// packages/db/src/schema/index.ts
-export * from "./auth";
-export * from "./appointments";
-```
-
-3. **Generate and run migration**:
-
-```bash
-pnpm db:generate   # Creates migration file
-pnpm db:migrate    # Applies migration
-```
-
-### Adding a New Frontend Page
-
-1. **Create page file**:
-
-```tsx
-// app/(primary)/new-page/page.tsx
-import { Main } from "../-components";
-
-function NewPage() {
-	return (
-		<Main>
-			<h1>New Page</h1>
-		</Main>
-	);
-}
-
-export default NewPage;
-```
-
-2. **For client interactivity**:
-
-```tsx
-"use client";
-
-import { useQuery } from "@tanstack/react-query";
-import { healthTipsQuery } from "@/lib/react-query/queryOptions";
-
-function NewPage() {
-	const { data, isLoading } = useQuery(healthTipsQuery());
-
-	if (isLoading) return <Spinner />;
-
-	return <div>{/* Use data */}</div>;
-}
-```
-
-### Adding Protected Routes
-
-1. **Check session in layout or page**:
-
-```tsx
-// app/dashboard/layout.tsx
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth"; // Your session helper
-
-async function DashboardLayout({ children }) {
-	const session = await getSession();
-
-	if (!session) {
-		redirect("/signin");
-	}
-
-	return <div>{children}</div>;
-}
-```
-
-### Debugging Tips
-
-**Backend**:
-
-```bash
-# Check logs with pino-pretty formatting
-pnpm dev:backend
-
-# Database queries are logged by default
-# Look for SQL in console output
-```
-
-**Frontend**:
-
-```bash
-# React Query Devtools (bottom-left button)
-# Shows all queries, cache state, refetch status
-
-# Network tab for API calls
-# Check cookies are being sent (credentials: include)
-```
-
-**Common Issues**:
-
-| Issue                           | Solution                                        |
-| ------------------------------- | ----------------------------------------------- |
-| CORS errors                     | Check `corsOptions.ts` includes frontend origin |
-| Cookies not sent                | Ensure `credentials: "include"` in fetch        |
-| Type errors after schema change | Run `pnpm db:generate`                          |
-| Auth middleware fails           | Check both cookies exist, tokens not expired    |
-| Google OAuth fails              | Verify callback URL matches Google Console      |
-
----
-
-## External Dependencies
-
-### Key Libraries
-
-| Package                 | Purpose                | Docs                                                   |
-| ----------------------- | ---------------------- | ------------------------------------------------------ |
-| `hono`                  | Backend framework      | [hono.dev](https://hono.dev)                           |
-| `drizzle-orm`           | Database ORM           | [orm.drizzle.team](https://orm.drizzle.team)           |
-| `zod`                   | Schema validation      | [zod.dev](https://zod.dev)                             |
-| `@tanstack/react-query` | Data fetching          | [tanstack.com/query](https://tanstack.com/query)       |
-| `@zayne-labs/callapi`   | Type-safe fetch client | Internal                                               |
-| `arctic`                | OAuth library          | [arctic.js.org](https://arctic.js.org)                 |
-| `react-hook-form`       | Form management        | [react-hook-form.com](https://react-hook-form.com)     |
-| `tailwind-variants`     | Variant styling        | [tailwind-variants.org](https://tailwind-variants.org) |
-
----

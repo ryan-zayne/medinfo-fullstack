@@ -10,14 +10,12 @@ import { transformError } from "./transformError";
 const errorHandler: ErrorHandler<BlankEnv> = (error: AppError | Error | HTTPException, ctx) => {
 	const modifiedError = transformError(error);
 
-	/* eslint-disable ts-eslint/no-unnecessary-condition */
 	/* eslint-disable perfectionist/sort-objects */
 	const errorInfo = {
 		status: "error",
-		message: modifiedError.message ?? "Something went very wrong!",
+		message: modifiedError.message,
 		...(Boolean(modifiedError.errors) && { errors: modifiedError.errors }),
 	};
-	/* eslint-enable ts-eslint/no-unnecessary-condition */
 
 	consola.error(`${error.name}:`, {
 		...errorInfo,

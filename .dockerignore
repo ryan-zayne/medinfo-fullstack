@@ -1,42 +1,43 @@
-# Dependencies
-node_modules
+# Development files
+.git
+.gitignore
+README.md
+DEV-GUIDE.md
+DOCKER.md
+
+# Frontend (not needed for backend)
+apps/frontend
+
+# Build artifacts
+**/dist
+**/build
+**/.next
+**/.turbo
+
+# Dependencies (will be installed in container)
 **/node_modules
 
-# Build outputs
-dist
-**/dist
-.turbo
-**/.turbo
-.next
-**/.next
-
-# Environment files (except example)
-.env
+# Environment files (will be mounted)
 **/.env
-.env.*
-!.env.example
+**/.env.*
 
-# IDE and OS
+# IDE files
 .vscode
 .idea
-*.swp
-*.swo
+
+# OS files
 .DS_Store
 Thumbs.db
 
-# Git
-.git
-.gitignore
-
-# Documentation (keep READMEs for context if needed)
-*.log
-
-# Frontend (not needed for backend build)
-apps/frontend
+# Logs
+**/*.log
+**/logs
 
 # Test files
-**/testing*.ts
-**/test_*.txt
+**/*.test.*
+**/*.spec.*
+**/tests
+**/__tests__
 
-# Bruno API client
-**/\(bruno\)-*
+# Documentation
+**/docs

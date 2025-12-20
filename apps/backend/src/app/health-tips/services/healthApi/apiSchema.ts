@@ -40,6 +40,10 @@ const topicSearchResultSchema = z.object({
 
 export const healthApiSchema = defineSchema(
 	{
+		/**
+		 * @description Searches and gets a topic's details.
+		 * @see https://odphp.health.gov/our-work/national-health-initiatives/health-literacy/consumer-health-content/free-web-content/apis-developers/api-documentation
+		 */
 		"@get/topicsearch.json": {
 			data: z.object({ Result: topicSearchResultSchema }),
 			query: z

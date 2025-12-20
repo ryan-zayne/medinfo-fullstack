@@ -4,72 +4,38 @@
 FROM node:22-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack prepare pnpm@10.25.0 --activate
+RUN corepack enable && corepack prepare pnpm@10.26.0 --activate
 WORKDIR /app
 
+
 # ================================================================
-# Stage 2: Builder - Install, Build, and Deploy
+# Stage 2: Builder
 # ================================================================
 FROM base AS builder
 
 # Copy workspace configuration
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Copy all package.json files to allow dependency checks
-COPY packages/db/package.json ./packages/db/
-COPY packages/env/package.json ./packages/env/
-COPY packages/shared/package.json ./packages/shared/
-COPY apps/backend/package.json ./apps/backend/
+COPY packages/db ./packages/db
+COPY packages/env ./packages/env
+COPY packages/shared ./packages/shared
+COPY apps/backend ./apps/backend
 
-# Install dependencies (frozen lockfile)
-RUN pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prefer-offline --ignore-scripts --frozen-lockfile
 
-# Copy source code for all packages (needed for building)
-COPY packages/db/src ./packages/db/src
-COPY packages/db/tsconfig.json ./packages/db/
-COPY packages/db/drizzle.config.ts ./packages/db/
+RUN pnpm --filter=@medinfo/backend build
 
-COPY packages/env/src ./packages/env/src
-COPY packages/env/tsconfig.json ./packages/env/
-
-COPY packages/shared/src ./packages/shared/src
-COPY packages/shared/tsconfig.json ./packages/shared/
-
-COPY apps/backend/src ./apps/backend/src
-COPY apps/backend/tsconfig.json ./apps/backend/
-COPY apps/backend/tsdown.config.ts ./apps/backend/
-
-# 1. Build the backend (creates dist/ with bundled workspace code)
-WORKDIR /app/apps/backend
-RUN pnpm run build
-
-# 2. Deploy the backend app (creates pruned node_modules + package.json + dist)
-WORKDIR /app
-RUN pnpm deploy --filter=@medinfo/backend --prod --legacy /deploy
-RUN cp -r /app/apps/backend/dist /deploy/dist
+RUN pnpm --filter=@medinfo/backend --prod --prefer-offline deploy ./pruned
 
 # ================================================================
 # Stage 3: Runner - Production Image
 # ================================================================
 FROM base AS runner
 
-# Create non-root user
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 hono
+COPY --from=builder /app/pruned ./
 
-WORKDIR /app
-
-# Copy the deployed application (includes package.json, node_modules, and dist)
-COPY --from=builder --chown=hono:nodejs /deploy /app
-
-USER hono
-
-# Expose port and start
-ENV NODE_ENV=production
-ENV PORT=8000
 EXPOSE 8000
 
-# Healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:8000/ || exit 1
 

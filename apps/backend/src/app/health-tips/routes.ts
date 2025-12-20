@@ -3,8 +3,8 @@ import { validateWithZodMiddleware } from "@/middleware";
 import { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
 import { omitKeys } from "@zayne-labs/toolkit-core";
 import { Hono } from "hono";
-import { healthApi } from "./services/api";
 import { getRandomHealthTipIds } from "./services/common";
+import { healthApi } from "./services/healthApi";
 
 const healthTipsRoutes = new Hono()
 	.basePath("/health-tips")

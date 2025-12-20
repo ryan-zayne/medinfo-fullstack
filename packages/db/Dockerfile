@@ -1,33 +1,35 @@
 # ================================================================
-# Drizzle Migration Runner
+# Stage 1: Base - Setup pnpm
 # ================================================================
-FROM node:22-alpine
-
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@10.25.0 --activate
+FROM node:22-alpine AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable && corepack prepare pnpm@10.26.0 --activate
 
 WORKDIR /app
 
-# Copy root workspace files
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# ================================================================
+# Stage 2: Prepare deps
+# ================================================================
+FROM base AS prepare-deps
 
-# Copy workspace packages
-COPY packages/db/package.json ./packages/db/
-COPY packages/env/package.json ./packages/env/
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+COPY packages/db ./packages/db
+COPY packages/env ./packages/env
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile --prod
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
 
-# Copy source files
-COPY packages/db/src ./packages/db/src
-COPY packages/db/drizzle.config.ts ./packages/db/
-COPY packages/db/tsconfig.json ./packages/db/
+# ================================================================
+# Stage 3: DB Setup
+# ================================================================
+FROM base AS setup
 
-COPY packages/env/src ./packages/env/src
-COPY packages/env/tsconfig.json ./packages/env/
+COPY --from=prepare-deps /app/node_modules ./node_modules
+COPY --from=prepare-deps /app/packages/db ./packages/db
+COPY --from=prepare-deps /app/packages/env ./packages/env
+
 
 WORKDIR /app/packages/db
 
 # Run migrations
-# Generate migrations inside the container, then run them, then seed
 CMD ["sh", "-c", "pnpm db:generate && pnpm db:migrate && pnpm db:seed"]

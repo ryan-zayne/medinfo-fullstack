@@ -9,9 +9,9 @@ const stringBoolean = z.stringbool({ falsy: ["false"], truthy: ["true"] });
 export const envSchema = z.object({
 	ACCESS_JWT_EXPIRES_IN: z.string().transform((value) => evaluateString<number>(value)),
 	ACCESS_SECRET: z.string(),
-	BASE_BACKEND_HOST_DEV: z.url(),
+	BASE_BACKEND_HOST_DEV: z.url().default("http://localhost:8000"),
 	BASE_BACKEND_HOST_PROD: z.url(),
-	BASE_FRONTEND_HOST_DEV: z.url(),
+	BASE_FRONTEND_HOST_DEV: z.url().default("http://localhost:3000"),
 	BASE_FRONTEND_HOST_PROD: z.url(),
 	CLOUDINARY_API_KEY: z.string(),
 	CLOUDINARY_API_SECRET: z.string(),
@@ -28,6 +28,9 @@ export const envSchema = z.object({
 	PORT: z.coerce.number().default(8000),
 	REFRESH_JWT_EXPIRES_IN: z.string().transform((value) => evaluateString<number>(value)),
 	REFRESH_SECRET: z.string(),
+	ZOOM_ACCOUNT_ID: z.string(),
+	ZOOM_CLIENT_ID: z.string(),
+	ZOOM_CLIENT_SECRET: z.string(),
 });
 
 dotenvx.config({
