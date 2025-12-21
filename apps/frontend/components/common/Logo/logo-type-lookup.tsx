@@ -1,5 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
-
 const LogoForHeader = (props: React.SVGProps<SVGSVGElement>) => (
 	<svg
 		width="84"

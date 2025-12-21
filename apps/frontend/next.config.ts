@@ -1,22 +1,10 @@
 import type { NextConfig } from "next";
-// import { fileURLToPath } from "node:url";
 
-// const getRoot = (rootPath = "/") => fileURLToPath(new URL(rootPath, import.meta.url));
-
-// const isDev = process.env.NODE_ENV !== "production";
 
 const nextConfig = {
 	devIndicators: {
 		position: "bottom-right",
 	},
-
-	experimental: {
-		turbopackFileSystemCacheForDev: true,
-	},
-
-	// ...(isDev && {
-	// 	outputFileTracingRoot: getRoot(),
-	// }),
 
 	images: {
 		remotePatterns: [

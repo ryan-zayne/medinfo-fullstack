@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import ArrowBackIcon from "@/components/icons/ArrowBackIcon";
-import Image from "next/image";
-import MessageImage from "@/public/assets/images/message.png";
-import ViewIcon from "@/components/icons/ViewIcon";
 import CommentIcon from "@/components/icons/CommentIcon";
-import { Button } from "@/components/ui";
 import NextIcon from "@/components/icons/NextIcon";
+import ViewIcon from "@/components/icons/ViewIcon";
+import { Button } from "@/components/ui";
+import MessageImage from "@/public/assets/images/message.png";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Page({ params }: { params: { slug: string } }) {
 	const [showComments, setShowComments] = useState(false);
@@ -79,7 +79,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 										<input
 											type="text"
 											placeholder="add a comment"
-											className="h-[48px] w-full rounded-[8px] border-2 border-solid
+											className="h-12 w-full rounded-[8px] border-2 border-solid
 												border-medinfo-primary-main px-4 focus:outline-hidden lg:h-[64px]"
 										/>
 									</div>

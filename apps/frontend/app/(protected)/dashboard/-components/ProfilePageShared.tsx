@@ -5,19 +5,19 @@ import { Button, Form, Select } from "@/components/ui";
 import { useForm } from "react-hook-form";
 
 function ProfilePageShared() {
-	const userIdentityMethods = useForm({
+	const userIdentityForm = useForm({
 		defaultValues: { bio: "", firstName: "", gender: "", lastName: "" },
 	});
 
-	const contactInfoMethods = useForm({
+	const contactInfoForm = useForm({
 		defaultValues: { email: "", phoneNumber: "" },
 	});
 
-	const locationMethods = useForm({
+	const locationForm = useForm({
 		defaultValues: { city: "", country: "" },
 	});
 
-	const changePasswordMethods = useForm({
+	const changePasswordForm = useForm({
 		defaultValues: { confirmPassword: "", newPassword: "", oldPassword: "" },
 	});
 
@@ -51,38 +51,38 @@ function ProfilePageShared() {
 			>
 				<h3 className="text-[18px] font-medium lg:min-w-[156px]">User Identity</h3>
 
-				<Form.Root className="w-full max-w-[372px] gap-3 self-center" methods={userIdentityMethods}>
-					<Form.Field<typeof userIdentityMethods.control>
+				<Form.Root className="w-full max-w-[372px] gap-3 self-center" form={userIdentityForm}>
+					<Form.Field<typeof userIdentityForm.control>
 						name="firstName"
 						className="gap-1 font-roboto font-medium"
 					>
 						<Form.Label className="md:text-[20px]">First Name</Form.Label>
 						<Form.Input
 							type="text"
-							className="h-[48px] rounded-[8px] border-[1.4px] border-medinfo-primary-main px-4 py-3
+							className="h-12 rounded-[8px] border-[1.4px] border-medinfo-primary-main px-4 py-3
 								placeholder:text-medinfo-dark-4 md:h-[64px] md:py-5 md:text-base"
 						/>
 					</Form.Field>
-					<Form.Field<typeof userIdentityMethods.control>
+					<Form.Field<typeof userIdentityForm.control>
 						name="lastName"
 						className="gap-1 font-roboto font-medium"
 					>
 						<Form.Label className="md:text-[20px]">Last Name</Form.Label>
 						<Form.Input
 							type="text"
-							className="h-[48px] rounded-[8px] border-[1.4px] border-medinfo-primary-main px-4 py-3
+							className="h-12 rounded-[8px] border-[1.4px] border-medinfo-primary-main px-4 py-3
 								placeholder:text-medinfo-dark-4 md:h-[64px] md:py-5 md:text-base"
 						/>
 					</Form.Field>
 					<Form.Field name="gender" className="gap-1 font-roboto font-medium">
 						<Form.Label className="md:text-[20px]">Gender</Form.Label>
 
-						<Form.FieldController
+						<Form.FieldBoundController
 							render={({ field }) => (
 								<Select.Root name={field.name} value={field.value} onValueChange={field.onChange}>
 									<Select.Trigger
 										classNames={{
-											base: `group h-[48px] gap-2 rounded-[8px] border-[1.4px]
+											base: `group h-12 gap-2 rounded-[8px] border-[1.4px]
 											border-medinfo-primary-main px-4 font-medium
 											data-placeholder:text-medinfo-dark-4 md:h-[64px] md:text-base`,
 											icon: `text-medinfo-body-color group-data-[state=open]:rotate-180
@@ -101,7 +101,7 @@ function ProfilePageShared() {
 									>
 										<Select.Item
 											value="male"
-											className="h-[48px] bg-medinfo-light-3 font-medium text-medinfo-dark-4
+											className="h-12 bg-medinfo-light-3 font-medium text-medinfo-dark-4
 												focus:bg-medinfo-light-1 focus:text-medinfo-body-color
 												data-[state=checked]:bg-medinfo-light-1 md:h-[64px] md:text-base"
 										>
@@ -109,7 +109,7 @@ function ProfilePageShared() {
 										</Select.Item>
 										<Select.Item
 											value="female"
-											className="h-[48px] bg-medinfo-light-3 font-medium text-medinfo-dark-4
+											className="h-12 bg-medinfo-light-3 font-medium text-medinfo-dark-4
 												focus:bg-medinfo-light-1 focus:text-medinfo-body-color
 												data-[state=checked]:bg-medinfo-light-1 md:h-[64px] md:text-base"
 										>
@@ -121,7 +121,7 @@ function ProfilePageShared() {
 						/>
 					</Form.Field>
 
-					<Form.Field<typeof userIdentityMethods.control>
+					<Form.Field<typeof userIdentityForm.control>
 						name="bio"
 						className="gap-1 font-roboto font-medium"
 					>
@@ -147,26 +147,26 @@ function ProfilePageShared() {
 			>
 				<h3 className="text-[18px] font-medium lg:min-w-[156px]">Contact Info</h3>
 
-				<Form.Root className="w-full max-w-[372px] gap-3 self-center" methods={contactInfoMethods}>
-					<Form.Field<typeof contactInfoMethods.control>
+				<Form.Root className="w-full max-w-[372px] gap-3 self-center" form={contactInfoForm}>
+					<Form.Field<typeof contactInfoForm.control>
 						name="email"
 						className="gap-1 font-roboto font-medium"
 					>
 						<Form.Label className="md:text-[20px]">Email</Form.Label>
 						<Form.Input
 							type="text"
-							className="h-[48px] rounded-[8px] border-[1.4px] border-medinfo-primary-main px-4 py-3
+							className="h-12 rounded-[8px] border-[1.4px] border-medinfo-primary-main px-4 py-3
 								placeholder:text-medinfo-dark-4 md:h-[64px] md:py-5 md:text-base"
 						/>
 					</Form.Field>
-					<Form.Field<typeof contactInfoMethods.control>
+					<Form.Field<typeof contactInfoForm.control>
 						name="phoneNumber"
 						className="gap-1 font-roboto font-medium"
 					>
 						<Form.Label className="md:text-[20px]">Phone number</Form.Label>
 						<Form.Input
 							type="number"
-							className="h-[48px] rounded-[8px] border-[1.4px] border-medinfo-primary-main px-4 py-3
+							className="h-12 rounded-[8px] border-[1.4px] border-medinfo-primary-main px-4 py-3
 								placeholder:text-medinfo-dark-4 md:h-[64px] md:py-5 md:text-base"
 						/>
 					</Form.Field>
@@ -184,26 +184,26 @@ function ProfilePageShared() {
 			>
 				<h3 className="text-[18px] font-medium lg:min-w-[156px]">Location</h3>
 
-				<Form.Root className="w-full max-w-[372px] gap-3 self-center" methods={locationMethods}>
-					<Form.Field<typeof locationMethods.control>
+				<Form.Root className="w-full max-w-[372px] gap-3 self-center" form={locationForm}>
+					<Form.Field<typeof locationForm.control>
 						name="country"
 						className="gap-1 font-roboto font-medium"
 					>
 						<Form.Label className="md:text-[20px]">Country</Form.Label>
 						<Form.Input
 							type="text"
-							className="h-[48px] rounded-[8px] border-[1.4px] border-medinfo-primary-main px-4 py-3
+							className="h-12 rounded-[8px] border-[1.4px] border-medinfo-primary-main px-4 py-3
 								placeholder:text-medinfo-dark-4 md:h-[64px] md:py-5 md:text-base"
 						/>
 					</Form.Field>
-					<Form.Field<typeof locationMethods.control>
+					<Form.Field<typeof locationForm.control>
 						name="city"
 						className="gap-1 font-roboto font-medium"
 					>
 						<Form.Label className="md:text-[20px]">City</Form.Label>
 						<Form.Input
 							type="text"
-							className="h-[48px] rounded-[8px] border-[1.4px] border-medinfo-primary-main px-4 py-3
+							className="h-12 rounded-[8px] border-[1.4px] border-medinfo-primary-main px-4 py-3
 								placeholder:text-medinfo-dark-4 md:h-[64px] md:py-5 md:text-base"
 						/>
 					</Form.Field>
@@ -221,8 +221,8 @@ function ProfilePageShared() {
 			>
 				<h3 className="text-[18px] font-medium lg:min-w-[156px]">Change Password</h3>
 
-				<Form.Root className="w-full max-w-[372px] gap-3 self-center" methods={changePasswordMethods}>
-					<Form.Field<typeof changePasswordMethods.control>
+				<Form.Root className="w-full max-w-[372px] gap-3 self-center" form={changePasswordForm}>
+					<Form.Field<typeof changePasswordForm.control>
 						name="oldPassword"
 						className="gap-1 font-roboto font-medium"
 					>
@@ -231,12 +231,12 @@ function ProfilePageShared() {
 							type="password"
 							classNames={{
 								input: "placeholder:text-medinfo-dark-4 md:text-base",
-								inputGroup: `h-[48px] rounded-[8px] border-[1.4px] border-medinfo-primary-main px-4
+								inputGroup: `h-12 rounded-[8px] border-[1.4px] border-medinfo-primary-main px-4
 								py-3 md:h-[64px] md:py-5`,
 							}}
 						/>
 					</Form.Field>
-					<Form.Field<typeof changePasswordMethods.control>
+					<Form.Field<typeof changePasswordForm.control>
 						name="newPassword"
 						className="gap-1 font-roboto font-medium"
 					>
@@ -245,12 +245,12 @@ function ProfilePageShared() {
 							type="password"
 							classNames={{
 								input: "placeholder:text-medinfo-dark-4 md:text-base",
-								inputGroup: `h-[48px] rounded-[8px] border-[1.4px] border-medinfo-primary-main px-4
+								inputGroup: `h-12 rounded-[8px] border-[1.4px] border-medinfo-primary-main px-4
 								py-3 md:h-[64px] md:py-5`,
 							}}
 						/>
 					</Form.Field>
-					<Form.Field<typeof changePasswordMethods.control>
+					<Form.Field<typeof changePasswordForm.control>
 						name="confirmPassword"
 						className="gap-1 font-roboto font-medium"
 					>
@@ -259,7 +259,7 @@ function ProfilePageShared() {
 							type="password"
 							classNames={{
 								input: "placeholder:text-medinfo-dark-4 md:text-base",
-								inputGroup: `h-[48px] rounded-[8px] border-[1.4px] border-medinfo-primary-main px-4
+								inputGroup: `h-12 rounded-[8px] border-[1.4px] border-medinfo-primary-main px-4
 								py-3 md:h-[64px] md:py-5`,
 							}}
 						/>

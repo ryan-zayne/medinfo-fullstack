@@ -35,7 +35,6 @@ export const users = pg.pgTable(
 			.$onUpdate(() => new Date()),
 	},
 	(table) => [
-		pg.uniqueIndex("user_id_index").on(table.id),
 		pg.uniqueIndex("user_email_index").on(table.email),
 		pg.uniqueIndex("user_google_id_index").on(table.googleId),
 	]

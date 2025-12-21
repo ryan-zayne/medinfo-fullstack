@@ -21,7 +21,7 @@ function SignInPage(props: PageProps<"/auth/signin">) {
 
 	const userRole = (searchParams.user as z.infer<typeof SignUpSchema>["role"] | undefined) ?? "patient";
 
-	const methods = useForm({
+	const form = useForm({
 		defaultValues: {
 			email: "",
 			password: "",
@@ -29,11 +29,11 @@ function SignInPage(props: PageProps<"/auth/signin">) {
 		resolver: zodResolver(SignInSchema),
 	});
 
-	const { control } = methods;
+	const { control } = form;
 
 	const router = useRouter();
 
-	const onSubmit = methods.handleSubmit(async (data) => {
+	const onSubmit = form.handleSubmit(async (data) => {
 		await callBackendApi("@post/auth/signin", {
 			body: data,
 			meta: { toast: { success: true } },
@@ -66,7 +66,7 @@ function SignInPage(props: PageProps<"/auth/signin">) {
 						</h1>
 
 						<Form.Root
-							methods={methods}
+							form={form}
 							className="w-full gap-3.5"
 							onSubmit={(event) => void onSubmit(event)}
 						>
@@ -116,7 +116,7 @@ function SignInPage(props: PageProps<"/auth/signin">) {
 								<Form.ErrorMessage />
 
 								<NavLink
-									href="/forgot-password"
+									href="/auth/forgot-password"
 									className="mt-1 self-end font-work-sans text-medinfo-primary-main"
 								>
 									Forgot password?
@@ -128,7 +128,7 @@ function SignInPage(props: PageProps<"/auth/signin">) {
 									<OAuthSection userRole={userRole} />
 								</Show.Root>
 
-								<Form.WatchFormState
+								<Form.StateSubscribe
 									render={(formState) => (
 										<Button
 											type="submit"

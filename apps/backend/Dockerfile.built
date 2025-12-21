@@ -25,7 +25,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prefer-offline 
 
 RUN pnpm --filter=@medinfo/backend build
 
-RUN pnpm --filter=@medinfo/backend --prod --prefer-offline deploy ./pruned
+RUN pnpm --filter=@medinfo/backend --prod --prefer-offline deploy --legacy ./pruned
 
 # ================================================================
 # Stage 3: Runner - Production Image

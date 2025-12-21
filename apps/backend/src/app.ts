@@ -10,10 +10,11 @@ const app = createHonoApp();
  *  == Health Check Route
  */
 app.get("/", (c) => {
-	const message = "Server is up and running!";
-
-	// eslint-disable-next-line perfectionist/sort-objects
-	return c.json({ status: "success", message });
+	return c.json({
+		status: "success",
+		// eslint-disable-next-line perfectionist/sort-objects
+		message: "Server is up and running!",
+	});
 });
 
 /**

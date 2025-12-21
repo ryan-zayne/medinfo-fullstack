@@ -58,7 +58,7 @@ function AppointmentPage() {
 				</Button>
 			</header>
 
-			<Form.Root methods={form} onSubmit={(event) => void onSubmit(event)}>
+			<Form.Root form={form} onSubmit={(event) => void onSubmit(event)}>
 				<Steps.Root
 					count={stepperItems.length}
 					linear={true}
@@ -111,7 +111,7 @@ function AppointmentPage() {
 										Preferred date & time
 									</Form.Label>
 
-									<Form.FieldController
+									<Form.FieldBoundController
 										render={({ field }) => (
 											<DateTimePicker
 												variant="datetime"
@@ -137,7 +137,7 @@ function AppointmentPage() {
 								>
 									<Form.Label className="text-medinfo-dark-4 md:text-[20px]">Language</Form.Label>
 
-									<Form.FieldController
+									<Form.FieldBoundController
 										render={({ field }) => (
 											<Select.Root
 												disabled={true}
@@ -352,7 +352,7 @@ function AppointmentPage() {
 					</section>
 
 					<AppointmentDialog
-						formData={form.getValues()}
+						formData={form.getValues() as unknown as z.infer<typeof AppointmentFormSchema>}
 						onFormReset={() => {
 							form.reset();
 						}}

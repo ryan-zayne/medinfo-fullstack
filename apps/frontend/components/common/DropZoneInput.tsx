@@ -1,12 +1,12 @@
 "use client";
 
+import { cnMerge } from "@/lib/utils/cn";
 import type { InferProps } from "@zayne-labs/toolkit-react/utils";
 import { isFile } from "@zayne-labs/toolkit-type-helpers";
+import Image from "next/image";
 import { toast } from "sonner";
-import { cnMerge } from "@/lib/utils/cn";
 import { DropZone } from "../ui/drop-zone";
 import { IconBox } from "./IconBox";
-import Image from "next/image";
 
 type DropZoneInputProps = InferProps<typeof DropZone.Root> & {
 	onChange: (file: File) => void;
@@ -65,7 +65,7 @@ export function DropZoneInputImagePreview(props: ImagePreviewProps) {
 					className={cnMerge("justify-between text-xs", classNames?.listItem)}
 				>
 					<DropZone.FileItemPreview
-						className="h-[48px] gap-4 md:h-[66px]"
+						className="h-12 gap-4 md:h-[66px]"
 						renderPreview={{
 							default: (
 								<span className="block size-[40px]">

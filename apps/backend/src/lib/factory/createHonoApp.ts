@@ -10,7 +10,7 @@ import { requestId } from "hono/request-id";
 import { secureHeaders } from "hono/secure-headers";
 
 const createHonoApp = () => {
-	const app = new Hono();
+	const app = new Hono({ strict: false });
 
 	/**
 	 *  == Middleware - App Security

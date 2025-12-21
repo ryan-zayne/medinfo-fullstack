@@ -6,7 +6,7 @@ export const appointments = pg.pgTable("appointments", {
 	allergies: pg.text(),
 	createdAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
 	dateOfAppointment: pg.timestamp({ mode: "string", withTimezone: true }).notNull(),
-	doctorId: pg.uuid().references(() => users.id, { onDelete: "set null" }),
+	doctorId: pg.uuid().references(() => users.id, { onDelete: "cascade" }),
 	existingMedicalConditions: pg.text(),
 	healthInsurance: pg.text({ enum: ["yes", "no"] }).notNull(),
 	id: pg.uuid().defaultRandom().primaryKey(),
@@ -14,8 +14,8 @@ export const appointments = pg.pgTable("appointments", {
 		.text({ enum: ["english"] })
 		.notNull()
 		.default("english"),
-	meetingId: pg.text(),
-	meetingUrl: pg.text(),
+	meetingId: pg.integer().notNull(),
+	meetingURL: pg.text().notNull(),
 	patientId: pg
 		.uuid()
 		.references(() => users.id, { onDelete: "cascade" })

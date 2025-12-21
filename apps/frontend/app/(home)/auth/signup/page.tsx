@@ -80,7 +80,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 						</h1>
 
 						<Form.Root
-							methods={form}
+							form={form}
 							className="w-full gap-[14px]"
 							onSubmit={(event) => void onSubmit(event)}
 						>
@@ -92,8 +92,8 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 								<Form.Label className="md:text-[20px]">First name</Form.Label>
 
 								<Form.InputGroup
-									className="h-[48px] gap-4 rounded-[8px] border-[1.4px]
-										border-medinfo-primary-main px-4 py-3 md:h-[64px] md:py-5"
+									className="h-12 gap-4 rounded-[8px] border-[1.4px] border-medinfo-primary-main
+										px-4 py-3 md:h-[64px] md:py-5"
 								>
 									<Form.InputLeftItem className="size-5 md:size-6">
 										<IconBox icon="majesticons:user-line" className="size-full" />
@@ -117,8 +117,8 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 								<Form.Label className="md:text-[20px]">Last name</Form.Label>
 
 								<Form.InputGroup
-									className="h-[48px] gap-4 rounded-[8px] border-[1.4px]
-										border-medinfo-primary-main px-4 py-3 md:h-[64px] md:py-5"
+									className="h-12 gap-4 rounded-[8px] border-[1.4px] border-medinfo-primary-main
+										px-4 py-3 md:h-[64px] md:py-5"
 								>
 									<Form.InputLeftItem className="size-5 md:size-6">
 										<IconBox icon="majesticons:user-line" className="size-full" />
@@ -138,8 +138,8 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 								<Form.Label className="md:text-[20px]">Email</Form.Label>
 
 								<Form.InputGroup
-									className="h-[48px] gap-4 rounded-[8px] border-[1.4px]
-										border-medinfo-primary-main px-4 py-3 md:h-[64px] md:py-5"
+									className="h-12 gap-4 rounded-[8px] border-[1.4px] border-medinfo-primary-main
+										px-4 py-3 md:h-[64px] md:py-5"
 								>
 									<Form.InputLeftItem className="size-5 md:size-6">
 										<IconBox icon="mynaui:envelope" className="size-full" />
@@ -158,7 +158,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 							<Form.Field control={control} name="gender" className="gap-1 font-roboto font-medium">
 								<Form.Label className="md:text-[20px]">Gender</Form.Label>
 
-								<Form.FieldController
+								<Form.FieldBoundController
 									render={({ field }) => (
 										<Select.Root
 											name={field.name}
@@ -167,7 +167,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 										>
 											<Select.Trigger
 												classNames={{
-													base: `group h-[48px] gap-2 rounded-[8px] border-[1.4px]
+													base: `group h-12 gap-2 rounded-[8px] border-[1.4px]
 													border-medinfo-primary-main px-4 font-medium
 													data-placeholder:text-medinfo-dark-4 md:h-[64px] md:text-base`,
 													icon: `text-medinfo-body-color group-data-[state=open]:rotate-180
@@ -186,18 +186,16 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 											>
 												<Select.Item
 													value="male"
-													className="h-[48px] bg-medinfo-light-3 font-medium
-														text-medinfo-dark-4 focus:bg-medinfo-light-1
-														focus:text-medinfo-body-color
+													className="h-12 bg-medinfo-light-3 font-medium text-medinfo-dark-4
+														focus:bg-medinfo-light-1 focus:text-medinfo-body-color
 														data-[state=checked]:bg-medinfo-light-1 md:h-[64px] md:text-base"
 												>
 													Male
 												</Select.Item>
 												<Select.Item
 													value="female"
-													className="h-[48px] bg-medinfo-light-3 font-medium
-														text-medinfo-dark-4 focus:bg-medinfo-light-1
-														focus:text-medinfo-body-color
+													className="h-12 bg-medinfo-light-3 font-medium text-medinfo-dark-4
+														focus:bg-medinfo-light-1 focus:text-medinfo-body-color
 														data-[state=checked]:bg-medinfo-light-1 md:h-[64px] md:text-base"
 												>
 													Female
@@ -217,7 +215,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 							>
 								<Form.Label className="md:text-[20px]">Country</Form.Label>
 
-								<Form.FieldController
+								<Form.FieldBoundController
 									render={({ field }) => (
 										<Select.Root
 											name={field.name}
@@ -226,7 +224,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 										>
 											<Select.Trigger
 												classNames={{
-													base: `group h-[48px] gap-2 rounded-[8px] border-[1.4px]
+													base: `group h-12 gap-2 rounded-[8px] border-[1.4px]
 													border-medinfo-primary-main px-4 font-medium
 													data-placeholder:text-medinfo-dark-4 md:h-[64px] md:text-base`,
 													icon: `text-medinfo-body-color group-data-[state=open]:rotate-180
@@ -245,9 +243,8 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 												<Select.Item
 													withIndicator={false}
 													value="Nigeria"
-													className="h-[48px] bg-medinfo-light-3 font-medium
-														text-medinfo-dark-4 focus:bg-medinfo-light-1
-														focus:text-medinfo-body-color
+													className="h-12 bg-medinfo-light-3 font-medium text-medinfo-dark-4
+														focus:bg-medinfo-light-1 focus:text-medinfo-body-color
 														data-[state=checked]:bg-medinfo-light-1 md:h-[64px] md:text-base"
 												>
 													Nigeria
@@ -255,9 +252,8 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 												<Select.Item
 													withIndicator={false}
 													value="Ghana"
-													className="h-[48px] bg-medinfo-light-3 font-medium
-														text-medinfo-dark-4 focus:bg-medinfo-light-1
-														focus:text-medinfo-body-color
+													className="h-12 bg-medinfo-light-3 font-medium text-medinfo-dark-4
+														focus:bg-medinfo-light-1 focus:text-medinfo-body-color
 														data-[state=checked]:bg-medinfo-light-1 md:h-[64px] md:text-base"
 												>
 													Ghana
@@ -278,7 +274,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 								>
 									<Form.Label className="md:text-[20px]">Specialty</Form.Label>
 
-									<Form.FieldController
+									<Form.FieldBoundController
 										render={({ field }) => (
 											<Select.Root
 												name={field.name}
@@ -287,7 +283,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 											>
 												<Select.Trigger
 													classNames={{
-														base: `group h-[48px] gap-2 rounded-[8px] border-[1.4px]
+														base: `group h-12 gap-2 rounded-[8px] border-[1.4px]
 														border-medinfo-primary-main px-4 font-medium
 														data-placeholder:text-medinfo-dark-4 md:h-[64px] md:text-base`,
 														icon: `text-medinfo-body-color group-data-[state=open]:rotate-180
@@ -306,7 +302,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 													<Select.Item
 														withIndicator={false}
 														value="steeze"
-														className="h-[48px] bg-medinfo-light-3 font-medium
+														className="h-12 bg-medinfo-light-3 font-medium
 															text-medinfo-dark-4 focus:bg-medinfo-light-1
 															focus:text-medinfo-body-color
 															data-[state=checked]:bg-medinfo-light-1 md:h-[64px]
@@ -317,7 +313,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 													<Select.Item
 														withIndicator={false}
 														value="cooking"
-														className="h-[48px] bg-medinfo-light-3 font-medium
+														className="h-12 bg-medinfo-light-3 font-medium
 															text-medinfo-dark-4 focus:bg-medinfo-light-1
 															focus:text-medinfo-body-color
 															data-[state=checked]:bg-medinfo-light-1 md:h-[64px]
@@ -342,7 +338,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 										Upload medical license/certificate
 									</Form.Label>
 
-									<Form.FieldController
+									<Form.FieldBoundController
 										render={({ field }) => (
 											<DropZoneInput
 												allowedFileTypes={["image/jpeg", "image/png", "application/pdf"]}
@@ -391,10 +387,10 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 							<Form.Field control={control} name="dob" className="gap-1 font-roboto font-medium">
 								<Form.Label className="md:text-[20px]">Date of Birth</Form.Label>
 
-								<Form.FieldController
+								<Form.FieldBoundController
 									render={({ field }) => (
 										<DateTimePicker
-											className="h-[48px] gap-4 rounded-[8px] border-[1.4px]
+											className="h-12 gap-4 rounded-[8px] border-[1.4px]
 												border-medinfo-primary-main px-4 py-3 text-[14px] md:h-[64px] md:py-5
 												md:text-base"
 											dateString={field.value}
@@ -415,8 +411,8 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 								<Form.Label className="md:text-[20px]">Password</Form.Label>
 
 								<Form.InputGroup
-									className="h-[48px] gap-4 rounded-[8px] border-[1.4px]
-										border-medinfo-primary-main px-4 py-3 md:h-[64px] md:py-5"
+									className="h-12 gap-4 rounded-[8px] border-[1.4px] border-medinfo-primary-main
+										px-4 py-3 md:h-[64px] md:py-5"
 								>
 									<Form.InputLeftItem className="size-5 md:size-6">
 										<IconBox icon="mynaui:lock-password" className="size-full" />
@@ -440,8 +436,8 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 								<Form.Label className="md:text-[20px]">Confirm password</Form.Label>
 
 								<Form.InputGroup
-									className="h-[48px] gap-4 rounded-[8px] border-[1.4px]
-										border-medinfo-primary-main px-4 py-3 md:h-[64px] md:py-5"
+									className="h-12 gap-4 rounded-[8px] border-[1.4px] border-medinfo-primary-main
+										px-4 py-3 md:h-[64px] md:py-5"
 								>
 									<Form.InputLeftItem className="size-5 md:size-6">
 										<IconBox icon="mynaui:lock-password" className="size-full" />
@@ -462,7 +458,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 									<OAuthSection userRole={userRole} />
 								</Show.Root>
 
-								<Form.WatchFormState
+								<Form.StateSubscribe
 									render={(formState) => (
 										<Button
 											type="submit"

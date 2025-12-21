@@ -1,4 +1,4 @@
-import { InsertAppointmentSchema } from "@medinfo/backend-db/schema/appointments";
+import { InsertAppointmentSchema, SelectAppointmentSchema } from "@medinfo/backend-db/schema/appointments";
 import { InsertUserSchema, SelectUserSchema } from "@medinfo/backend-db/schema/auth";
 import { InsertDiseaseSchema } from "@medinfo/backend-db/schema/diseases";
 import { fallBackRouteSchemaKey, type FallBackRouteSchemaKey } from "@zayne-labs/callapi/constants";
@@ -17,14 +17,6 @@ const HealthTipSchema = z.object({
 		})
 	),
 	title: z.string(),
-});
-
-export const DiseaseSchema = z.object({
-	/* eslint-disable perfectionist/sort-objects */
-	name: InsertDiseaseSchema.shape.name,
-	description: InsertDiseaseSchema.shape.description,
-	/* eslint-enable perfectionist/sort-objects */
-	...InsertDiseaseSchema.omit({ description: true, name: true }).shape,
 });
 
 const BaseSuccessResponseSchema = z.object({
@@ -53,21 +45,21 @@ export type BaseApiErrorResponse<TErrors = z.infer<typeof BaseErrorResponseSchem
 	errors: TErrors;
 };
 
-const withBaseSuccessResponse = <TSchemaObject extends z.ZodType>(dataSchema: TSchemaObject) =>
-	z.object({
-		...BaseSuccessResponseSchema.shape,
+const withBaseSuccessResponse = <TSchemaObject extends z.ZodType>(dataSchema: TSchemaObject) => {
+	return BaseSuccessResponseSchema.extend({
 		data: dataSchema,
 	});
+};
 
 const withBaseErrorResponse = <
 	TSchemaObject extends z.ZodType = typeof BaseErrorResponseSchema.shape.errors,
 >(
 	errorSchema?: TSchemaObject
-) =>
-	z.object({
-		...BaseErrorResponseSchema.shape,
+) => {
+	return BaseErrorResponseSchema.extend({
 		errors: (errorSchema ?? BaseErrorResponseSchema.shape.errors) as NonNullable<TSchemaObject>,
 	});
+};
 
 const defaultSchemaRoute = defineSchemaRoutes({
 	[fallBackRouteSchemaKey]: {
@@ -80,16 +72,14 @@ const stringWithNumberValidation = () => {
 };
 
 const stringWithBooleanValidation = () => {
-	return z.preprocess((value: boolean) => {
-		const castValue = value as unknown;
-
-		if (castValue === "true") {
+	return z.preprocess((value: string) => {
+		if (value === "true") {
 			return true;
 		}
-		if (castValue === "false") {
+		if (value === "false") {
 			return false;
 		}
-		return castValue;
+		return value;
 	}, z.boolean());
 };
 
@@ -114,7 +104,7 @@ const healthTipRoutes = defineSchemaRoutes({
 
 const diseaseRoutes = defineSchemaRoutes({
 	"@delete/diseases/delete": {
-		body: DiseaseSchema.pick({ name: true }),
+		body: InsertDiseaseSchema.pick({ name: true }),
 		data: withBaseSuccessResponse(z.null()),
 	},
 
@@ -122,7 +112,7 @@ const diseaseRoutes = defineSchemaRoutes({
 		data: withBaseSuccessResponse(
 			z.object({
 				// eslint-disable-next-line perfectionist/sort-objects
-				diseases: z.array(DiseaseSchema.pick({ name: true, description: true, image: true })),
+				diseases: z.array(InsertDiseaseSchema.pick({ name: true, description: true, image: true })),
 				limit: z.int().positive(),
 				page: z.int().positive(),
 				total: z.number(),
@@ -139,20 +129,18 @@ const diseaseRoutes = defineSchemaRoutes({
 	},
 
 	"@get/diseases/one/:name": {
-		data: withBaseSuccessResponse(DiseaseSchema),
+		data: withBaseSuccessResponse(InsertDiseaseSchema),
 		params: z.object({ name: z.string() }),
 	},
 
 	"@patch/diseases/update": {
-		body: DiseaseSchema.partial().extend({
-			name: DiseaseSchema.shape.name,
-		}),
-		data: withBaseSuccessResponse(DiseaseSchema),
+		body: InsertDiseaseSchema.partial().extend({ name: InsertDiseaseSchema.shape.name }),
+		data: withBaseSuccessResponse(InsertDiseaseSchema),
 	},
 
 	"@post/diseases/add": {
-		body: DiseaseSchema,
-		data: withBaseSuccessResponse(DiseaseSchema),
+		body: InsertDiseaseSchema,
+		data: withBaseSuccessResponse(InsertDiseaseSchema),
 	},
 });
 
@@ -270,6 +258,11 @@ export const DoctorUserSchema = SelectUserSchema.pick({
 
 const appointmentsRoutes = () => {
 	return defineSchemaRoutes({
+		"@delete/appointments/cancel": {
+			body: SelectAppointmentSchema.pick({ meetingId: true }).extend({ appointmentId: z.string() }),
+			data: withBaseSuccessResponse(z.null()),
+		},
+
 		"@post/appointments/book": {
 			body: InsertAppointmentSchema.pick({
 				allergies: true,
@@ -286,13 +279,27 @@ const appointmentsRoutes = () => {
 				allowTeleMedicine: stringWithBooleanValidation(),
 				doctorId: z.string(),
 			}),
+
+			data: withBaseSuccessResponse(
+				SelectAppointmentSchema.pick({
+					dateOfAppointment: true,
+					id: true,
+					meetingId: true,
+					meetingURL: true,
+					reason: true,
+					status: true,
+				}).extend({
+					doctorName: z.string(),
+					patientName: z.string(),
+				})
+			),
 		},
 
 		"@post/appointments/match-doctor": {
 			body: InsertAppointmentSchema.pick({ reason: true }),
 			data: withBaseSuccessResponse(
 				z.object({
-					doctors: z.array(DoctorUserSchema),
+					doctors: DoctorUserSchema.array(),
 				})
 			),
 		},
@@ -315,7 +322,7 @@ export type RouteSchemaKeys = Exclude<keyof typeof backendApiSchemaRoutes, FallB
 
 export type BackendApiSchemaRoutes = Omit<typeof backendApiSchemaRoutes, FallBackRouteSchemaKey>;
 
-export type DiseaseSchemaType = z.infer<typeof DiseaseSchema>;
+export type DiseaseSchemaType = z.infer<typeof InsertDiseaseSchema>;
 
 export type HealthTipSchemaType = z.infer<typeof HealthTipSchema>;
 

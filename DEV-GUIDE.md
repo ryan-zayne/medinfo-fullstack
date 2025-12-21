@@ -605,12 +605,12 @@ const SignInSchema = backendApiSchemaRoutes["@post/auth/signin"].body;
 function SignInPage() {
   const router = useRouter();
 
-  const methods = useForm({
+  const form = useForm({
     defaultValues: { email: "", password: "" },
     resolver: zodResolver(SignInSchema),
   });
 
-  const onSubmit = methods.handleSubmit(async (data) => {
+  const onSubmit = form.handleSubmit(async (data) => {
     await callBackendApi("@post/auth/signin", {
       body: data,
       meta: { toast: { success: true } },
@@ -619,7 +619,7 @@ function SignInPage() {
   });
 
   return (
-    <Form.Root methods={methods} onSubmit={(e) => void onSubmit(e)}>
+    <Form.Root form={form} onSubmit={(e) => void onSubmit(e)}>
       <Form.Field control={control} name="email" className="gap-1">
         <Form.Label>Email</Form.Label>
         <Form.InputGroup className="...">

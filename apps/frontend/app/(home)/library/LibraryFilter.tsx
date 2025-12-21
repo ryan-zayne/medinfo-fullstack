@@ -16,7 +16,7 @@ function LibraryFilter(props: ScrollableAlternateDiseaseCardsProps) {
 
 	return (
 		<>
-			<section className="flex h-[48px] justify-center gap-5 lg:h-[64px] lg:gap-8">
+			<section className="flex h-12 justify-center gap-5 lg:h-[64px] lg:gap-8">
 				<DropdownMenu.Root>
 					<DropdownMenu.Trigger
 						className="group flex h-full w-[116px] items-center justify-between gap-2 rounded-[8px]
@@ -44,20 +44,18 @@ function LibraryFilter(props: ScrollableAlternateDiseaseCardsProps) {
 							<DropdownMenu.RadioItem
 								withIndicator={false}
 								value="grid"
-								className="h-[48px] bg-medinfo-light-3 font-medium text-medinfo-dark-4
-									focus:text-base focus:text-medinfo-body-color
-									data-[state=checked]:bg-medinfo-light-1 md:h-[64px] md:text-base
-									md:focus:text-[18px]"
+								className="h-12 bg-medinfo-light-3 font-medium text-medinfo-dark-4 focus:text-base
+									focus:text-medinfo-body-color data-[state=checked]:bg-medinfo-light-1
+									md:h-[64px] md:text-base md:focus:text-[18px]"
 							>
 								grid
 							</DropdownMenu.RadioItem>
 							<DropdownMenu.RadioItem
 								withIndicator={false}
 								value="list"
-								className="h-[48px] bg-medinfo-light-3 font-medium text-medinfo-dark-4
-									focus:text-base focus:text-medinfo-body-color
-									data-[state=checked]:bg-medinfo-light-1 md:h-[64px] md:text-base
-									md:focus:text-[18px]"
+								className="h-12 bg-medinfo-light-3 font-medium text-medinfo-dark-4 focus:text-base
+									focus:text-medinfo-body-color data-[state=checked]:bg-medinfo-light-1
+									md:h-[64px] md:text-base md:focus:text-[18px]"
 							>
 								list
 							</DropdownMenu.RadioItem>
