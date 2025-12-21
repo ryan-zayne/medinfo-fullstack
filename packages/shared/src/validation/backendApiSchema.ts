@@ -115,7 +115,7 @@ const diseaseRoutes = defineSchemaRoutes({
 				diseases: z.array(InsertDiseaseSchema.pick({ name: true, description: true, image: true })),
 				limit: z.int().positive(),
 				page: z.int().positive(),
-				total: z.number(),
+				total: z.int().positive(),
 			})
 		),
 		query: z
@@ -261,6 +261,30 @@ const appointmentsRoutes = () => {
 		"@delete/appointments/cancel": {
 			body: SelectAppointmentSchema.pick({ meetingId: true }).extend({ appointmentId: z.string() }),
 			data: withBaseSuccessResponse(z.null()),
+		},
+
+		"@get/appointments/all": {
+			data: withBaseSuccessResponse(
+				z.object({
+					appointments: z.array(
+						SelectAppointmentSchema.pick({
+							id: true,
+							meetingId: true,
+							meetingURL: true,
+							reason: true,
+							status: true,
+						}).extend({ doctorOrPatientName: z.string() })
+					),
+					limit: z.int().positive(),
+				})
+			),
+
+			query: z
+				.object({
+					limit: stringWithNumberValidation(),
+				})
+				.partial()
+				.optional(),
 		},
 
 		"@post/appointments/book": {

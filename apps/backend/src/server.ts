@@ -1,7 +1,7 @@
 import "@colors/colors";
 import { serve } from "@hono/node-server";
 import { consola } from "consola";
-import { app } from "./app";
+import { app } from "./app/app";
 import { ENVIRONMENT } from "./config/env";
 
 serve(

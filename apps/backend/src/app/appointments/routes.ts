@@ -7,6 +7,7 @@ import {
 	backendApiSchemaRoutes,
 	type DoctorUserSchemaType,
 } from "@medinfo/shared/validation/backendApiSchema";
+import { omitKeys } from "@zayne-labs/toolkit-core";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { authMiddleware } from "../auth/middleware/authMiddleware";
@@ -60,7 +61,14 @@ const appointmentsRoutes = new Hono()
 				reason,
 			} = ctx.req.valid("json");
 
-			const patient = ctx.get("currentUser");
+			const currentUser = ctx.get("currentUser");
+
+			if (currentUser.role !== "patient") {
+				throw new AppError({
+					code: 401,
+					message: "Only patients can book appointments",
+				});
+			}
 
 			const [doctor] = await db.select().from(users).where(eq(users.id, doctorId)).limit(1);
 
@@ -74,7 +82,7 @@ const appointmentsRoutes = new Hono()
 			const zoomMeetingDetails = await createMeeting({
 				dateOfAppointment,
 				doctorEmail: doctor.email,
-				patientEmail: patient.email,
+				patientEmail: currentUser.email,
 				reason,
 			});
 
@@ -89,7 +97,7 @@ const appointmentsRoutes = new Hono()
 					language,
 					meetingId: zoomMeetingDetails.id,
 					meetingURL: zoomMeetingDetails.join_url,
-					patientId: patient.id,
+					patientId: currentUser.id,
 					reason,
 				})
 				.returning();
@@ -108,12 +116,57 @@ const appointmentsRoutes = new Hono()
 					id: newAppointment.id,
 					meetingId: newAppointment.meetingId,
 					meetingURL: newAppointment.meetingURL,
-					patientName: `${patient.firstName} ${patient.lastName}`,
+					patientName: `${currentUser.firstName} ${currentUser.lastName}`,
 					reason: newAppointment.reason,
 					status: newAppointment.status,
 				},
 				message: "Appointment booked successfully",
 				schema: backendApiSchemaRoutes["@post/appointments/book"].data,
+			});
+		}
+	)
+	.get(
+		"/all",
+		validateWithZodMiddleware("query", backendApiSchemaRoutes["@get/appointments/all"].query),
+		async (ctx) => {
+			const { limit = 10 } = ctx.req.valid("query") ?? {};
+
+			const currentUser = ctx.get("currentUser");
+
+			const appointmentsResult = await db
+				.select({
+					id: appointments.id,
+					meetingId: appointments.meetingId,
+					meetingURL: appointments.meetingURL,
+					reason: appointments.reason,
+					status: appointments.status,
+					userFirstName: users.firstName,
+					userLastName: users.lastName,
+				})
+				.from(appointments)
+				.innerJoin(
+					users,
+					currentUser.role === "patient" ?
+						eq(appointments.doctorId, users.id)
+					:	eq(appointments.patientId, users.id)
+				)
+				.where(
+					currentUser.role === "patient" ?
+						eq(appointments.patientId, currentUser.id)
+					:	eq(appointments.doctorId, currentUser.id)
+				)
+				.limit(limit);
+
+			return AppJsonResponse(ctx, {
+				data: {
+					appointments: appointmentsResult.map((appointment) => ({
+						...omitKeys(appointment, ["userFirstName", "userLastName"]),
+						doctorOrPatientName: `${appointment.userFirstName} ${appointment.userLastName}`,
+					})),
+					limit,
+				},
+				message: "Appointments retrieved successfully",
+				schema: backendApiSchemaRoutes["@get/appointments/all"].data,
 			});
 		}
 	)
@@ -123,7 +176,7 @@ const appointmentsRoutes = new Hono()
 		async (ctx) => {
 			const { appointmentId, meetingId } = ctx.req.valid("json");
 
-			const patient = ctx.get("currentUser");
+			const currentUser = ctx.get("currentUser");
 
 			const [appointment] = await db
 				.select()
@@ -138,10 +191,13 @@ const appointmentsRoutes = new Hono()
 				});
 			}
 
-			if (appointment.patientId !== patient.id) {
+			if (
+				(currentUser.role === "patient" && appointment.patientId !== currentUser.id)
+				|| (currentUser.role === "doctor" && appointment.doctorId !== currentUser.id)
+			) {
 				throw new AppError({
 					code: 403,
-					message: "Forbidden Action",
+					message: "Forbidden",
 				});
 			}
 

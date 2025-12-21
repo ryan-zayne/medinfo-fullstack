@@ -1,8 +1,8 @@
-import { appointmentsRoutes } from "./app/appointments/routes";
-import { authRoutes } from "./app/auth/routes";
-import { diseasesRoutes } from "./app/diseases/routes";
-import { healthTipsRoutes } from "./app/health-tips/routes";
-import { createHonoApp } from "./lib/factory";
+import { createHonoApp } from "../lib/factory";
+import { appointmentsRoutes } from "./appointments/routes";
+import { authRoutes } from "./auth/routes";
+import { diseasesRoutes } from "./diseases/routes";
+import { healthTipsRoutes } from "./health-tips/routes";
 
 const app = createHonoApp();
 
