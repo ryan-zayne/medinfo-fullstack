@@ -1,6 +1,5 @@
 import type { NextConfig } from "next";
 
-
 const nextConfig = {
 	devIndicators: {
 		position: "bottom-right",
