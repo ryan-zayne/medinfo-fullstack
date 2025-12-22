@@ -7,7 +7,6 @@ import {
 	backendApiSchemaRoutes,
 	type DoctorUserSchemaType,
 } from "@medinfo/shared/validation/backendApiSchema";
-import { omitKeys } from "@zayne-labs/toolkit-core";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { authMiddleware } from "../auth/middleware/authMiddleware";
@@ -29,6 +28,7 @@ const appointmentsRoutes = new Hono()
 					country: users.country,
 					email: users.email,
 					firstName: users.firstName,
+					fullName: users.fullName,
 					gender: users.gender,
 					id: users.id,
 					lastName: users.lastName,
@@ -112,11 +112,11 @@ const appointmentsRoutes = new Hono()
 			return AppJsonResponse(ctx, {
 				data: {
 					dateOfAppointment: newAppointment.dateOfAppointment,
-					doctorName: `${doctor.firstName} ${doctor.lastName}`,
+					doctorName: doctor.fullName,
 					id: newAppointment.id,
 					meetingId: newAppointment.meetingId,
 					meetingURL: newAppointment.meetingURL,
-					patientName: `${currentUser.firstName} ${currentUser.lastName}`,
+					patientName: currentUser.fullName,
 					reason: newAppointment.reason,
 					status: newAppointment.status,
 				},
@@ -126,47 +126,88 @@ const appointmentsRoutes = new Hono()
 		}
 	)
 	.get(
-		"/all",
-		validateWithZodMiddleware("query", backendApiSchemaRoutes["@get/appointments/all"].query),
+		"/doctor/all",
+		validateWithZodMiddleware("query", backendApiSchemaRoutes["@get/appointments/doctor/all"].query),
 		async (ctx) => {
 			const { limit = 10 } = ctx.req.valid("query") ?? {};
 
 			const currentUser = ctx.get("currentUser");
 
+			if (currentUser.role !== "doctor") {
+				throw new AppError({
+					code: 401,
+					message: "Only doctors can access this route",
+				});
+			}
+
 			const appointmentsResult = await db
 				.select({
+					dateOfAppointment: appointments.dateOfAppointment,
+					id: appointments.id,
+					meetingId: appointments.meetingId,
+					meetingURL: appointments.meetingURL,
+					patientName: users.fullName,
+					reason: appointments.reason,
+					status: appointments.status,
+				})
+				.from(appointments)
+				.innerJoin(users, eq(appointments.patientId, users.id))
+				.where(eq(appointments.doctorId, currentUser.id))
+				.limit(limit);
+
+			return AppJsonResponse(ctx, {
+				data: {
+					appointments: appointmentsResult,
+					pagination: {
+						limit,
+						total: appointmentsResult.length,
+					},
+				},
+				message: "Appointments retrieved successfully",
+				schema: backendApiSchemaRoutes["@get/appointments/doctor/all"].data,
+			});
+		}
+	)
+	.get(
+		"/patient/all",
+		validateWithZodMiddleware("query", backendApiSchemaRoutes["@get/appointments/patient/all"].query),
+		async (ctx) => {
+			const { limit = 10 } = ctx.req.valid("query") ?? {};
+
+			const currentUser = ctx.get("currentUser");
+
+			if (currentUser.role !== "patient") {
+				throw new AppError({
+					code: 401,
+					message: "Only patients can access this route",
+				});
+			}
+
+			const appointmentsResult = await db
+				.select({
+					dateOfAppointment: appointments.dateOfAppointment,
+					doctorName: users.fullName,
 					id: appointments.id,
 					meetingId: appointments.meetingId,
 					meetingURL: appointments.meetingURL,
 					reason: appointments.reason,
 					status: appointments.status,
-					userFirstName: users.firstName,
-					userLastName: users.lastName,
 				})
 				.from(appointments)
-				.innerJoin(
-					users,
-					currentUser.role === "patient" ?
-						eq(appointments.doctorId, users.id)
-					:	eq(appointments.patientId, users.id)
-				)
-				.where(
-					currentUser.role === "patient" ?
-						eq(appointments.patientId, currentUser.id)
-					:	eq(appointments.doctorId, currentUser.id)
-				)
+				.innerJoin(users, eq(appointments.doctorId, users.id))
+				.where(eq(appointments.patientId, currentUser.id))
 				.limit(limit);
 
 			return AppJsonResponse(ctx, {
 				data: {
-					appointments: appointmentsResult.map((appointment) => ({
-						...omitKeys(appointment, ["userFirstName", "userLastName"]),
-						doctorOrPatientName: `${appointment.userFirstName} ${appointment.userLastName}`,
-					})),
-					limit,
+					appointments: appointmentsResult,
+					pagination: {
+						limit,
+						total: appointmentsResult.length,
+					},
 				},
 				message: "Appointments retrieved successfully",
-				schema: backendApiSchemaRoutes["@get/appointments/all"].data,
+				schema: backendApiSchemaRoutes["@get/appointments/patient/all"].data,
 			});
 		}
 	)

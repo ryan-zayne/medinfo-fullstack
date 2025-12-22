@@ -28,15 +28,17 @@ const diseasesRoutes = new Hono()
 				random ?
 					baseQuery.orderBy(sql`RANDOM()`).limit(limit)
 				:	baseQuery.orderBy(asc(diseases.id)).where(gt(diseases.id, offset)).limit(limit),
-				random ? [null] : db.select({ value: count(diseases.id) }).from(diseases),
+				random ? [null] : db.select({ value: count() }).from(diseases),
 			]);
 
 			return AppJsonResponse(ctx, {
 				data: {
 					diseases: diseasesResult,
-					limit,
-					page: random ? 1 : page,
-					total: random ? diseasesResult.length : (totalCount?.value ?? 0),
+					pagination: {
+						limit,
+						page: random ? 1 : page,
+						total: random ? diseasesResult.length : (totalCount?.value ?? 0),
+					},
 				},
 				message: "Diseases retrieved successfully",
 				schema: backendApiSchemaRoutes["@get/diseases/all"].data,

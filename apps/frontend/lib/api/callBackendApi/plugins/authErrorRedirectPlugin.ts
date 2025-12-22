@@ -1,5 +1,6 @@
 import type { RequestContext, ResponseErrorContext } from "@zayne-labs/callapi";
 import { definePlugin } from "@zayne-labs/callapi/utils";
+import { isBrowser } from "@zayne-labs/toolkit-core";
 import type { Awaitable, CallbackFn } from "@zayne-labs/toolkit-type-helpers";
 import type { BaseApiErrorResponse } from "../apiSchema";
 import type { ToastPluginMeta } from "./toastPlugin";
@@ -82,7 +83,7 @@ export const authErrorRedirectPlugin = (authOptions?: AuthErrorRedirectPluginMet
 
 				if (shouldSkipRouteFromRedirect || !isAuthErrorThatNeedsRedirect(ctx.error)) return;
 
-				void redirectFn(signInRoute);
+				isBrowser() && void redirectFn(signInRoute);
 
 				throw new Error(redirectErrorMessage);
 			},

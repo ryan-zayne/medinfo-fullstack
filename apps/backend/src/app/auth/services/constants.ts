@@ -4,6 +4,7 @@ import { defineEnum } from "@zayne-labs/toolkit-type-helpers";
 export const necessaryUserDetails = defineEnum([
 	"firstName",
 	"lastName",
+	"fullName",
 	"email",
 	"avatar",
 	"role",

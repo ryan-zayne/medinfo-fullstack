@@ -86,7 +86,12 @@ const stringWithBooleanValidation = () => {
 const healthTipRoutes = defineSchemaRoutes({
 	"@get/health-tips/all": {
 		data: withBaseSuccessResponse(
-			z.array(HealthTipSchema.omit({ lastUpdated: true, mainContent: true }))
+			z.array(
+				HealthTipSchema.omit({
+					lastUpdated: true,
+					mainContent: true,
+				})
+			)
 		),
 		query: z
 			.object({
@@ -111,11 +116,15 @@ const diseaseRoutes = defineSchemaRoutes({
 	"@get/diseases/all": {
 		data: withBaseSuccessResponse(
 			z.object({
-				// eslint-disable-next-line perfectionist/sort-objects
-				diseases: z.array(InsertDiseaseSchema.pick({ name: true, description: true, image: true })),
-				limit: z.int().positive(),
-				page: z.int().positive(),
-				total: z.int().positive(),
+				diseases: z.array(
+					// eslint-disable-next-line perfectionist/sort-objects
+					InsertDiseaseSchema.pick({ name: true, description: true, image: true })
+				),
+				pagination: z.object({
+					limit: z.int().positive(),
+					page: z.int().positive(),
+					total: z.int().positive(),
+				}),
 			})
 		),
 		query: z
@@ -246,6 +255,7 @@ export const DoctorUserSchema = SelectUserSchema.pick({
 	country: true,
 	email: true,
 	firstName: true,
+	fullName: true,
 	gender: true,
 	id: true,
 	lastName: true,
@@ -257,34 +267,46 @@ export const DoctorUserSchema = SelectUserSchema.pick({
 });
 
 const appointmentsRoutes = () => {
+	const AppointmentDetailsSchema = SelectAppointmentSchema.pick({
+		dateOfAppointment: true,
+		id: true,
+		meetingId: true,
+		meetingURL: true,
+		reason: true,
+		status: true,
+	});
+
+	const PaginationSchema = z.object({
+		limit: z.int().positive(),
+		total: z.int().positive(),
+	});
+
 	return defineSchemaRoutes({
 		"@delete/appointments/cancel": {
 			body: SelectAppointmentSchema.pick({ meetingId: true }).extend({ appointmentId: z.string() }),
 			data: withBaseSuccessResponse(z.null()),
 		},
 
-		"@get/appointments/all": {
+		"@get/appointments/doctor/all": {
 			data: withBaseSuccessResponse(
 				z.object({
-					appointments: z.array(
-						SelectAppointmentSchema.pick({
-							id: true,
-							meetingId: true,
-							meetingURL: true,
-							reason: true,
-							status: true,
-						}).extend({ doctorOrPatientName: z.string() })
-					),
-					limit: z.int().positive(),
+					appointments: z.array(AppointmentDetailsSchema.extend({ patientName: z.string() })),
+					pagination: PaginationSchema,
 				})
 			),
 
-			query: z
-				.object({
-					limit: stringWithNumberValidation(),
+			query: z.object({ limit: stringWithNumberValidation() }).partial().optional(),
+		},
+
+		"@get/appointments/patient/all": {
+			data: withBaseSuccessResponse(
+				z.object({
+					appointments: z.array(AppointmentDetailsSchema.extend({ doctorName: z.string() })),
+					pagination: PaginationSchema,
 				})
-				.partial()
-				.optional(),
+			),
+
+			query: z.object({ limit: stringWithNumberValidation() }).partial().optional(),
 		},
 
 		"@post/appointments/book": {

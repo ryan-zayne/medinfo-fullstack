@@ -11,9 +11,6 @@ export default zayne(
 				},
 			},
 		},
-		// node: {
-		// 	security: true,
-		// },
 		tailwindcssBetter: {
 			settings: { entryPoint: "apps/frontend/tailwind.css" },
 		},
@@ -34,5 +31,9 @@ export default zayne(
 	{
 		files: ["apps/backend/testing.ts"],
 		rules: { "unicorn/no-empty-file": "off" },
+	},
+	{
+		files: ["packages/db/src/migrations/**"],
+		rules: { "unicorn/filename-case": "off" },
 	}
 );

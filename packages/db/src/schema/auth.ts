@@ -12,6 +12,7 @@ export const users = pg.pgTable(
 		email: pg.text().notNull().unique(),
 		emailVerifiedAt: pg.timestamp({ withTimezone: true }),
 		firstName: pg.text().notNull(),
+		fullName: pg.text().notNull(),
 		gender: pg.text({ enum: ["male", "female"] }).notNull(),
 		googleId: pg.text(),
 		id: pg.uuid().defaultRandom().primaryKey(),

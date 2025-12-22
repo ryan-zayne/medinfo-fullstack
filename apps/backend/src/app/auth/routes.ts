@@ -62,6 +62,7 @@ const authRoutes = new Hono()
 				dob,
 				email,
 				firstName,
+				fullName: `${firstName} ${lastName}`,
 				gender,
 				lastName,
 				medicalLicense: medicalLicenseUrl,
@@ -175,7 +176,6 @@ const authRoutes = new Hono()
 
 			const [updatedUser] = await db
 				.update(users)
-				// == Update user loginRetries to 0 and lastLoginAt to current time
 				.set({
 					lastLoginAt: new Date(),
 					loginRetryCount: 0,

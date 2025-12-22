@@ -33,7 +33,7 @@ async function LibraryPage() {
 					transitionType="regular"
 					className="inline-block text-center text-medinfo-primary-main lg:text-[20px] lg:font-medium"
 				>
-					More results ...({allDiseasesResult.data.data.total})
+					More results ...({allDiseasesResult.data.data.pagination.total})
 				</NavLink>
 			</section>
 		</Main>

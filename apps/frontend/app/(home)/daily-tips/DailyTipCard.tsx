@@ -1,8 +1,8 @@
 "use client";
 
-import { IconBox, NavLink } from "@/components/common";
+import { IconBox, NavLink, Switch } from "@/components/common";
 import { For } from "@/components/common/for";
-import { Card, Carousel } from "@/components/ui";
+import { Card, Carousel, Skeleton } from "@/components/ui";
 import { healthTipsQuery } from "@/lib/react-query/queryOptions";
 import { cnMerge } from "@/lib/utils/cn";
 import type { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
@@ -23,8 +23,8 @@ export function DailyTipCard(props: DailyTipCardProps) {
 		<Card.Root
 			as="li"
 			className={cnMerge(
-				`flex w-[161px] shrink-0 flex-col rounded-[16px] border-[1.4px] border-medinfo-light-1 pb-3
-				max-md:gap-3 md:w-[276px] md:pb-7`,
+				`flex h-full w-[161px] shrink-0 flex-col rounded-[16px] border-[1.4px] border-medinfo-light-1
+				pb-3 max-md:gap-3 md:w-[276px] md:pb-7`,
 				className
 			)}
 		>
@@ -51,9 +51,31 @@ export function DailyTipCard(props: DailyTipCardProps) {
 	);
 }
 
-// type ScrollableCardProps = {
-// 	result?: CallApiResult<BaseApiSuccessResponse<HealthTipSchemaType[]>, BaseApiErrorResponse>;
-// };
+export function DailyTipCardSkeleton({ className }: { className?: string }) {
+	return (
+		<Card.Root
+			className={cnMerge(
+				`flex h-full min-h-[299px] w-[161px] shrink-0 flex-col rounded-[16px] border-[1.4px]
+				border-medinfo-light-1 pb-3 max-md:gap-3 md:min-h-[358px] md:w-[276px] md:pb-7`,
+				className
+			)}
+		>
+			<Card.Header className="h-[117px] md:h-[176px]">
+				<Skeleton className="size-full rounded-t-[16px] rounded-b-none" />
+			</Card.Header>
+
+			<Card.Content className="grow px-3 pt-3 md:p-7">
+				<Skeleton className="mb-2 h-4 w-full" />
+				<Skeleton className="h-4 w-2/3" />
+			</Card.Content>
+
+			<Card.Footer className="px-3 md:px-7">
+				<Skeleton className="h-4 w-24" />
+			</Card.Footer>
+		</Card.Root>
+	);
+}
+
 export function ScrollableTipCards(props: { pageName?: string }) {
 	const { pageName } = props;
 
@@ -62,23 +84,34 @@ export function ScrollableTipCards(props: { pageName?: string }) {
 	return (
 		<Carousel.Root className="mt-6 flex w-full flex-col items-center gap-3.5 lg:gap-10">
 			<Carousel.Content className="gap-5 select-none">
-				<For
-					each={healthTipsQueryResult.data?.data ?? []}
-					renderItem={(tip) => (
-						<Carousel.Item
-							key={tip.id}
-							className="cursor-grab active:cursor-grabbing"
-							asChild={true}
-						>
-							<DailyTipCard
-								id={tip.id}
-								imageUrl={tip.imageUrl}
-								title={tip.title}
-								imageAlt={tip.imageAlt}
-							/>
-						</Carousel.Item>
-					)}
-				/>
+				<Switch.Root>
+					<Switch.Match when={healthTipsQueryResult.isPending}>
+						<For
+							each={6}
+							renderItem={(index) => (
+								<Carousel.Item key={index} className="w-fit cursor-grab active:cursor-grabbing">
+									<DailyTipCardSkeleton />
+								</Carousel.Item>
+							)}
+						/>
+					</Switch.Match>
+
+					<Switch.Match when={healthTipsQueryResult.data?.data}>
+						<For
+							each={healthTipsQueryResult.data?.data ?? []}
+							renderItem={(tip) => (
+								<Carousel.Item key={tip.id} className="w-fit cursor-grab active:cursor-grabbing">
+									<DailyTipCard
+										id={tip.id}
+										imageUrl={tip.imageUrl}
+										title={tip.title}
+										imageAlt={tip.imageAlt}
+									/>
+								</Carousel.Item>
+							)}
+						/>
+					</Switch.Match>
+				</Switch.Root>
 			</Carousel.Content>
 		</Carousel.Root>
 	);

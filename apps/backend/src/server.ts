@@ -14,7 +14,10 @@ serve(
 		port: ENVIRONMENT.PORT,
 	},
 	(info) => {
-		consola.info(`Server is running on http://localhost:${info.port}`.yellow.italic);
+		const message =
+			ENVIRONMENT.NODE_ENV === "development" ? `http://localhost:${info.port}` : `PORT:${info.port}`;
+
+		consola.info(`Server is running on ${message}`.yellow.italic);
 	}
 );
 

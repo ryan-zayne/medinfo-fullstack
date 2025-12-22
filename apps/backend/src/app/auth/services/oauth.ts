@@ -233,6 +233,7 @@ export const findOrCreateUserFromGoogle = async (
 			email: userInfo.email,
 			emailVerifiedAt: userInfo.emailVerified ? new Date() : null,
 			firstName: userInfo.firstName,
+			fullName: `${userInfo.firstName} ${userInfo.lastName}`,
 			gender: userInfo.gender,
 			googleId: userInfo.providerId,
 			lastName: userInfo.lastName,
