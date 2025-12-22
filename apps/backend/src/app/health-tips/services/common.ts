@@ -28,8 +28,7 @@ const healthTipIds = [
 export const getRandomHealthTipIds = (count: number) => {
 	const randomNumbers = generateRandomNumbers({ count, max: healthTipIds.length });
 
-	// eslint-disable-next-line ts-eslint/no-non-null-assertion
-	const randomHealthTipIds = randomNumbers.map((number) => healthTipIds[number]!);
+	const randomHealthTipIds = randomNumbers.map((number) => healthTipIds[number] as number);
 
 	return randomHealthTipIds;
 };

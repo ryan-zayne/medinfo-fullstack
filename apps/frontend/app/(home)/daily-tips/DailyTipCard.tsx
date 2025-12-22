@@ -76,10 +76,10 @@ export function DailyTipCardSkeleton({ className }: { className?: string }) {
 	);
 }
 
-export function ScrollableTipCards(props: { pageName?: string }) {
-	const { pageName } = props;
+export function ScrollableTipCards(props: { tipId?: string }) {
+	const { tipId } = props;
 
-	const healthTipsQueryResult = useQuery(healthTipsQuery({ pageName }));
+	const healthTipsQueryResult = useQuery(healthTipsQuery({ tipId }));
 
 	return (
 		<Carousel.Root className="mt-6 flex w-full flex-col items-center gap-3.5 lg:gap-10">
