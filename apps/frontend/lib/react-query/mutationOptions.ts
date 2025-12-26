@@ -1,6 +1,6 @@
-import type { backendApiSchemaRoutes, SignUpSchema } from "@/lib/api/callBackendApi/apiSchema";
 import { mutationOptions } from "@tanstack/react-query";
 import type { z } from "zod";
+import type { backendApiSchemaRoutes, SignUpSchema } from "@/lib/api/callBackendApi/apiSchema";
 import { callBackendApiForQuery } from "../api/callBackendApi";
 
 export const googleOAuthMutation = () => {

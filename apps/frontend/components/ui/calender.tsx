@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
 import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker";
 import { cnMerge } from "@/lib/utils/cn";
 import { IconBox } from "../common";
-import { type ShadcnButtonProps, shadcnButtonVariants } from "./constants";
+import { shadcnButtonVariants, type ShadcnButtonProps } from "./constants";
 
 export function Calendar(
 	props: InferProps<typeof DayPicker> & {

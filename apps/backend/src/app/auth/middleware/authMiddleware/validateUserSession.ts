@@ -1,4 +1,10 @@
 /* eslint-disable import/no-named-as-default-member */
+import { db } from "@medinfo/backend-db";
+import { users, type SelectUserType } from "@medinfo/backend-db/schema/auth";
+import { defineEnum, type UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
+import { eq } from "drizzle-orm";
+// eslint-disable-next-line import/default
+import jwt from "jsonwebtoken";
 import {
 	decodeJwtToken,
 	generateAccessToken,
@@ -7,12 +13,6 @@ import {
 } from "@/app/auth/services/token";
 import { ENVIRONMENT } from "@/config/env";
 import { AppError } from "@/lib/utils";
-import { db } from "@medinfo/backend-db";
-import { users, type SelectUserType } from "@medinfo/backend-db/schema/auth";
-import { defineEnum, type UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
-import { eq } from "drizzle-orm";
-// eslint-disable-next-line import/default
-import jwt from "jsonwebtoken";
 
 const AUTH_ERROR_MESSAGES = defineEnum({
 	ACCOUNT_SUSPENDED: "Your account is currently suspended",

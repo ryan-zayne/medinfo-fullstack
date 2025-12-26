@@ -1,5 +1,3 @@
-import { AppError, AppJsonResponse } from "@/lib/utils";
-import { validateWithZodMiddleware } from "@/middleware";
 import { db } from "@medinfo/backend-db";
 import { appointments } from "@medinfo/backend-db/schema/appointments";
 import { users } from "@medinfo/backend-db/schema/auth";
@@ -9,6 +7,8 @@ import {
 } from "@medinfo/shared/validation/backendApiSchema";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
+import { AppError, AppJsonResponse } from "@/lib/utils";
+import { validateWithZodMiddleware } from "@/middleware";
 import { authMiddleware } from "../auth/middleware/authMiddleware";
 import { getTopDoctors } from "./services/matchDoctorAlgorithm";
 import { createMeeting, deleteMeeting } from "./services/zoomApi/api";

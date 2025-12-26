@@ -1,5 +1,5 @@
-import { callBackendApiForQuery } from "@/lib/api/callBackendApi";
 import { queryOptions } from "@tanstack/react-query";
+import { callBackendApiForQuery } from "@/lib/api/callBackendApi";
 import { checkUserSessionForQuery } from "../api/callBackendApi/plugins/utils/session";
 
 export const sessionQuery = () => {

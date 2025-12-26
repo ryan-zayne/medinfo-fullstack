@@ -1,5 +1,15 @@
 "use client";
 
+import { Steps, useStepsContext } from "@ark-ui/react/steps";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useMutationState } from "@tanstack/react-query";
+import { useDisclosure } from "@zayne-labs/toolkit-react";
+import { defineEnumDeep } from "@zayne-labs/toolkit-type-helpers";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import type { z } from "zod";
 import { IconBox, Show } from "@/components/common";
 import { getElementList } from "@/components/common/for";
 import { CloseIcon, GreenSpinnerIcon } from "@/components/icons";
@@ -13,16 +23,6 @@ import {
 import { capitalize } from "@/lib/utils";
 import { cnJoin, cnMerge } from "@/lib/utils/cn";
 import { appointmentPlaceholder, doctorAvatar } from "@/public/assets/images/dashboard";
-import { Steps, useStepsContext } from "@ark-ui/react/steps";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useMutationState } from "@tanstack/react-query";
-import { useDisclosure } from "@zayne-labs/toolkit-react";
-import { defineEnumDeep } from "@zayne-labs/toolkit-type-helpers";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import type { z } from "zod";
 import { Main } from "../../../-components/Main";
 
 const stepperItems = defineEnumDeep([

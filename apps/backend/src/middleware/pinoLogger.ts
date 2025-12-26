@@ -1,7 +1,7 @@
-import { ENVIRONMENT } from "@/config/env";
 import { pinoLogger as pinoLoggerPrimitive } from "hono-pino";
 import { pino } from "pino";
 import pretty from "pino-pretty";
+import { ENVIRONMENT } from "@/config/env";
 
 const pinoLoggerMiddleware = () => {
 	return pinoLoggerPrimitive({

@@ -1,8 +1,8 @@
 "use client";
 
+import { useForm } from "react-hook-form";
 import { CameraIcon } from "@/components/icons";
 import { Button, Form, Select } from "@/components/ui";
-import { useForm } from "react-hook-form";
 
 function ProfilePageShared() {
 	const userIdentityForm = useForm({

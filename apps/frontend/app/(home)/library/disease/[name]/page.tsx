@@ -1,7 +1,7 @@
+import Image from "next/image";
 import { Main } from "@/app/(home)/-components";
 import { ForWithWrapper } from "@/components/common/for";
 import { callBackendApi } from "@/lib/api/callBackendApi";
-import Image from "next/image";
 import { AlternateDiseaseCard, ScrollableAlternateDiseaseCards } from "../../DiseaseCard";
 
 async function DiseaseDetailsPage({ params }: PageProps<"/library/disease/[name]">) {

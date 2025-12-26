@@ -1,14 +1,14 @@
 "use client";
 
+import type { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
+import { useDragScroll } from "@zayne-labs/ui-react/ui/drag-scroll";
+import Image from "next/image";
+import type { z } from "zod";
 import { IconBox, NavLink } from "@/components/common";
 import { getElementList } from "@/components/common/for";
 import { Button, Card } from "@/components/ui";
 import { cnJoin } from "@/lib/utils/cn";
 import { tipPlaceHolder } from "@/public/assets/images/landing-page";
-import type { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
-import { useDragScroll } from "@zayne-labs/ui-react/ui/drag-scroll";
-import Image from "next/image";
-import type { z } from "zod";
 
 type DiseaseResponseType = z.infer<
 	(typeof backendApiSchemaRoutes)["@get/diseases/all"]["data"]

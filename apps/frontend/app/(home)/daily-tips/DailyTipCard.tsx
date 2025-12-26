@@ -1,14 +1,14 @@
 "use client";
 
+import type { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
+import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
+import { z } from "zod";
 import { IconBox, NavLink, Switch } from "@/components/common";
 import { For } from "@/components/common/for";
 import { Card, Carousel, Skeleton } from "@/components/ui";
 import { healthTipsQuery } from "@/lib/react-query/queryOptions";
 import { cnMerge } from "@/lib/utils/cn";
-import type { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
-import { useQuery } from "@tanstack/react-query";
-import Image from "next/image";
-import { z } from "zod";
 
 export type DailyTipCardProps = z.infer<
 	(typeof backendApiSchemaRoutes)["@get/health-tips/all"]["data"]

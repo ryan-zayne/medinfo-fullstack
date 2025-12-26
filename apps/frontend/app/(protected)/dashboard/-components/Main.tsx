@@ -1,5 +1,5 @@
-import { cnMerge } from "@/lib/utils/cn";
 import type { InferProps } from "@zayne-labs/toolkit-react/utils";
+import { cnMerge } from "@/lib/utils/cn";
 
 function Main(props: InferProps<"main">) {
 	const { children, className, ...restOfProps } = props;

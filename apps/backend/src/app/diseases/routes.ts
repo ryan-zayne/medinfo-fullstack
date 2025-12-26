@@ -1,10 +1,10 @@
-import { AppError, AppJsonResponse } from "@/lib/utils";
-import { validateWithZodMiddleware } from "@/middleware";
 import { db } from "@medinfo/backend-db";
 import { diseases } from "@medinfo/backend-db/schema/diseases";
 import { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
 import { asc, count, eq, gt, sql } from "drizzle-orm";
 import { Hono } from "hono";
+import { AppError, AppJsonResponse } from "@/lib/utils";
+import { validateWithZodMiddleware } from "@/middleware";
 
 const diseasesRoutes = new Hono()
 	.basePath("/diseases")

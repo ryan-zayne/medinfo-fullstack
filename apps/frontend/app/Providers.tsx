@@ -1,9 +1,9 @@
 "use client";
 
-import { getQueryClient } from "@/lib/react-query/queryClient";
-import { sessionQuery } from "@/lib/react-query/queryOptions";
 import { ProgressProvider } from "@bprogress/next/app";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { getQueryClient } from "@/lib/react-query/queryClient";
+import { sessionQuery } from "@/lib/react-query/queryOptions";
 import { HydrationBoundary } from "./HydrationBoundary";
 
 type ProvidersProps = {

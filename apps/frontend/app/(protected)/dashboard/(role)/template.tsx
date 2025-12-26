@@ -1,9 +1,9 @@
 "use client";
 
-import { usePageBlocker } from "@/lib/hooks";
-import { sessionQuery } from "@/lib/react-query/queryOptions";
 import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
+import { usePageBlocker } from "@/lib/hooks";
+import { sessionQuery } from "@/lib/react-query/queryOptions";
 
 function RoleDashboardTemplate({ children }: { children: React.ReactNode }) {
 	const sessionQueryResult = useQuery(sessionQuery());

@@ -1,11 +1,11 @@
-import { ENVIRONMENT } from "@/config/env";
-import { AppError, getValidatedValue } from "@/lib/utils";
 import { db } from "@medinfo/backend-db";
 import { users, type SelectUserType } from "@medinfo/backend-db/schema/auth";
 import { callApi } from "@zayne-labs/callapi";
 import * as arctic from "arctic";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+import { ENVIRONMENT } from "@/config/env";
+import { AppError, getValidatedValue } from "@/lib/utils";
 
 const BASE_BACKEND_HOST =
 	ENVIRONMENT.NODE_ENV === "development" ?

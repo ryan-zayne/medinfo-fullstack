@@ -1,9 +1,9 @@
 "use client";
 
-import { NavLink } from "@/components/common";
-import { sessionQuery } from "@/lib/react-query/queryOptions";
 import { useQuery } from "@tanstack/react-query";
 import type { InferProps } from "@zayne-labs/toolkit-react/utils";
+import { NavLink } from "@/components/common";
+import { sessionQuery } from "@/lib/react-query/queryOptions";
 
 function CallToActionLink(props: Omit<InferProps<typeof NavLink>, "href">) {
 	const sessionQueryResult = useQuery(sessionQuery());

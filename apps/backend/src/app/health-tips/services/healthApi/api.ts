@@ -1,7 +1,7 @@
-import { AppError } from "@/lib/utils";
 import type { HealthTipSchemaType } from "@medinfo/shared/validation/backendApiSchema";
 import { createFetchClient } from "@zayne-labs/callapi";
 import { z } from "zod";
+import { AppError } from "@/lib/utils";
 import { healthApiSchema, type healthApiSchemaRoutes } from "./apiSchema";
 
 const BASE_URL = "https://odphp.health.gov/myhealthfinder/api/v4";

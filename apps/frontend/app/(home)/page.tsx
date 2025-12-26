@@ -1,9 +1,9 @@
+import Image from "next/image";
 import { IconBox } from "@/components/common";
 import { ForWithWrapper } from "@/components/common/for";
 import { Button } from "@/components/ui";
 import { cnJoin } from "@/lib/utils/cn";
 import { feature1, feature2, feature3, hero } from "@/public/assets/images/landing-page";
-import Image from "next/image";
 import { AccordionFaqs, Main } from "./-components";
 import { CallToActionLink } from "./-components/CallToActionLink";
 import { ScrollableTipCards } from "./daily-tips/DailyTipCard";

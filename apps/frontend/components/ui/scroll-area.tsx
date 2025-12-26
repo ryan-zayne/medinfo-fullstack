@@ -1,8 +1,8 @@
 "use client";
 
-import { cnMerge } from "@/lib/utils/cn";
 import type { InferProps } from "@zayne-labs/toolkit-react/utils";
 import { ScrollArea as ScrollAreaPrimitive } from "radix-ui";
+import { cnMerge } from "@/lib/utils/cn";
 
 export function ScrollArea(props: InferProps<typeof ScrollAreaPrimitive.Root>) {
 	const { children, className, ...restProps } = props;

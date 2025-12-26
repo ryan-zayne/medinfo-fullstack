@@ -1,9 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { IconBox, NavLink } from "@/components/common";
 import { Button, Form } from "@/components/ui";
 import { cnJoin } from "@/lib/utils/cn";
-import { useState } from "react";
 import { Main } from "../../-components";
 
 function ForgotPasswordPage() {

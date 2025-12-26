@@ -1,7 +1,7 @@
-import { getValidatedValue } from "@/lib/utils";
 import type { ValidationTargets } from "hono";
 import { validator } from "hono/validator";
 import type { z } from "zod";
+import { getValidatedValue } from "@/lib/utils";
 
 export const validateWithZodMiddleware = <
 	TTarget extends keyof ValidationTargets,

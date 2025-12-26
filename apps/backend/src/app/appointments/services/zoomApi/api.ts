@@ -1,6 +1,6 @@
+import { createFetchClient } from "@zayne-labs/callapi";
 import { ENVIRONMENT } from "@/config/env";
 import { AppError } from "@/lib/utils";
-import { createFetchClient } from "@zayne-labs/callapi";
 import { zoomMainApiSchema, zoomOauthApiSchema } from "./apiSchema";
 
 const callZoomOauthApi = createFetchClient({

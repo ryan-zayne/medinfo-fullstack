@@ -1,12 +1,12 @@
 "use client";
 
+import { useToggle } from "@zayne-labs/toolkit-react";
+import { usePathname } from "next/navigation";
 import { Logo } from "@/components/common";
 import type { MainAppRoutes } from "@/components/common/NavLink";
 import { HamburgerIcon, NotificationIcon, SearchIcon, XIcon } from "@/components/icons";
 import { Button } from "@/components/ui";
 import { capitalize } from "@/lib/utils";
-import { useToggle } from "@zayne-labs/toolkit-react";
-import { usePathname } from "next/navigation";
 import MobileNavigation from "./MobileNavigation";
 
 export type MenuItem = {

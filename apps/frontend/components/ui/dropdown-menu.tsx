@@ -1,8 +1,8 @@
 "use client";
 
-import { cnMerge } from "@/lib/utils/cn";
 import type { InferProps } from "@zayne-labs/toolkit-react/utils";
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
+import { cnMerge } from "@/lib/utils/cn";
 import { IconBox } from "../common";
 
 function DropdownMenuRoot(props: InferProps<typeof DropdownMenuPrimitive.Root>) {

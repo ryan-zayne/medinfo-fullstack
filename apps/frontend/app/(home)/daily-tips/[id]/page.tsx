@@ -1,6 +1,6 @@
+import Image from "next/image";
 import { ForWithWrapper } from "@/components/common/for";
 import { callBackendApi } from "@/lib/api/callBackendApi";
-import Image from "next/image";
 import { Main } from "../../-components";
 import { ScrollableTipCards } from "../DailyTipCard";
 import { HealthFinderDetails } from "../HealthFinderLogo";

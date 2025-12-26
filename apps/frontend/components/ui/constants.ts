@@ -1,5 +1,5 @@
 import type { InferProps } from "@zayne-labs/toolkit-react/utils";
-import { type VariantProps, tv } from "tailwind-variants";
+import { tv, type VariantProps } from "tailwind-variants";
 
 export type ShadcnButtonProps = InferProps<"button"> & VariantProps<typeof shadcnButtonVariants>;
 

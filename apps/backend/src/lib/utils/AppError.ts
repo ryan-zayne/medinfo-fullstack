@@ -1,4 +1,5 @@
 import type { ErrorCodesUnion } from "@/constants";
+
 // import type { ContentfulStatusCode } from "hono/utils/http-status";
 
 class AppError extends Error {

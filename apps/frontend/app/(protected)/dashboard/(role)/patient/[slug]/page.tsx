@@ -1,10 +1,10 @@
 "use client";
 
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import ArrowBackIcon from "@/components/icons/ArrowBackIcon";
 import WarningIcon from "@/components/icons/WarningIcon";
 import { Button } from "@/components/ui";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 export default function Page({ params }: { params: { slug: string } }) {
 	const decodedSlug = decodeURIComponent(params.slug);

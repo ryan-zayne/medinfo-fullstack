@@ -1,6 +1,6 @@
+import { createMiddleware } from "hono/factory";
 import { getCookie, setCookie } from "@/app/auth/services/cookie";
 import type { HonoAppBindings } from "@/lib/types/common";
-import { createMiddleware } from "hono/factory";
 import { validateUserSession } from "./validateUserSession";
 
 const authMiddleware = createMiddleware<HonoAppBindings>(async (ctx, next) => {

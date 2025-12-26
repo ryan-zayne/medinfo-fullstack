@@ -1,5 +1,5 @@
-import { createFeatureExtractionPipeline } from "@/services/ai/huggingFace";
 import type { DoctorUserSchemaType } from "@medinfo/shared/validation/backendApiSchema";
+import { createFeatureExtractionPipeline } from "@/services/ai/huggingFace";
 
 /**
  * @description Computes the dot product between two vectors.

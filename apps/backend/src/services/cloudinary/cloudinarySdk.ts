@@ -1,6 +1,6 @@
-import { ENVIRONMENT } from "@/config/env";
 import { createPromiseWithResolvers } from "@zayne-labs/toolkit-core";
 import { v2 as cloudinary, type UploadApiOptions, type UploadApiResponse } from "cloudinary";
+import { ENVIRONMENT } from "@/config/env";
 
 cloudinary.config({
 	api_key: ENVIRONMENT.CLOUDINARY_API_KEY,

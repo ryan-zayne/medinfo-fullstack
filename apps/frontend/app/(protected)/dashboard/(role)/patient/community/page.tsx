@@ -1,11 +1,11 @@
 "use client";
 
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import CommentIcon from "@/components/icons/CommentIcon";
 import ViewIcon from "@/components/icons/ViewIcon";
 import { Button } from "@/components/ui";
 import MessageImage from "@/public/assets/images/message.png";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 function Page() {
 	const router = useRouter();

@@ -1,14 +1,14 @@
 "use client";
 
-import { IconBox, Logo, NavLink, Show } from "@/components/common";
-import { Button, Form } from "@/components/ui";
-import { callBackendApi } from "@/lib/api/callBackendApi";
-import { backendApiSchemaRoutes, type SignUpSchema } from "@/lib/api/callBackendApi/apiSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { use } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
+import { IconBox, Logo, NavLink, Show } from "@/components/common";
+import { Button, Form } from "@/components/ui";
+import { callBackendApi } from "@/lib/api/callBackendApi";
+import { backendApiSchemaRoutes, type SignUpSchema } from "@/lib/api/callBackendApi/apiSchema";
 import { Main } from "../../-components";
 import { OAuthSection } from "../OAuthSection";
 

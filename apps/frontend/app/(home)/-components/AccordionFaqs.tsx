@@ -1,6 +1,6 @@
 "use client";
-// FIXME - Change accordions component to another suitable one and then remove use client from this page`
 
+// FIXME - Change accordions component to another suitable one and then remove use client from this page`
 import { For } from "@/components/common/for";
 import { ChevronDownIcon } from "@/components/icons";
 import { Accordion } from "@/components/ui";

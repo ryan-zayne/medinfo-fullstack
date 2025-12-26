@@ -1,5 +1,12 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SignUpSchema as SignUpSchemaPrimitive } from "@medinfo/shared/validation/backendApiSchema";
+import { toFormData } from "@zayne-labs/callapi/utils";
+import { useRouter } from "next/navigation";
+import { use } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import {
 	DropZoneInput,
 	DropZoneInputImagePreview,
@@ -11,13 +18,6 @@ import {
 import { Button, DateTimePicker, Form, Select } from "@/components/ui";
 import { DropZone } from "@/components/ui/drop-zone";
 import { callBackendApi } from "@/lib/api/callBackendApi";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { SignUpSchema as SignUpSchemaPrimitive } from "@medinfo/shared/validation/backendApiSchema";
-import { toFormData } from "@zayne-labs/callapi/utils";
-import { useRouter } from "next/navigation";
-import { use } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Main } from "../../-components";
 import { OAuthSection } from "../OAuthSection";
 

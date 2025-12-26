@@ -1,8 +1,8 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { ForWithWrapper, NavLink } from "@/components/common";
 import { cnJoin } from "@/lib/utils/cn";
-import { usePathname } from "next/navigation";
 import type { MenuItem } from "./HeaderShared";
 
 type SidebarProps = {

@@ -1,10 +1,10 @@
+import { useRouter } from "@bprogress/next";
+import { useMutation } from "@tanstack/react-query";
+import type { z } from "zod";
 import { IconBox } from "@/components/common";
 import { Button } from "@/components/ui";
 import type { SignUpSchema } from "@/lib/api/callBackendApi/apiSchema";
 import { googleOAuthMutation } from "@/lib/react-query/mutationOptions";
-import { useRouter } from "@bprogress/next";
-import { useMutation } from "@tanstack/react-query";
-import type { z } from "zod";
 
 function OAuthSection(props: { userRole: z.infer<typeof SignUpSchema>["role"] }) {
 	const { userRole } = props;

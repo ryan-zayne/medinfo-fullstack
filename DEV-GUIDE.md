@@ -105,7 +105,7 @@ medinfo-fullstack/
 ### Prerequisites
 
 - Node.js 18+
-- pnpm 10.26.0 (`corepack enable`)
+- pnpm 10.26.2 (`corepack enable`)
 - PostgreSQL database
 
 ### Installation

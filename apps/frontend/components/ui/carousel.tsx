@@ -1,15 +1,15 @@
-/* eslint-disable react-you-might-not-need-an-effect/no-pass-live-state-to-parent */
+/* eslint-disable react-you-might-not-need-an-effect/no-pass-data-to-parent */
 "use client";
 
-import { cnMerge } from "@/lib/utils/cn";
 import { createCustomContext, useCallbackRef } from "@zayne-labs/toolkit-react";
 import type { DiscriminatedRenderProps, InferProps } from "@zayne-labs/toolkit-react/utils";
 import type { AnyFunction } from "@zayne-labs/toolkit-type-helpers";
 import useEmblaCarousel, { type UseEmblaCarouselType } from "embla-carousel-react";
 import { useEffect, useMemo, useState } from "react";
+import { cnMerge } from "@/lib/utils/cn";
 import { IconBox } from "../common";
 import { Slot } from "../common/slot";
-import { type ShadcnButtonProps, shadcnButtonVariants } from "./constants";
+import { shadcnButtonVariants, type ShadcnButtonProps } from "./constants";
 
 type CarouselApi = UseEmblaCarouselType[1];
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>;

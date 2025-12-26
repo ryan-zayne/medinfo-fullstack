@@ -1,8 +1,8 @@
 "use client";
 
-import { cnMerge } from "@/lib/utils/cn";
 import type { InferProps } from "@zayne-labs/toolkit-react/utils";
 import { Popover as PopoverPrimitive } from "radix-ui";
+import { cnMerge } from "@/lib/utils/cn";
 
 function PopoverRoot(props: InferProps<typeof PopoverPrimitive.Root>) {
 	return <PopoverPrimitive.Root data-slot="popover-root" {...props} />;

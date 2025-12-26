@@ -1,11 +1,11 @@
 "use client";
 
+import { useToggle } from "@zayne-labs/toolkit-react";
 import { Logo, NavLink } from "@/components/common";
 import { ForWithWrapper } from "@/components/common/for";
 import { HamburgerIcon, SearchIcon, XIcon } from "@/components/icons";
 import { Button } from "@/components/ui";
 import { cnMerge } from "@/lib/utils/cn";
-import { useToggle } from "@zayne-labs/toolkit-react";
 import { CallToActionLink } from "./CallToActionLink";
 
 function NavBar() {
