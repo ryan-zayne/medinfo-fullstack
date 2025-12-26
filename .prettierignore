@@ -1,2 +1,5 @@
+dist
+.next
 pnpm-lock.yaml
-# package.json
+package.json
+*.tsbuildinfo

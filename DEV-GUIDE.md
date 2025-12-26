@@ -459,21 +459,21 @@ app/
 "use client";
 
 function Providers({ children }: { children: React.ReactNode }) {
-  const queryClient = getQueryClient();
+	const queryClient = getQueryClient();
 
-  return (
-    <HydrationBoundary queryClient={queryClient}>
-      <ProgressProvider
-        height="2.5px"
-        color="hsl(150,21%,17%)"
-        options={{ showSpinner: true }}
-        shallowRouting={true}
-      >
-        {children}
-      </ProgressProvider>
-      <ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} />
-    </HydrationBoundary>
-  );
+	return (
+		<HydrationBoundary queryClient={queryClient}>
+			<ProgressProvider
+				height="2.5px"
+				color="hsl(150,21%,17%)"
+				options={{ showSpinner: true }}
+				shallowRouting={true}
+			>
+				{children}
+			</ProgressProvider>
+			<ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} />
+		</HydrationBoundary>
+	);
 }
 ```
 
@@ -603,47 +603,43 @@ googleAuthMutation.mutate({ role: "patient" }, { onSuccess: (data) => router.pus
 const SignInSchema = backendApiSchemaRoutes["@post/auth/signin"].body;
 
 function SignInPage() {
-  const router = useRouter();
+	const router = useRouter();
 
-  const form = useForm({
-    defaultValues: { email: "", password: "" },
-    resolver: zodResolver(SignInSchema),
-  });
+	const form = useForm({
+		defaultValues: { email: "", password: "" },
+		resolver: zodResolver(SignInSchema),
+	});
 
-  const onSubmit = form.handleSubmit(async (data) => {
-    await callBackendApi("@post/auth/signin", {
-      body: data,
-      meta: { toast: { success: true } },
-      onSuccess: () => router.push(`/dashboard/${userRole}`),
-    });
-  });
+	const onSubmit = form.handleSubmit(async (data) => {
+		await callBackendApi("@post/auth/signin", {
+			body: data,
+			meta: { toast: { success: true } },
+			onSuccess: () => router.push(`/dashboard/${userRole}`),
+		});
+	});
 
-  return (
-    <Form.Root form={form} onSubmit={(e) => void onSubmit(e)}>
-      <Form.Field control={control} name="email" className="gap-1">
-        <Form.Label>Email</Form.Label>
-        <Form.InputGroup className="...">
-          <Form.InputLeftItem>
-            <IconBox icon="mynaui:envelope" />
-          </Form.InputLeftItem>
-          <Form.Input type="email" placeholder="enter email" />
-        </Form.InputGroup>
-        <Form.ErrorMessage />
-      </Form.Field>
+	return (
+		<Form.Root form={form} onSubmit={(e) => void onSubmit(e)}>
+			<Form.Field control={control} name="email" className="gap-1">
+				<Form.Label>Email</Form.Label>
+				<Form.InputGroup className="...">
+					<Form.InputLeftItem>
+						<IconBox icon="mynaui:envelope" />
+					</Form.InputLeftItem>
+					<Form.Input type="email" placeholder="enter email" />
+				</Form.InputGroup>
+				<Form.ErrorMessage />
+			</Form.Field>
 
-      <Form.WatchFormState
-        render={(formState) => (
-          <Button
-            type="submit"
-            isLoading={formState.isSubmitting}
-            disabled={formState.isSubmitting}
-          >
-            Sign In
-          </Button>
-        )}
-      />
-    </Form.Root>
-  );
+			<Form.WatchFormState
+				render={(formState) => (
+					<Button type="submit" isLoading={formState.isSubmitting} disabled={formState.isSubmitting}>
+						Sign In
+					</Button>
+				)}
+			/>
+		</Form.Root>
+	);
 }
 ```
 

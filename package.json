@@ -17,7 +17,7 @@
 		"lint:eslint": "eslint . --max-warnings=0",
 		"lint:eslint:interactive": "pnpx eslint-interactive@latest . --max-warnings=0 --fix",
 		"lint:format": "turbo run lint:format",
-		"lint:format:root": "prettier --write . --experimental-cli",
+		"lint:format:root": "prettier --write .",
 		"lint:type-check": "turbo run lint:type-check",
 		"prepare": "husky || true"
 	},
