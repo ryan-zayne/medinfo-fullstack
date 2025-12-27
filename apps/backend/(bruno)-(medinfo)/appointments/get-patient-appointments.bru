@@ -1,0 +1,29 @@
+meta {
+  name: get-patient-appointments
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseURL-dev}}/appointments/patient/all?limit=10
+  body: none
+  auth: inherit
+}
+
+params:query {
+  limit: 10
+}
+
+docs {
+  # Get Patient Appointments
+
+  Retrieves a list of appointments for the authenticated patient.
+
+  ## Query Parameters
+
+  - `limit` (number, optional): The number of appointments to retrieve. Defaults to 10.
+
+  ## Success Response (200 OK)
+
+  Returns a list of appointments and pagination metadata.
+}

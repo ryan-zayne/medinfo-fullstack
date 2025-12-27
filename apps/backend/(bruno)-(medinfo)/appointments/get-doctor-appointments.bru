@@ -1,0 +1,29 @@
+meta {
+  name: get-doctor-appointments
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseURL-dev}}/appointments/doctor/all?limit=10
+  body: none
+  auth: inherit
+}
+
+params:query {
+  limit: 10
+}
+
+docs {
+  # Get Doctor Appointments
+
+  Retrieves a list of appointments for the authenticated doctor.
+
+  ## Query Parameters
+
+  - `limit` (number, optional): The number of appointments to retrieve. Defaults to 10.
+
+  ## Success Response (200 OK)
+
+  Returns a list of appointments and pagination metadata.
+}

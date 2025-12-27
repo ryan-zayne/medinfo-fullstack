@@ -1,0 +1,33 @@
+meta {
+  name: cancel
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseURL-dev}}/appointments/cancel
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "appointmentId": "replace-with-valid-appointment-uuid",
+    "meetingId": "replace-with-valid-zoom-meeting-id"
+  }
+}
+
+docs {
+  # Cancel Appointment
+
+  Cancels an existing appointment and deletes the associated Zoom meeting.
+
+  ## Request Body
+
+  - `appointmentId` (string, required): The UUID of the appointment to cancel.
+  - `meetingId` (string, required): The ID of the Zoom meeting to delete.
+
+  ## Success Response (200 OK)
+
+  Returns a success message upon cancellation.
+}
