@@ -1,18 +1,18 @@
 packages:
-   - apps/*
-   - packages/*
+  - apps/*
+  - packages/*
 
 catalog:
-   "@dotenvx/dotenvx": 1.51.2
-   tsdown: 0.18.3
-   typescript: 5.9.3
-   zod: 4.2.1
+  '@dotenvx/dotenvx': 1.51.4
+  tsdown: 0.18.3
+  typescript: 5.9.3
+  zod: 4.2.1
 
 ignoredBuiltDependencies:
-   - esbuild
-   - protobufjs
-   - unrs-resolver
+  - esbuild
+  - protobufjs
+  - unrs-resolver
 
 onlyBuiltDependencies:
-   - onnxruntime-node
-   - sharp
+  - onnxruntime-node
+  - sharp

@@ -35,8 +35,10 @@ export function Calendar(
 				`group/calendar bg-shadcn-background p-3 [--cell-size:--spacing(8)]
 				in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent`,
 				// prettier-ignore
+				// eslint-disable-next-line react-hooks/todo
 				String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
 				// prettier-ignore
+				// eslint-disable-next-line react-hooks/todo
 				String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
 				className,
 				classNames?.base
