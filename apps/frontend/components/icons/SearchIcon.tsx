@@ -1,7 +1,7 @@
-const SearchIcon = (props: React.SVGProps<SVGSVGElement> & { type: "green" | "white" }) => {
-	const { type, ...restProps } = props;
+const SearchIcon = (props: React.SVGProps<SVGSVGElement> & { variant: "green" | "white" }) => {
+	const { variant, ...restProps } = props;
 
-	return type === "green" ?
+	return variant === "green" ?
 			<svg
 				width="24"
 				height="24"

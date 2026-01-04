@@ -1,5 +1,5 @@
-import { db } from "@medinfo/backend-db";
-import { diseases } from "@medinfo/backend-db/schema/diseases";
+import { db } from "@medinfo/db";
+import { diseases } from "@medinfo/db/schema/diseases";
 import { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
 import { asc, count, eq, gt, sql } from "drizzle-orm";
 import { Hono } from "hono";

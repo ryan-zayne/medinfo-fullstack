@@ -1,5 +1,5 @@
-import { db } from "@medinfo/backend-db";
-import { users, type SelectUserType } from "@medinfo/backend-db/schema/auth";
+import { db } from "@medinfo/db";
+import { users, type SelectUserType } from "@medinfo/db/schema/auth";
 import { callApi } from "@zayne-labs/callapi";
 import * as arctic from "arctic";
 import { eq } from "drizzle-orm";

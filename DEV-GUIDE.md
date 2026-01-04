@@ -1,102 +1,76 @@
 # MedInfo Developer Guide
 
-A comprehensive guide to the MedInfo codebase - a full-stack healthcare platform built with TypeScript.
-
-## Table of Contents
-
-1. [Project Overview](#project-overview)
-2. [Monorepo Architecture](#monorepo-architecture)
-3. [Getting Started](#getting-started)
-4. [Backend Deep Dive](#backend-deep-dive)
-5. [Frontend Deep Dive](#frontend-deep-dive)
-6. [Shared Packages](#shared-packages)
-7. [Authentication System](#authentication-system)
-8. [API Patterns](#api-patterns)
-9. [Code Conventions](#code-conventions)
-10.   [Common Workflows](#common-workflows)
-
----
+A guide to the MedInfo codebase - a full-stack healthcare platform built with TypeScript.
 
 ## Project Overview
 
-MedInfo Nigeria is a healthcare platform that:
-
-- Connects patients with certified doctors for virtual consultations
-- Provides a free medical information library (diseases, health tips)
-- Supports appointment scheduling and messaging
+MedInfo Nigeria connects patients with certified doctors for virtual consultations, provides a medical information library, and supports appointment scheduling with video conferencing.
 
 ### Tech Stack
 
-| Layer      | Technology                                   |
-| ---------- | -------------------------------------------- |
-| Monorepo   | Turborepo + pnpm workspaces                  |
-| Backend    | Hono.js on Node.js                           |
-| Frontend   | Next.js 16 (App Router) + React 19           |
-| Database   | PostgreSQL + Drizzle ORM                     |
-| Validation | Zod (shared across stack)                    |
-| Styling    | TailwindCSS 4 + tailwind-variants            |
-| State      | TanStack Query + Zustand                     |
-| Auth       | JWT (access + refresh tokens) + Google OAuth |
-| AI         | HuggingFace Transformers                     |
-| Storage    | Cloudinary                                   |
+| Layer      | Technology                         |
+| ---------- | ---------------------------------- |
+| Monorepo   | Turborepo + pnpm workspaces        |
+| Backend    | Hono.js on Node.js                 |
+| Frontend   | Next.js 16 (App Router) + React 19 |
+| Database   | PostgreSQL + Drizzle ORM           |
+| Validation | Zod (shared across stack)          |
+| State      | TanStack Query + Zustand           |
+| Auth       | JWT + Google OAuth                 |
+| AI         | HuggingFace Transformers           |
+| Storage    | Cloudinary                         |
+| Video      | Zoom API                           |
 
 ---
 
-## Monorepo Architecture
+## Monorepo Structure
 
 ```
 medinfo-fullstack/
 ├── apps/
-│   ├── backend/                 # @medinfo/backend - Hono API server
+│   ├── backend/         # Hono API server
 │   │   └── src/
-│   │       ├── app/             # Feature modules (auth, diseases, health-tips, appointments)
-│   │       ├── config/          # Environment, CORS settings
-│   │       ├── lib/             # Shared utilities, types, factory
-│   │       ├── middleware/      # Global middleware
-│   │       ├── services/        # Shared services (ai, cloudinary)
+│   │       ├── app/             # Feature modules (auth, diseases, appointments, health-tips)
+│   │       ├── config/          # env, corsOptions, rateLimiterOptions
+│   │       ├── lib/             # factory (createHonoApp), types, utils
+│   │       ├── middleware/      # errorHandler, validateWithZod, pinoLogger
+│   │       ├── services/        # ai (huggingFace), cloudinary
 │   │       ├── app.ts           # Route composition
 │   │       └── server.ts        # Entry point
 │   │
-│   └── frontend/                # @medinfo/frontend - Next.js app
-│       ├── app/                 # App Router pages
-│       │   ├── (home)/          # Public routes (landing, auth, library)
-│       │   └── (protected)/     # Authenticated dashboard routes
-│       │       └── dashboard/   # Role-based dashboards (patient, doctor)
-│       ├── components/          # Reusable components
-│       │   ├── common/          # Shared (Logo, NavLink, Show, For, etc.)
-│       │   ├── icons/           # SVG icon components
-│       │   └── ui/              # UI primitives (Button, Form, Select, etc.)
-│       └── lib/                 # Utilities
-│           ├── api/             # API client (callBackendApi)
-│           ├── react-query/     # Query/mutation options
-│           ├── utils/           # Helpers (cn, common)
-│           └── zustand/         # State stores
+│   └── frontend/        # Next.js app
+│       ├── app/
+│       │   ├── (home)/          # Public routes (landing, auth, library, daily-tips)
+│       │   ├── (protected)/     # Authenticated routes
+│       │   │   └── dashboard/   # Role-based (patient/doctor)
+│       │   ├── Providers.tsx    # React Query, progress provider
+│       │   └── layout.tsx
+│       ├── components/
+│       │   ├── common/          # Logo, NavLink, Show, For, Await, DropZoneInput
+│       │   ├── icons/           # Icon components
+│       │   └── ui/              # Button, Form, Select, Dialog, Accordion, etc.
+│       └── lib/
+│           ├── api/             # callBackendApi client with plugins
+│           ├── react-query/     # queryOptions, mutationOptions
+│           ├── utils/           # cn, common helpers
+│           └── zustand/         # theme store
 │
 └── packages/
-    ├── db/                      # @medinfo/backend-db - Drizzle ORM layer
+    ├── db/                      # Drizzle ORM
     │   └── src/
-    │       ├── schema/          # Table definitions (auth.ts)
+    │       ├── schema/          # Table definitions (auth, appointments, diseases)
     │       ├── migrations/      # SQL migrations
+    │       ├── seeders/         # diseases seeder
     │       └── db.ts            # Database connection
     │
-    ├── env/                     # @medinfo/env - Environment validation
-    │   └── src/
-    │       └── backend-env.ts   # Zod schema for env vars
+    ├── env/                     # Environment validation with Zod
+    │   └── src/backend-env.ts
     │
-    └── shared/                  # @medinfo/shared - Shared code
-        └── src/
-            └── validation/      # API schemas (backendApiSchema.ts)
+    └── shared/                  # Shared types & API schemas
+        └── src/validation/backendApiSchema.ts
 ```
 
-### Package Dependencies
-
-```
-@medinfo/frontend  ──→  @medinfo/shared  ──→  @medinfo/backend-db
-@medinfo/backend   ──→  @medinfo/shared  ──→  @medinfo/backend-db
-@medinfo/backend   ──→  @medinfo/env
-```
-
-**Rule**: Code flows from `packages/` to `apps/`, never the reverse.
+**Dependency Flow**: `apps/` → `packages/` (never reverse)
 
 ---
 
@@ -105,86 +79,66 @@ medinfo-fullstack/
 ### Prerequisites
 
 - Node.js 18+
-- pnpm 10.26.2 (`corepack enable`)
+- pnpm 10.27.0 (`corepack enable`)
 - PostgreSQL database
 
-### Installation
+### Setup
 
 ```bash
-# Clone and install
 git clone <repo-url>
 cd medinfo-fullstack
 pnpm install
-
-# Setup backend environment
 cp apps/backend/.env.example apps/backend/.env
-# Edit .env with your values
-
-# Database setup
-pnpm db:generate    # Generate types from schema
-pnpm db:migrate     # Run migrations
-pnpm db:push        # Push schema directly (dev only)
-
-# Start development
-pnpm dev:backend    # http://localhost:8000
-pnpm dev:frontend   # http://localhost:3000
+# Edit .env with your credentials
+pnpm db:generate && pnpm db:migrate && pnpm db:push
+pnpm dev:backend  # http://localhost:8000
+pnpm dev:frontend # http://localhost:3000
 ```
 
-### Available Scripts
+### Key Commands
 
 ```bash
-# Root level
-pnpm dev:backend          # Start backend dev server
-pnpm dev:frontend         # Start frontend dev server
-pnpm build                # Build all packages
-pnpm lint:eslint          # Lint entire monorepo
-pnpm lint:type-check      # Type check all packages
+# Development
+pnpm dev:backend      # Start backend
+pnpm dev:frontend     # Start frontend
+pnpm dev:db           # Start PostgreSQL via Docker
+
+# Build & Lint
+pnpm build            # Build all packages
+pnpm lint:eslint      # Lint entire monorepo
+pnpm lint:type-check  # Type check all packages
 
 # Database
-pnpm db:generate          # Generate Drizzle types
-pnpm db:migrate           # Run migrations
-pnpm db:push              # Push schema (dev)
-pnpm db:studio            # Open Drizzle Studio GUI
+pnpm db:generate      # Generate Drizzle types
+pnpm db:migrate       # Run migrations
+pnpm db:push          # Push schema (dev only)
+pnpm db:seed          # Seed data
+pnpm db:studio        # Open Drizzle Studio GUI
+
+# Docker
+docker-compose up -d  # Start all services
+docker-compose down   # Stop all services
 ```
 
 ---
 
-## Backend Deep Dive
+## Backend Architecture
 
-### Hono App Factory
+### App Factory Pattern
 
-The app is created using a factory pattern in `src/lib/factory/createHonoApp.ts`:
+The backend is initialized in `src/lib/factory/createHonoApp.ts` which applies:
 
-```typescript
-// Creates a configured Hono instance with global middleware
-const createHonoApp = () => {
-	const app = new Hono();
-
-	// Security
-	app.use(cors(corsOptions)); // Configured in config/corsOptions.ts
-
-	// Logging
-	app.use(requestId(), pinoLoggerMiddleware());
-
-	// Error handling
-	app.notFound(notFoundHandler);
-	app.onError(errorHandler);
-
-	return app;
-};
-```
+- CORS configuration from `src/config/corsOptions.ts`
+- Rate limiting from `src/config/rateLimiterOptions.ts`
+- Secure headers
+- Request ID and pino logger
+- Not found and error handlers
 
 ### Route Composition
 
-Routes are composed in `src/app.ts`:
+Routes are composed in `src/app/app.ts`:
 
 ```typescript
-const app = createHonoApp();
-
-// Health check
-app.get("/", (c) => c.json({ status: "success", message: "Server is up!" }));
-
-// API v1 routes
 app.basePath("/api/v1")
 	.route("", healthTipsRoutes)
 	.route("", diseasesRoutes)
@@ -192,538 +146,355 @@ app.basePath("/api/v1")
 	.route("", appointmentsRoutes);
 ```
 
-### Feature Module Structure
+### Feature Module Pattern
 
-Each feature follows this pattern:
+Each feature follows this structure:
 
 ```
-src/app/auth/
-├── routes.ts              # Route definitions
-├── middleware/            # Feature-specific middleware
+src/app/{feature}/
+├── routes.ts           # Hono route definitions
+├── middleware/         # Feature-specific middleware
 │   └── authMiddleware/
-│       ├── index.ts
-│       ├── authMiddleware.ts
-│       └── validateUserSession.ts
-└── services/              # Business logic
-    ├── common.ts          # Shared helpers
-    ├── constants.ts       # Feature constants
-    ├── cookie.ts          # Cookie management
-    ├── hash.ts            # Password hashing
-    ├── oauth.ts           # Google OAuth logic
-    └── token.ts           # JWT operations
+└── services/           # Business logic & external integrations
 ```
 
-### AI and Cloud Services
+Example: `src/app/auth/`, `src/app/appointments/`, `src/app/diseases/`
 
-The backend now integrates with external services:
+### Key Patterns
 
-- **AI**: HuggingFace transformers integration located in `src/services/ai/huggingFace.ts`.
-- **Storage**: Cloudinary SDK configuration in `src/services/cloudinary/`.
-
-### Route Definition Pattern
+**Validation** - All inputs validated with Zod via `validateWithZodMiddleware`:
 
 ```typescript
-// src/app/auth/routes.ts
-const authRoutes = new Hono()
-	.basePath("/auth")
-	.post(
-		"/signin",
-		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/auth/signin"].body),
-		async (ctx) => {
-			const { email, password } = ctx.req.valid("json");
-
-			// Business logic...
-			const [currentUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
-
-			if (!currentUser) {
-				throw new AppError({
-					cause: "No user found",
-					code: 401,
-					message: "Email or password is incorrect",
-				});
-			}
-
-			// Return standardized response
-			return AppJsonResponse(ctx, {
-				data: { user: getNecessaryUserDetails(currentUser) },
-				message: "Signed in successfully",
-				schema: backendApiSchemaRoutes["@post/auth/signin"].data,
-			});
-		}
-	);
+.post("/signin", validateWithZodMiddleware("json", schema.body), handler)
 ```
 
-### Error Handling with AppError
+**Error Handling** - Use `AppError` class:
 
 ```typescript
-// src/lib/utils/AppError.ts
-class AppError extends Error {
-	errors?: unknown;
-	errorStatus: string;
-	statusCode: ContentfulStatusCode;
-
-	constructor(options: { code: ContentfulStatusCode; errors?: unknown; message: string }) {
-		super(options.message, { cause: options.cause });
-		this.statusCode = options.code;
-		this.errorStatus = String(options.code).startsWith("5") ? "Failed" : "Error";
-		this.errors = options.errors;
-	}
-
-	static isError(error: unknown): error is AppError {
-		return error instanceof AppError;
-	}
-}
-
-// Usage
-throw new AppError({
-	code: 404,
-	message: "User not found",
-});
-
-throw new AppError({
-	code: 422,
-	message: "Validation failed",
-	errors: { email: ["Invalid email format"] },
-});
+throw new AppError({ code: 404, message: "User not found" });
 ```
 
-### Error Codes
+**Responses** - Use `AppJsonResponse` for consistency:
 
 ```typescript
-// src/constants/common.ts
-export const errorCodes = defineEnum({
-	BAD_REQUEST: 400,
-	UNAUTHORIZED: 401,
-	PAYMENT_REQUIRED: 402,
-	FORBIDDEN: 403,
-	NOT_FOUND: 404,
-	REQUEST_TIMEOUT: 408,
-	CONFLICT: 409,
-	VALIDATION_ERROR: 422,
-	SERVER_ERROR: 500,
-});
+return AppJsonResponse(ctx, { data, message: "Success", schema });
 ```
 
-### Validation Middleware
+**Cookies** - Managed via `src/app/auth/services/cookie.ts`:
 
-```typescript
-// src/middleware/validateWithZodMiddleware.ts
-export const validateWithZodMiddleware = <
-	TTarget extends keyof ValidationTargets,
-	TSchema extends z.ZodType,
->(
-	target: TTarget, // "json" | "query" | "param"
-	schema: TSchema
-) => {
-	return validator(target, (value) => {
-		const validatedValue = getValidatedValue(value, schema, target);
-		return validatedValue;
-	});
-};
+- httpOnly, secure, sameSite configured
+- Production uses partitioned cookies
 
-// getValidatedValue throws AppError with formatted messages on failure
-// Example error: "(JSON) Validation Error: ✖ Invalid email → at email"
-```
+### External Services
 
-### Response Standardization
-
-```typescript
-// src/lib/utils/AppJsonResponse.ts
-const AppJsonResponse = <TSchema, TDataSchema>(
-	ctx: Context,
-	options: {
-		code?: ContentfulStatusCode; // Default: 200
-		data: z.infer<TDataSchema>;
-		message: string;
-		schema: TSchema; // Validates response data
-	}
-) => {
-	const validatedData = getValidatedValue(data, schema.shape.data, "data");
-
-	return ctx.json(
-		{
-			status: "success",
-			message,
-			data: validatedData,
-		},
-		statusCode
-	);
-};
-```
-
-### Cookie Management
-
-```typescript
-// src/app/auth/services/cookie.ts
-type PossibleCookieNames =
-	| "google_code_verifier"
-	| "google_oauth_state"
-	| "zayneAccessToken"
-	| "zayneRefreshToken";
-
-export const setCookie = (
-	ctx: Context,
-	name: PossibleCookieNames,
-	value: string,
-	options?: CookieOptions
-) => {
-	const isProduction = ENVIRONMENT.NODE_ENV === "production";
-
-	cookieHelpers.setCookie(ctx, name, value, {
-		httpOnly: true,
-		partitioned: isProduction,
-		sameSite: isProduction ? "none" : "lax",
-		secure: isProduction,
-		...options,
-	});
-};
-```
-
-### JWT Token Services
-
-```typescript
-// src/app/auth/services/token.ts
-
-// Encode with validation
-export const encodeJwtToken = <TSchema>(payload: z.infer<TSchema>, options: JwtOptions) => {
-	const validPayload = getValidatedValue(payload, schema);
-	return jwt.sign(validPayload, secretKey, restOfOptions);
-};
-
-// Generate access token (short-lived)
-export const generateAccessToken = (user: SelectUserType) => {
-	const payload = pickKeys(user, ["id"]);
-	const accessToken = encodeJwtToken(payload, {
-		expiresIn: ENVIRONMENT.ACCESS_JWT_EXPIRES_IN,
-		secretKey: ENVIRONMENT.ACCESS_SECRET,
-	});
-	return { token: accessToken, expiresAt: new Date(Date.now() + expiresIn) };
-};
-
-// Generate refresh token (long-lived)
-export const generateRefreshToken = (user: SelectUserType) => {
-	// Similar to access token but with REFRESH_SECRET and longer expiry
-};
-
-// Token whitelist management (for refresh token rotation)
-export const getUpdatedTokenArray = (options: {
-	currentUser: SelectUserType;
-	zayneRefreshToken: string | undefined;
-}): string[] => {
-	// If token not in whitelist, possible reuse attack - clear all tokens
-	if (!isTokenInWhitelist(currentUser.refreshTokenArray, zayneRefreshToken)) {
-		warnAboutTokenReuse({ compromisedToken: zayneRefreshToken, currentUser });
-		return []; // Logs out from all devices
-	}
-	// Remove used token from array
-	return currentUser.refreshTokenArray.filter((token) => token !== zayneRefreshToken);
-};
-```
+| Service | Location                         | Purpose                                    |
+| ------- | -------------------------------- | ------------------------------------------ |
+| AI      | `src/services/ai/huggingFace.ts` | HuggingFace embeddings for doctor matching |
+| Storage | `src/services/cloudinary/`       | File uploads (doctor licenses)             |
+| Video   | `src/services/zoomApi/`          | Zoom meeting creation/deletion             |
 
 ---
 
-## Frontend Deep Dive
+## Frontend Architecture
 
-### App Router Structure
+### Route Groups
 
 ```
 app/
-├── (home)/                       # Route group - public pages
-│   ├── -components/              # Private components (prefixed with -)
-│   │   ├── OAuthSection.tsx
-│   │   └── ...
-│   ├── auth/
-│   │   ├── signin/page.tsx
-│   │   └── signup/page.tsx
+├── (home)/                   # Public pages (navbar + footer)
+│   ├── auth/                 # signin, signup
 │   ├── daily-tips/
 │   ├── library/
-│   ├── layout.tsx               # Shared layout with navbar
-│   └── page.tsx                 # Landing page
+│   ├── layout.tsx
+│   └── page.tsx              # Landing page
 │
-├── (protected)/                  # Authenticated routes
-│   ├── dashboard/
-│   │   ├── (role)/
-│   │       ├── patient/         # Patient dashboard
-│   │       └── doctor/          # Doctor dashboard
-│   └── template.tsx             # Dashboard layout template
+├── (protected)/              # Authenticated (requires session)
+│   └── dashboard/
+│       ├── (role)/
+│       │   ├── patient/
+│       │   └── doctor/
+│       └── template.tsx      # Dashboard layout
 │
-├── layout.tsx                   # Root layout
-├── Providers.tsx                # Client providers wrapper
-└── HydrationBoundary.tsx        # React Query hydration
+├── Providers.tsx             # React Query, progress bar
+└── layout.tsx                # Root layout
 ```
 
-### Providers Setup
+### State Management
 
-```typescript
-// app/Providers.tsx
-"use client";
+- **TanStack Query**: Server state, caching, mutations
+- **Zustand**: Client state (theme store)
+- **React Hook Form + Zod**: Form validation
 
-function Providers({ children }: { children: React.ReactNode }) {
-	const queryClient = getQueryClient();
+### API Client
 
-	return (
-		<HydrationBoundary queryClient={queryClient}>
-			<ProgressProvider
-				height="2.5px"
-				color="hsl(150,21%,17%)"
-				options={{ showSpinner: true }}
-				shallowRouting={true}
-			>
-				{children}
-			</ProgressProvider>
-			<ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} />
-		</HydrationBoundary>
-	);
-}
-```
+The API client in `lib/api/callBackendApi/callBackendApi.ts` uses `@zayne-labs/callapi` with:
 
-### API Client Configuration
-
-```typescript
-// lib/api/callBackendApi/callBackendApi.ts
-const REMOTE_BACKEND_HOST = "https://api-medical-info.onrender.com";
-const LOCAL_BACKEND_HOST = "http://localhost:8000";
-const BACKEND_HOST = process.env.NODE_ENV === "development" ? LOCAL_BACKEND_HOST : REMOTE_BACKEND_HOST;
-
-export const BASE_API_URL = `${BACKEND_HOST}/api/v1`;
-
-export const sharedBaseConfig = defineBaseConfig({
-	baseURL: BASE_API_URL,
-	credentials: "include", // Send cookies with requests
-
-	// Request deduplication
-	dedupe: {
-		cacheScope: "global",
-		cacheScopeKey: (ctx) => ctx.options.baseURL,
-	},
-
-	// Plugins for cross-cutting concerns
-	plugins: [
-		toastPlugin({ errorAndSuccess: true, errorsToSkip: ["AbortError"] }),
-		loggerPlugin({ enabled: { onError: true } }),
-	],
-
-	resultMode: "withoutResponse",
-	schema: backendApiSchema, // Type-safe routes from shared package
-});
-
-// Standard client - returns { data, error }
-export const callBackendApi = createFetchClient(sharedBaseConfig);
-
-// For React Query - throws on error, returns data directly
-export const callBackendApiForQuery = createFetchClient({
-	...sharedBaseConfig,
-	resultMode: "onlyData",
-	throwOnError: true,
-});
-```
-
-### Toast Plugin
-
-```typescript
-// lib/api/callBackendApi/plugins/toastPlugin.ts
-export type ToastPluginMeta = {
-	toast?: {
-		endpointsToSkip?: { error?: string[]; success?: string[] };
-		error?: boolean;
-		errorAndSuccess?: boolean;
-		errorsToSkip?: Array<string>;
-		success?: boolean;
-	};
-};
-
-export const toastPlugin = (toastOptions?: ToastPluginMeta["toast"]) => {
-	return definePlugin({
-		id: "toast-plugin",
-		hooks: (setupCtx) => ({
-			onError: (ctx) => {
-				// Skip if configured
-				if (shouldSkipErrorToast) return;
-
-				// Show field errors individually
-				if (isHTTPError(ctx.error) && ctx.error.errorData.errors) {
-					Object.values(ctx.error.errorData.errors).forEach((message) => toast.error(message));
-					return;
-				}
-				toast.error(ctx.error.message);
-			},
-
-			onSuccess: (ctx) => {
-				if (shouldSkipSuccessToast) return;
-				toast.success(ctx.data.message);
-			},
-		}),
-	});
-};
-```
+- **Base URL**: localhost:8000 (dev) or production API
+- **Credentials**: include (cookies sent automatically)
+- **Plugins**:
+   - `authErrorRedirectPlugin`: Redirects to /auth/signin on 401
+   - `toastPlugin`: Shows success/error toasts via sonner
+   - `loggerPlugin`: Logs errors
 
 ### React Query Patterns
 
-```typescript
-// lib/react-query/queryOptions.ts
-export const healthTipsQuery = (options: { pageName?: string } = {}) => {
-	const { pageName = "home-page" } = options;
-
-	return queryOptions({
-		queryKey: ["health-tips", pageName],
-		queryFn: () =>
-			callBackendApiForQuery("@get/health-tips/all", {
-				meta: { toast: { success: false } }, // Don't toast on success
-				query: { limit: 8 },
-			}),
-		staleTime: Infinity, // Cache forever
-	});
-};
-
-// lib/react-query/mutationOptions.ts
-export const googleOAuthMutation = () => {
-	return mutationOptions({
-		mutationKey: ["auth", "google"],
-		mutationFn: (options: { role: "doctor" | "patient" }) => {
-			return callBackendApiForQuery("@get/auth/google", {
-				meta: { toast: { success: false } },
-				query: { role: options.role },
-			});
-		},
-	});
-};
-
-// Usage in component
-const googleAuthMutation = useMutation(googleOAuthMutation());
-
-googleAuthMutation.mutate({ role: "patient" }, { onSuccess: (data) => router.push(data.data.authURL) });
-```
-
-### Form Pattern with React Hook Form + Zod
+Query options provide caching and stale time configuration:
 
 ```typescript
-// app/(home)/auth/signin/page.tsx
-"use client";
+// Cached forever
+healthTipsQuery();
 
-const SignInSchema = backendApiSchemaRoutes["@post/auth/signin"].body;
+// Query with pagination
+diseasesQuery({ page: 1, limit: 10 });
 
-function SignInPage() {
-	const router = useRouter();
-
-	const form = useForm({
-		defaultValues: { email: "", password: "" },
-		resolver: zodResolver(SignInSchema),
-	});
-
-	const onSubmit = form.handleSubmit(async (data) => {
-		await callBackendApi("@post/auth/signin", {
-			body: data,
-			meta: { toast: { success: true } },
-			onSuccess: () => router.push(`/dashboard/${userRole}`),
-		});
-	});
-
-	return (
-		<Form.Root form={form} onSubmit={(e) => void onSubmit(e)}>
-			<Form.Field control={control} name="email" className="gap-1">
-				<Form.Label>Email</Form.Label>
-				<Form.InputGroup className="...">
-					<Form.InputLeftItem>
-						<IconBox icon="mynaui:envelope" />
-					</Form.InputLeftItem>
-					<Form.Input type="email" placeholder="enter email" />
-				</Form.InputGroup>
-				<Form.ErrorMessage />
-			</Form.Field>
-
-			<Form.WatchFormState
-				render={(formState) => (
-					<Button type="submit" isLoading={formState.isSubmitting} disabled={formState.isSubmitting}>
-						Sign In
-					</Button>
-				)}
-			/>
-		</Form.Root>
-	);
-}
+// Mutations with toast handling
+googleOAuthMutation();
+bookAppointmentMutation();
 ```
 
 ### Component Library
 
-**Common Components** (`components/common/`):
-
-- `Logo` - App logo with variants
-- `NavLink` - Next.js Link with transition support
-- `IconBox` - Iconify icon wrapper
-- `Show` - Conditional rendering (`<Show.Root when={condition}>`)
-- `For` / `ForWithWrapper` - List rendering helpers
-- `Switch` - Switch/case rendering
-- `Await` - Async data rendering
-- `Overlay` - Modal overlay
-- `DropZoneInput` - File upload with drag & drop
-
-**UI Components** (`components/ui/`):
-
-- `Button` - With loading state, themes, sizes
-- `Form` - React Hook Form integration
-- `Select` - Radix-based select
-- `Dialog` - Modal dialogs
-- `Accordion` - Collapsible sections
-- `Carousel` - Embla carousel wrapper
-- `DateTimePicker` - Date selection
-- `DropdownMenu` - Context menus
-- `Popover` - Floating content
+| Location             | Components                                                                               |
+| -------------------- | ---------------------------------------------------------------------------------------- |
+| `components/common/` | Logo, NavLink, Show, For, ForWithWrapper, Switch, Await, Overlay, DropZoneInput          |
+| `components/icons/`  | Icon components (ArrowBackIcon, CalendarIcon, etc.)                                      |
+| `components/ui/`     | Button, Form, Select, Dialog, Accordion, Carousel, DateTimePicker, DropdownMenu, Popover |
 
 ---
 
 ## Shared Packages
 
-### @medinfo/backend-db
+### @medinfo/db
 
-Database layer using Drizzle ORM with PostgreSQL.
+Database layer using Drizzle ORM with PostgreSQL. Schemas define:
 
-```typescript
-// packages/db/src/schema/auth.ts
-export const users = pg.pgTable(
-	"users",
-	{
-		id: pg.uuid().defaultRandom().primaryKey(),
-		email: pg.text().notNull().unique(),
-		passwordHash: pg.text(),
-		firstName: pg.text().notNull(),
-		lastName: pg.text().notNull(),
-		avatar: pg.text().notNull(),
-		dob: pg.timestamp({ mode: "string", withTimezone: true }).notNull(),
-		gender: pg.text({ enum: ["male", "female"] }).notNull(),
-		role: pg.text({ enum: ["doctor", "patient"] }).notNull(),
-		country: pg.text(),
+- Tables with columns, indexes, constraints
+- Auto-generated Zod schemas via `createInsertSchema`/`createSelectSchema`
+- Type inference with `$inferInsert`/`$inferSelect`
 
-		// Doctor-specific
-		medicalLicense: pg.text(),
-		specialty: pg.text(),
+### @medinfo/env
 
-		// OAuth
-		googleId: pg.text(),
+Zod-based environment validation in `packages/env/src/backend-env.ts`. All env vars validated at startup.
 
-		// Security
-		isSuspended: pg.boolean().notNull().default(false),
-		loginRetryCount: pg.integer().notNull().default(0),
-		refreshTokenArray: pg.jsonb().notNull().$type<string[]>().default([]),
+### @medinfo/shared
 
-		// Timestamps
-		emailVerifiedAt: pg.timestamp({ withTimezone: true }),
-		lastLoginAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
-		createdAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
-		updatedAt: pg
-			.timestamp({ withTimezone: true })
-			.notNull()
-			.defaultNow()
-			.$onUpdate(() => new Date()),
-		deletedAt: pg.timestamp({ withTimezone: true }),
-	},
-	(table) => [pg.uniqueIndex("user_google_id_index").on(table.googleId)]
-);
+Shared code used by both apps:
 
-// Auto-generate Zod schemas from Drizzle
-export const InsertUserSchema = createInsertSchema(users);
-export const SelectUserSchema = createSelectSchema(users);
+- API request/response schemas in `backendApiSchema.ts`
+- TypeScript types generated from Zod schemas
+- Provides end-to-end type safety
 
-// Infer TypeScript types
-export type InsertUserType = typeof users.$inferInsert;
-export type SelectUserType = typeof users.$inferSelect;
+---
+
+## Authentication System
+
+### JWT Token Flow
+
+- **Access Token**: Short-lived (15 min), validates API requests
+- **Refresh Token**: Long-lived (7 days), stored in DB as jsonb array
+- **Rotation**: Each refresh replaces old token in whitelist
+- **Reuse Detection**: Clears all tokens if reused token not in whitelist
+
+### Cookie Storage
+
+- httpOnly (inaccessible to JS)
+- secure (HTTPS only)
+- sameSite (lax in dev, none in prod)
+- partitioned (prod only)
+
+### Google OAuth Flow
+
+1. Client calls `/auth/google?role=patient|doctor`
+2. Backend generates state + code verifier, stores in cookies
+3. Redirects to Google consent screen
+4. Google calls back to `/auth/google/callback`
+5. Backend exchanges code for tokens, creates/finds user
+6. Generates JWT tokens, sets cookies, redirects to frontend
+
+### Session Validation
+
+Middleware checks tokens in order:
+
+1. Validate access token
+2. If expired/invalid, validate refresh token against DB whitelist
+3. On success, set user in context
+4. On failure, return 401
+
+---
+
+## Key Features
+
+### Disease Library
+
+- Public endpoint with search and pagination
+- Data seeded from `packages/db/src/data/diseases.json`
+- CRUD operations for admins
+
+### Health Tips
+
+- Fetches from external API
+- Cached indefinitely with `staleTime: Infinity`
+- Random selection with limit
+
+### AI Doctor Matching
+
+- Uses HuggingFace `e5-small-v2` embeddings
+- **Process**:
+   1. Create embedding vector for patient's reason/symptoms
+   2. Create embedding vectors for each doctor's specialty
+   3. Compute cosine similarity between patient vector and each doctor
+   4. Rank by similarity score, return top 3
+- Location: `src/app/appointments/services/matchDoctorAlgorithm.ts`
+
+### Appointments with Zoom
+
+- Patient provides: reason, allergies, medical conditions, health insurance
+- AI matches with doctors
+- Zoom meeting created with patient and doctor as invitees
+- Meeting URL stored for video consultation
+- Cancellation deletes both appointment and Zoom meeting
+
+**Endpoints**:
+
+- `POST /appointments/match-doctor` - AI doctor matching
+- `POST /appointments/book` - Create appointment + Zoom meeting
+- `GET /appointments/doctor/all` - Doctor's appointments
+- `GET /appointments/patient/all` - Patient's appointments
+- `DELETE /appointments/cancel` - Cancel appointment + meeting
+
+---
+
+## Database
+
+### Schema Files
+
+| Table        | File                     | Purpose                        |
+| ------------ | ------------------------ | ------------------------------ |
+| users        | `schema/auth.ts`         | Patients and doctors           |
+| appointments | `schema/appointments.ts` | Appointments with Zoom details |
+| diseases     | `schema/diseases.ts`     | Disease library                |
+
+### Database Operations
+
+```bash
+# Make schema changes
+1. Edit schema in packages/db/src/schema/
+2. pnpm db:generate
+3. pnpm db:migrate
+4. pnpm db:studio  # Verify
 ```
+
+### Seeders
+
+- Diseases seeded from `packages/db/src/data/diseases.json`
+- Uses `onConflictDoNothing()` for idempotent seeding
+
+---
+
+## Security
+
+| Feature               | Implementation                           |
+| --------------------- | ---------------------------------------- |
+| Auth Tokens           | JWT with separate access/refresh secrets |
+| Token Storage         | httpOnly, secure, sameSite cookies       |
+| Token Whitelist       | Refresh tokens in DB jsonb array         |
+| Password Hashing      | bcrypt-like hashing                      |
+| Rate Limiting         | hono-rate-limiter on all routes          |
+| CORS                  | Configured allowed origins               |
+| Secure Headers        | helmet-like via hono/secure-headers      |
+| Input Validation      | Zod schemas for all inputs               |
+| CSRF Protection       | State + code verifier in OAuth           |
+| Login Retry Limits    | Max 3 attempts in 12 hours               |
+| Token Reuse Detection | Clears all tokens on reuse               |
+
+---
+
+## Docker
+
+### Services
+
+| Service             | Image              | Purpose                   |
+| ------------------- | ------------------ | ------------------------- |
+| medinfo-postgres-db | postgres:18-alpine | PostgreSQL database       |
+| medinfo-db-setup    | Custom Dockerfile  | Runs migrations and seeds |
+| medinfo-backend     | Custom Dockerfile  | API server on port 8000   |
+
+### Setup Flow
+
+1. PostgreSQL starts and becomes healthy
+2. medinfo-db-setup runs (generate, migrate, seed)
+3. Backend starts and waits for db-setup completion
+
+---
+
+## Common Workflows
+
+### Adding a Backend Feature
+
+1. Create directory in `apps/backend/src/app/{feature}/`
+2. Add `routes.ts` with Hono route definitions
+3. Add `services/` for business logic
+4. Add `middleware/` if needed
+5. Register route in `apps/backend/src/app/app.ts`
+6. Add API schemas in `packages/shared/src/validation/backendApiSchema.ts`
+
+### Adding a Frontend Feature
+
+1. Create page in `apps/frontend/app/`
+2. Add query options in `lib/react-query/queryOptions.ts`
+3. Add mutation options in `lib/react-query/mutationOptions.ts`
+4. Use API client from `lib/api/callBackendApi/`
+
+### Database Schema Changes
+
+1. Edit schema in `packages/db/src/schema/`
+2. Run `pnpm db:generate`
+3. Run `pnpm db:migrate`
+4. Update seeders if needed
+5. Verify with `pnpm db:studio`
+
+### Environment Variables
+
+Required in `apps/backend/.env`:
+
+```bash
+# Database
+DATABASE_URL_DEV=
+DATABASE_URL_PROD=
+
+# Auth
+ACCESS_SECRET=
+REFRESH_SECRET=
+ACCESS_JWT_EXPIRES_IN=
+REFRESH_JWT_EXPIRES_IN=
+
+# OAuth
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# Storage
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+CLOUDINARY_CLOUD_NAME=
+
+# Zoom
+ZOOM_CLIENT_ID=
+ZOOM_CLIENT_SECRET=
+ZOOM_ACCOUNT_ID=
+
+# Server
+PORT=8000
+NODE_ENV=
+```
+
+---
+
+## Code Conventions
+
+- **No comments** unless explicitly requested
+- Follow existing patterns in each feature module
+- Use shared packages for types and schemas
+- Validate with Zod, throw `AppError` on failure
+- Use `AppJsonResponse` for consistent API responses
+- Run `pnpm lint:eslint` and `pnpm lint:type-check` before committing
+- Component files prefixed with `-` are private (e.g., `-components/NavBar.tsx`)

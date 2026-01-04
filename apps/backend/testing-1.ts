@@ -1,6 +1,6 @@
-import type { SelectUserType } from "@medinfo/backend-db/schema/auth";
+import type { SelectUserType } from "@medinfo/db/schema/auth";
 import type { DoctorUserSchemaType } from "@medinfo/shared/validation/backendApiSchema";
-import { getTopDoctors } from "@/app/appointments/services/matchDoctorAlgorithm";
+import { getTopDoctors } from "@/app/appointments/services/matchDoctorAlgo";
 
 // Comprehensive list of doctors across specialties
 const mockDoctors = [

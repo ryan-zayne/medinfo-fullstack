@@ -1,5 +1,5 @@
 /* eslint-disable import/no-named-as-default-member */
-import { SelectUserSchema, type SelectUserType } from "@medinfo/backend-db/schema/auth";
+import { SelectUserSchema, type SelectUserType } from "@medinfo/db/schema/auth";
 import { pickKeys } from "@zayne-labs/toolkit-core";
 import { consola } from "consola";
 // eslint-disable-next-line import/default

@@ -68,7 +68,7 @@ function LibraryFilter(props: ScrollableAlternateDiseaseCardsProps) {
 						border-medinfo-primary-main bg-white px-4 focus-within:ring-2
 						focus-within:ring-medinfo-primary-lighter focus-visible:outline-hidden lg:w-[500px]"
 				>
-					<SearchIcon type="green" className="size-5 shrink-0 lg:size-6" />
+					<SearchIcon variant="green" className="size-5 shrink-0 lg:size-6" />
 
 					<input
 						type="search"

@@ -26,7 +26,7 @@ export function DateTimePicker(props: DatePickerProps) {
 	const {
 		className,
 		dateString: dateStringProp,
-		defaultDateString = "",
+		defaultDateString: defaultDateStringProp = "",
 		formats,
 		onDateStringChange: onDateStringChangeProp,
 		placeholder,
@@ -34,14 +34,13 @@ export function DateTimePicker(props: DatePickerProps) {
 	} = props;
 
 	const [dateString, setDateString] = useControllableState({
-		defaultValue: defaultDateString,
+		defaultProp: defaultDateStringProp,
+		isControlled: "dateString" in props,
 		onChange: onDateStringChangeProp,
-		value: dateStringProp,
+		prop: dateStringProp,
 	});
 
 	const date = getDateFromString(dateString);
-
-	const isDateSelected = dateString !== "";
 
 	const showTimePicker = variant === "time" || variant === "datetime";
 
@@ -58,8 +57,8 @@ export function DateTimePicker(props: DatePickerProps) {
 						className
 					)}
 				>
-					<span className={cnMerge(!isDateSelected && "text-medinfo-dark-4")}>
-						{isDateSelected ? format(date, formats?.visibleDate ?? "PPP") : placeholder}
+					<span className={cnMerge(!date && "text-medinfo-dark-4")}>
+						{date ? format(date, formats?.visibleDate ?? "PPP") : placeholder}
 					</span>
 
 					<IconBox icon="solar:calendar-outline" className="size-5" />
@@ -103,7 +102,7 @@ export function DateTimePicker(props: DatePickerProps) {
 
 					{showTimePicker && (
 						<TimeScrollArea
-							dateValue={date}
+							dateValue={date ?? new Date()}
 							onChange={setDateString as typeof onDateStringChangeProp}
 							formats={formats}
 						/>

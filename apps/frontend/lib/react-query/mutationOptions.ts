@@ -23,6 +23,7 @@ export const matchDoctorMutation = () => {
 		) => {
 			return callBackendApiForQuery("@post/appointments/match-doctor", {
 				body: bodyData,
+				meta: { toast: { success: false } },
 			});
 		},
 

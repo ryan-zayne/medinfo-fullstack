@@ -31,10 +31,17 @@ function NavLink(
 		Reflect.set(href, "pathname", `${pathname}/${href.pathname}`);
 	}
 
+	const resolvedHref =
+		isString(href) && isRelativeLink(href) ? `${pathname}/${href.replaceAll(" ", "")}` : href;
+
+	const isActive =
+		isString(resolvedHref) ? pathname === resolvedHref : pathname === resolvedHref.pathname;
+
 	return (
 		<Link
 			prefetch={false}
-			href={isRelativeLink(href) ? `${pathname}/${href.replaceAll(" ", "")}` : href}
+			href={resolvedHref}
+			data-active={isActive}
 			className={cnMerge(
 				transitionType !== "no-transition" && "nav-link-transition relative",
 				transitionType === "navbar" && "nav-mobile",

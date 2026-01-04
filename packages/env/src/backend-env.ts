@@ -28,6 +28,7 @@ export const envSchema = z.object({
 	PORT: z.coerce.number().default(8000),
 	REFRESH_JWT_EXPIRES_IN: z.string().transform((value) => evaluateString<number>(value)),
 	REFRESH_SECRET: z.string(),
+	SEED_PASSWORD: z.string(),
 	ZOOM_ACCOUNT_ID: z.string(),
 	ZOOM_CLIENT_ID: z.string(),
 	ZOOM_CLIENT_SECRET: z.string(),

@@ -2,17 +2,15 @@ import { useRouter } from "@bprogress/next";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
-type Options = {
-	/**
-	 * @description If true, the user will be redirected.
-	 */
+type PageBlockerOptions = {
 	condition: boolean;
 	message: string;
+	redirectDelay?: number;
 	redirectPath: string;
 };
 
-export const usePageBlocker = (options: Options) => {
-	const { condition, message, redirectPath } = options;
+const usePageBlocker = (options: PageBlockerOptions) => {
+	const { condition, message, redirectDelay = 500, redirectPath } = options;
 
 	const router = useRouter();
 
@@ -21,10 +19,11 @@ export const usePageBlocker = (options: Options) => {
 			if (!condition) return;
 
 			toast.error(message);
-
 			router.replace(redirectPath);
-		}, 300);
+		}, redirectDelay);
 
 		return () => clearTimeout(timeout);
-	}, [router, condition, message, redirectPath]);
+	}, [router, condition, message, redirectPath, redirectDelay]);
 };
+
+export { usePageBlocker };

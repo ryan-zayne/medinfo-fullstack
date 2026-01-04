@@ -3,18 +3,18 @@ import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { users } from "./auth";
 
 export const appointments = pg.pgTable("appointments", {
-	allergies: pg.text(),
+	allergies: pg.text().notNull().default("none"),
 	createdAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
 	dateOfAppointment: pg.timestamp({ mode: "string", withTimezone: true }).notNull(),
 	doctorId: pg.uuid().references(() => users.id, { onDelete: "cascade" }),
-	existingMedicalConditions: pg.text(),
+	existingMedicalConditions: pg.text().notNull().default("none"),
 	healthInsurance: pg.text({ enum: ["yes", "no"] }).notNull(),
 	id: pg.uuid().defaultRandom().primaryKey(),
 	language: pg
 		.text({ enum: ["english"] })
 		.notNull()
 		.default("english"),
-	meetingId: pg.integer().notNull(),
+	meetingId: pg.text().notNull(),
 	meetingURL: pg.text().notNull(),
 	patientId: pg
 		.uuid()

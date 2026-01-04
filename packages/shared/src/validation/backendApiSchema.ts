@@ -1,6 +1,6 @@
-import { InsertAppointmentSchema, SelectAppointmentSchema } from "@medinfo/backend-db/schema/appointments";
-import { InsertUserSchema, SelectUserSchema } from "@medinfo/backend-db/schema/auth";
-import { InsertDiseaseSchema } from "@medinfo/backend-db/schema/diseases";
+import { InsertAppointmentSchema, SelectAppointmentSchema } from "@medinfo/db/schema/appointments";
+import { InsertUserSchema, SelectUserSchema } from "@medinfo/db/schema/auth";
+import { InsertDiseaseSchema } from "@medinfo/db/schema/diseases";
 import { fallBackRouteSchemaKey, type FallBackRouteSchemaKey } from "@zayne-labs/callapi/constants";
 import { defineSchema, defineSchemaRoutes } from "@zayne-labs/callapi/utils";
 import { z } from "zod";
@@ -324,6 +324,7 @@ const appointmentsRoutes = () => {
 				allowInfoDisclosure: stringWithBooleanValidation(),
 				allowTeleMedicine: stringWithBooleanValidation(),
 				doctorId: z.string(),
+				reason: z.string().min(1, "Must provide a reason for the appointment"),
 			}),
 
 			data: withBaseSuccessResponse(

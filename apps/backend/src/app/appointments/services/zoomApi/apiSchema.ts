@@ -66,11 +66,7 @@ export const zoomMainApiSchema = defineSchema(
 		 * @description Deletes a meeting.
 		 * @see https://developers.zoom.us/docs/api/meetings/#tag/meetings/delete/meetings/%7BmeetingId%7D
 		 */
-		"@delete/meetings/:meetingId": {
-			params: z.object({
-				meetingId: z.number(),
-			}),
-		},
+		"@delete/meetings/:meetingId": {},
 
 		/**
 		 * @description Creates a meeting.
@@ -92,11 +88,11 @@ export const zoomMainApiSchema = defineSchema(
 			}),
 
 			data: z.object({
-				chat_join_url: z.url(),
+				chat_join_url: z.url().optional(),
 				duration: z.number(),
 				id: z.number(),
 				join_url: z.url(),
-				registration_url: z.url(),
+				registration_url: z.url().optional(),
 				start_time: z.string(),
 				status: z.literal(["waiting", "started"]),
 				topic: z.string(),

@@ -1,12 +1,8 @@
 import "@colors/colors";
 import { serve } from "@hono/node-server";
 import { consola } from "consola";
-import { Hono } from "hono";
-import { app as appMain } from "./app/app";
+import { app } from "./app/app";
 import { ENVIRONMENT } from "./config/env";
-
-// Doing this to enable vercel deployment to work
-const app = new Hono().route("/", appMain);
 
 serve(
 	{
@@ -22,4 +18,4 @@ serve(
 );
 
 // Doing this to enable vercel deployment to work
-export default app;
+// export default app;

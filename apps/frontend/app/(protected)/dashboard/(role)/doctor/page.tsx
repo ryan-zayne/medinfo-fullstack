@@ -30,7 +30,7 @@ function DoctorPage() {
 
 					<div className="flex gap-[16px] rounded-[16px] bg-white p-[28px] shadow-md">
 						<div className="rounded-[8px] bg-[#F8F5DB] p-[8px]">
-							<CalendarIcon />
+							<CalendarIcon width={44} height={44} />
 						</div>
 						<div className="space-y-[6px]">
 							<p className="font-normal text-medinfo-dark-3">Total appointments</p>

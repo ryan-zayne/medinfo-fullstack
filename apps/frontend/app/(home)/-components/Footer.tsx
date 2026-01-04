@@ -8,7 +8,7 @@ function Footer() {
 				lg:items-start lg:justify-between lg:px-[100px] lg:py-14"
 		>
 			<div className="mt-5 flex flex-col">
-				<Logo type="footer" className="max-lg:h-[46px] max-lg:max-w-[60px]" />
+				<Logo variant="footer" className="max-lg:h-[46px] max-lg:max-w-[60px]" />
 
 				<div className="mt-5 flex items-center gap-1 text-[14px] text-white lg:text-base">
 					<CopyrightIcon />

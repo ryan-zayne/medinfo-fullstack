@@ -25,6 +25,11 @@ export default zayne(
 		},
 	},
 	{
+		// FIXME - Turn back on once the error is fixed
+		files: ["apps/frontend/components/animated/primitives/**"],
+		rules: { "react-you-might-not-need-an-effect/no-reset-all-state-on-prop-change": "off" },
+	},
+	{
 		files: ["apps/frontend/**/*.ts"],
 		rules: { "node/no-process-env": "off" },
 	},

@@ -228,18 +228,18 @@ export function CalendarDayButton(props: InferProps<typeof DayButton> & ShadcnBu
 
 	const defaultClassNames = getDefaultClassNames();
 
-	const ref = useRef<HTMLButtonElement>(null);
+	const buttonRef = useRef<HTMLButtonElement>(null);
 
 	useEffect(() => {
 		if (!modifiers.focused) return;
 
-		ref.current?.focus();
+		buttonRef.current?.focus();
 	}, [modifiers.focused]);
 
 	return (
 		<button
 			type="button"
-			ref={ref}
+			ref={buttonRef}
 			data-day={day.date.toLocaleDateString()}
 			data-selected-single={
 				modifiers.selected && !modifiers.range_start && !modifiers.range_end && !modifiers.range_middle

@@ -59,7 +59,7 @@ function DesktopNavigation(props: { className?: string }) {
 
 			<div className="flex min-w-fit items-center gap-8">
 				<Button size="icon" theme="secondary">
-					<SearchIcon type="green" />
+					<SearchIcon variant="green" />
 				</Button>
 
 				<Button asChild={true}>
@@ -93,7 +93,7 @@ function MobileNavigation(props: MobileNavProps) {
 				element.tagName === "A" && toggleNavShow();
 			}}
 		>
-			<Logo type="footer" className="h-[46px] w-[60px]" />
+			<Logo variant="footer" className="h-[46px] w-[60px]" />
 
 			<ForWithWrapper
 				as="nav"
@@ -108,7 +108,7 @@ function MobileNavigation(props: MobileNavProps) {
 
 			<div className="flex flex-col items-center gap-4">
 				<Button unstyled={true}>
-					<SearchIcon type="white" />
+					<SearchIcon variant="white" />
 				</Button>
 
 				<Button theme="secondary-inverted" asChild={true}>

@@ -1,6 +1,6 @@
-import { db } from "@medinfo/backend-db";
-import { appointments } from "@medinfo/backend-db/schema/appointments";
-import { users } from "@medinfo/backend-db/schema/auth";
+import { db } from "@medinfo/db";
+import { appointments } from "@medinfo/db/schema/appointments";
+import { users } from "@medinfo/db/schema/auth";
 import {
 	backendApiSchemaRoutes,
 	type DoctorUserSchemaType,
@@ -10,7 +10,7 @@ import { Hono } from "hono";
 import { AppError, AppJsonResponse } from "@/lib/utils";
 import { validateWithZodMiddleware } from "@/middleware";
 import { authMiddleware } from "../auth/middleware/authMiddleware";
-import { getTopDoctors } from "./services/matchDoctorAlgorithm";
+import { getTopDoctors } from "./services/matchDoctorAlgo";
 import { createMeeting, deleteMeeting } from "./services/zoomApi/api";
 
 const appointmentsRoutes = new Hono()
@@ -95,7 +95,7 @@ const appointmentsRoutes = new Hono()
 					existingMedicalConditions,
 					healthInsurance,
 					language,
-					meetingId: zoomMeetingDetails.id,
+					meetingId: zoomMeetingDetails.id as unknown as string,
 					meetingURL: zoomMeetingDetails.join_url,
 					patientId: currentUser.id,
 					reason,

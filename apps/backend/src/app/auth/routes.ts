@@ -1,5 +1,5 @@
-import { db } from "@medinfo/backend-db";
-import { users } from "@medinfo/backend-db/schema/auth";
+import { db } from "@medinfo/db";
+import { users } from "@medinfo/db/schema/auth";
 import { backendApiSchemaRoutes, SignUpSchema } from "@medinfo/shared/validation/backendApiSchema";
 import { differenceInHours } from "date-fns";
 import { eq, sql } from "drizzle-orm";
@@ -147,7 +147,7 @@ const authRoutes = new Hono()
 				// TODO send verification email
 			}
 
-			if (currentUser.isSuspended) {
+			if (currentUser.suspendedAt) {
 				throw new AppError({
 					code: 401,
 					message: "Your account is currently suspended",

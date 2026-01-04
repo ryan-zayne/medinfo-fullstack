@@ -17,7 +17,7 @@ This project is a monorepo managed by **TurboRepo** and **pnpm workspaces**.
 
 ### Packages
 
-- **@medinfo/backend-db**: Database schema and Drizzle configuration.
+- **@medinfo/db**: Database schema and Drizzle configuration.
 - **@medinfo/env**: Environment variable validation.
 - **@medinfo/shared**: Shared types and validation schemas.
 
@@ -26,7 +26,7 @@ This project is a monorepo managed by **TurboRepo** and **pnpm workspaces**.
 ### Prerequisites
 
 - Node.js 18+
-- pnpm 10.26.2+
+- pnpm 10.27.0+
 - PostgreSQL
 
 ### Installation

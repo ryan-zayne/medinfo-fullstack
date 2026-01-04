@@ -1,6 +1,6 @@
 /* eslint-disable import/no-named-as-default-member */
-import { db } from "@medinfo/backend-db";
-import { users, type SelectUserType } from "@medinfo/backend-db/schema/auth";
+import { db } from "@medinfo/db";
+import { users, type SelectUserType } from "@medinfo/db/schema/auth";
 import { defineEnum, type UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
 import { eq } from "drizzle-orm";
 // eslint-disable-next-line import/default
@@ -69,19 +69,20 @@ const getAndVerifyUserFromToken = async (options: VerifyOptions) => {
 		});
 	}
 
-	if (currentUser.isSuspended) {
+	if (currentUser.suspendedAt) {
 		throw new AppError({
 			code: 401,
 			message: AUTH_ERROR_MESSAGES.ACCOUNT_SUSPENDED,
 		});
 	}
 
-	if (!currentUser.emailVerifiedAt) {
-		throw new AppError({
-			code: 422,
-			message: AUTH_ERROR_MESSAGES.EMAIL_UNVERIFIED,
-		});
-	}
+	// FIXME - Enable email verification when ready
+	// if (!currentUser.emailVerifiedAt) {
+	// 	throw new AppError({
+	// 		code: 422,
+	// 		message: AUTH_ERROR_MESSAGES.EMAIL_UNVERIFIED,
+	// 	});
+	// }
 
 	// TODO csrf protection
 	// TODO browser client fingerprinting

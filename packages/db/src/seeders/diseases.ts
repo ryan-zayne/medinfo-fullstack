@@ -17,5 +17,5 @@ export const seedDiseases = async () => {
 
 	consola.info(`Found ${diseasesData.length} diseases to seed.`);
 
-	await db.insert(diseases).values(diseasesData);
+	await db.insert(diseases).values(diseasesData).onConflictDoNothing();
 };

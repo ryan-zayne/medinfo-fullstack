@@ -4,6 +4,7 @@ import type { InferProps, PolymorphicProps } from "@zayne-labs/toolkit-react/uti
 import type { Prettify } from "@zayne-labs/toolkit-type-helpers";
 import { tv, type VariantProps } from "tailwind-variants";
 import { Slot } from "@/components/common/slot";
+import { cnJoin } from "@/lib/utils/cn";
 import { WhiteSpinnerIcon } from "../icons";
 
 export type ButtonProps = InferProps<"button">
@@ -11,6 +12,7 @@ export type ButtonProps = InferProps<"button">
 		VariantProps<typeof buttonVariants> & {
 			asChild?: boolean;
 			isLoading?: boolean;
+			loadingStyle?: "replace-content" | "side-by-side";
 			unstyled?: boolean;
 		}
 	>;
@@ -104,6 +106,7 @@ function Button<TElement extends React.ElementType>(props: PolymorphicProps<TEle
 		disabled = false,
 		isDisabled = disabled,
 		isLoading = false,
+		loadingStyle = "replace-content",
 		size,
 		theme,
 		type = "button",
@@ -130,10 +133,17 @@ function Button<TElement extends React.ElementType>(props: PolymorphicProps<TEle
 	const withIcon = (
 		<>
 			<Slot.Slottable>
-				<div className="invisible [grid-area:1/1]">{children}</div>
+				{loadingStyle === "replace-content" ?
+					<div className="invisible [grid-area:1/1]">{children}</div>
+				:	children}
 			</Slot.Slottable>
 
-			<span className="flex justify-center [grid-area:1/1]">
+			<span
+				className={cnJoin(
+					"flex justify-center",
+					loadingStyle === "replace-content" && "[grid-area:1/1]"
+				)}
+			>
 				<WhiteSpinnerIcon />
 			</span>
 		</>

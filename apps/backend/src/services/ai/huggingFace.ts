@@ -3,6 +3,7 @@ import {
 	type FeatureExtractionPipeline,
 	type ProgressCallback,
 } from "@huggingface/transformers";
+import { consola } from "consola";
 
 export const createFeatureExtractionPipeline = () => {
 	const task = "feature-extraction";
@@ -11,7 +12,17 @@ export const createFeatureExtractionPipeline = () => {
 	let instance: Promise<FeatureExtractionPipeline> | null = null;
 
 	const getInstance = (progress_callback?: ProgressCallback) => {
-		instance ??= pipeline(task, model, { progress_callback });
+		if (instance === null) {
+			consola.info(`[HuggingFace] Initializing pipeline...`);
+
+			instance = pipeline(task, model, { progress_callback }).catch((error) => {
+				consola.error(
+					"[HuggingFace] Pipeline creation failed:",
+					(error as Error | undefined)?.message
+				);
+				throw error;
+			});
+		}
 
 		return instance;
 	};

@@ -153,19 +153,37 @@ type LayoutConfig<Route extends LayoutRoutes = LayoutRoutes> = {
   type __Unused = __Check
 }
 
-// Validate ../../../app/(protected)/dashboard/(role)/patient/[slug]/page.tsx
+// Validate ../../../app/(protected)/dashboard/(role)/patient/appointments/book/page.tsx
 {
-  type __IsExpected<Specific extends AppPageConfig<"/dashboard/patient/[slug]">> = Specific
-  const handler = {} as typeof import("../../../app/(protected)/dashboard/(role)/patient/[slug]/page.js")
+  type __IsExpected<Specific extends AppPageConfig<"/dashboard/patient/appointments/book">> = Specific
+  const handler = {} as typeof import("../../../app/(protected)/dashboard/(role)/patient/appointments/book/page.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check
 }
 
-// Validate ../../../app/(protected)/dashboard/(role)/patient/appointment/page.tsx
+// Validate ../../../app/(protected)/dashboard/(role)/patient/appointments/history/page.tsx
 {
-  type __IsExpected<Specific extends AppPageConfig<"/dashboard/patient/appointment">> = Specific
-  const handler = {} as typeof import("../../../app/(protected)/dashboard/(role)/patient/appointment/page.js")
+  type __IsExpected<Specific extends AppPageConfig<"/dashboard/patient/appointments/history">> = Specific
+  const handler = {} as typeof import("../../../app/(protected)/dashboard/(role)/patient/appointments/history/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../../app/(protected)/dashboard/(role)/patient/appointments/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/dashboard/patient/appointments">> = Specific
+  const handler = {} as typeof import("../../../app/(protected)/dashboard/(role)/patient/appointments/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../../app/(protected)/dashboard/(role)/patient/appointments/upcoming/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/dashboard/patient/appointments/upcoming">> = Specific
+  const handler = {} as typeof import("../../../app/(protected)/dashboard/(role)/patient/appointments/upcoming/page.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check

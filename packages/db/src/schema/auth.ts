@@ -16,7 +16,6 @@ export const users = pg.pgTable(
 		gender: pg.text({ enum: ["male", "female"] }).notNull(),
 		googleId: pg.text(),
 		id: pg.uuid().defaultRandom().primaryKey(),
-		isSuspended: pg.boolean().notNull().default(false),
 		lastLoginAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
 		lastName: pg.text().notNull(),
 		loginRetryCount: pg.integer().notNull().default(0),
@@ -29,6 +28,7 @@ export const users = pg.pgTable(
 			.default([]),
 		role: pg.text({ enum: ["doctor", "patient"] }).notNull(),
 		specialty: pg.text(),
+		suspendedAt: pg.timestamp({ withTimezone: true }),
 		updatedAt: pg
 			.timestamp({ withTimezone: true })
 			.notNull()

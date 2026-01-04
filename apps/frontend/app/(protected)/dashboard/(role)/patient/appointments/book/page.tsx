@@ -1,19 +1,20 @@
 "use client";
 
 import { Steps, useStepsContext } from "@ark-ui/react/steps";
+import { useRouter } from "@bprogress/next";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useMutationState } from "@tanstack/react-query";
 import { useDisclosure } from "@zayne-labs/toolkit-react";
 import { defineEnumDeep } from "@zayne-labs/toolkit-type-helpers";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
+import { DialogAnimated } from "@/components/animated/ui";
 import { IconBox, Show } from "@/components/common";
 import { getElementList } from "@/components/common/for";
 import { CloseIcon, GreenSpinnerIcon } from "@/components/icons";
-import { Button, DateTimePicker, Dialog, Form, Select } from "@/components/ui";
+import { Button, DateTimePicker, Form, Select } from "@/components/ui";
 import { backendApiSchemaRoutes } from "@/lib/api/callBackendApi/apiSchema";
 import {
 	bookAppointmentMutation,
@@ -23,7 +24,7 @@ import {
 import { capitalize } from "@/lib/utils";
 import { cnJoin, cnMerge } from "@/lib/utils/cn";
 import { appointmentPlaceholder, doctorAvatar } from "@/public/assets/images/dashboard";
-import { Main } from "../../../-components/Main";
+import { Main } from "../../../../-components/Main";
 
 const stepperItems = defineEnumDeep([
 	{
@@ -46,8 +47,19 @@ function AppointmentPage() {
 
 	const matchDoctorsMutationResult = useMutation(matchDoctorMutation());
 
+	const dialogCtx = useDisclosure();
+
 	const onSubmit = form.handleSubmit(async (data) => {
-		await matchDoctorsMutationResult.mutateAsync({ reason: data.reason });
+		dialogCtx.onOpen();
+
+		await matchDoctorsMutationResult.mutateAsync(
+			{ reason: data.reason },
+			{
+				onError: () => {
+					dialogCtx.onClose();
+				},
+			}
+		);
 	});
 
 	return (
@@ -103,6 +115,8 @@ function AppointmentPage() {
 										border-medinfo-primary-main px-4 py-3 placeholder:text-medinfo-dark-4 md:py-5
 										md:text-base"
 								/>
+
+								<Form.ErrorMessage />
 							</Form.Field>
 
 							<div className="flex w-full flex-col gap-4">
@@ -128,6 +142,8 @@ function AppointmentPage() {
 											/>
 										)}
 									/>
+
+									<Form.ErrorMessage />
 								</Form.Field>
 
 								<Form.Field
@@ -168,7 +184,7 @@ function AppointmentPage() {
 													}}
 												>
 													<Select.Item
-														value="English"
+														value="english"
 														className="h-12 bg-medinfo-light-3 font-medium
 															text-medinfo-dark-4 focus:bg-medinfo-light-1
 															focus:text-medinfo-body-color
@@ -181,6 +197,8 @@ function AppointmentPage() {
 											</Select.Root>
 										)}
 									/>
+
+									<Form.ErrorMessage />
 								</Form.Field>
 							</div>
 						</article>
@@ -224,6 +242,8 @@ function AppointmentPage() {
 											border-medinfo-primary-main px-4 py-3 placeholder:text-medinfo-dark-4
 											md:py-5 md:text-base"
 									/>
+
+									<Form.ErrorMessage />
 								</Form.Field>
 
 								<Form.Field
@@ -240,41 +260,42 @@ function AppointmentPage() {
 											border-medinfo-primary-main px-4 py-3 placeholder:text-medinfo-dark-4
 											md:py-5 md:text-base"
 									/>
+
+									<Form.ErrorMessage />
 								</Form.Field>
 							</div>
 
-							<div className="flex flex-col gap-5 md:flex-row">
-								<Form.Field
-									control={form.control}
-									name="healthInsurance"
-									className="flex-row-reverse items-center justify-end gap-2"
+							<Form.Field
+								control={form.control}
+								name="healthInsurance"
+								className="gap-5 md:flex-row"
+							>
+								<Form.Label
+									htmlFor={undefined}
+									className="flex flex-row-reverse items-center justify-end gap-2 md:text-[20px]"
 								>
-									<Form.Label className="md:text-[20px]">Yes, I have health insurance</Form.Label>
-
+									<p>Yes, I have health insurance</p>
 									<Form.Input
 										type="radio"
 										value="yes"
 										className="size-5 accent-medinfo-primary-main"
 									/>
-								</Form.Field>
+								</Form.Label>
 
-								<Form.Field
-									control={form.control}
-									name="healthInsurance"
-									className="flex-row-reverse items-center justify-end gap-2"
+								<Form.Label
+									htmlFor={undefined}
+									className="flex flex-row-reverse items-center justify-end gap-2 md:text-[20px]"
 								>
-									<Form.Label className="md:text-[20px]">
-										No, I don't have health insurance
-									</Form.Label>
-
+									<p>No, I don't have health insurance</p>
 									<Form.Input
-										defaultChecked={true}
 										type="radio"
 										value="no"
 										className="size-5 accent-medinfo-primary-main"
 									/>
-								</Form.Field>
-							</div>
+								</Form.Label>
+
+								<Form.ErrorMessage />
+							</Form.Field>
 						</article>
 					</section>
 
@@ -299,6 +320,8 @@ function AppointmentPage() {
 									className="size-5 shrink-0 rounded-[4px] border border-medinfo-primary-main
 										accent-medinfo-primary-main"
 								/>
+
+								<Form.ErrorMessage />
 							</Form.Field>
 
 							<Form.Field
@@ -314,6 +337,8 @@ function AppointmentPage() {
 									className="size-5 shrink-0 rounded-[4px] border border-medinfo-primary-main
 										accent-medinfo-primary-main"
 								/>
+
+								<Form.ErrorMessage />
 							</Form.Field>
 
 							<Form.Field
@@ -332,6 +357,8 @@ function AppointmentPage() {
 									className="size-5 shrink-0 rounded-[4px] border border-medinfo-primary-main
 										accent-medinfo-primary-main"
 								/>
+
+								<Form.ErrorMessage />
 							</Form.Field>
 
 							<Form.Field
@@ -347,16 +374,29 @@ function AppointmentPage() {
 									className="size-5 shrink-0 rounded-[4px] border border-medinfo-primary-main
 										accent-medinfo-primary-main"
 								/>
+
+								<Form.ErrorMessage />
 							</Form.Field>
 						</article>
 					</section>
 
-					<AppointmentDialog
-						formData={form.getValues() as unknown as z.infer<typeof AppointmentFormSchema>}
-						onFormReset={() => {
-							form.reset();
-						}}
-					/>
+					<section>
+						<div className="flex justify-center gap-6 md:justify-end">
+							<Button theme="secondary">Cancel</Button>
+
+							<Button type="submit" theme="primary" asChild={true}>
+								<Steps.NextTrigger>Book now</Steps.NextTrigger>
+							</Button>
+						</div>
+
+						<AppointmentDialog
+							dialogCtx={dialogCtx}
+							formData={form.getValues() as unknown as z.infer<typeof AppointmentFormSchema>}
+							onFormReset={() => {
+								form.reset();
+							}}
+						/>
+					</section>
 				</Steps.Root>
 			</Form.Root>
 		</Main>
@@ -364,14 +404,13 @@ function AppointmentPage() {
 }
 
 type DialogMainContentProps = {
+	dialogCtx: ReturnType<typeof useDisclosure>;
 	formData: z.infer<typeof AppointmentFormSchema>;
 	onFormReset: () => void;
 };
 
 function AppointmentDialog(props: DialogMainContentProps) {
-	const { formData, onFormReset } = props;
-
-	const dialogCtx = useDisclosure();
+	const { dialogCtx, formData, onFormReset } = props;
 
 	const [trialCount, setTrialCount] = useState(0);
 
@@ -408,30 +447,15 @@ function AppointmentDialog(props: DialogMainContentProps) {
 				},
 				onSuccess: () => {
 					onReset();
-					router.push("/patient");
+					router.push("/dashboard/patient");
 				},
 			}
 		);
 	};
 
 	return (
-		<Dialog.Root open={dialogCtx.isOpen} onOpenChange={dialogCtx.onToggle}>
-			<div className="flex justify-center gap-6 md:justify-end">
-				<Button theme="secondary">Cancel</Button>
-
-				<Button
-					type="submit"
-					theme="primary"
-					onClick={() => {
-						dialogCtx.onOpen();
-						stepsCtx.goToNextStep();
-					}}
-				>
-					Book Now
-				</Button>
-			</div>
-
-			<Dialog.Content
+		<DialogAnimated.Root open={dialogCtx.isOpen} onOpenChange={dialogCtx.onToggle}>
+			<DialogAnimated.Content
 				onPointerDownOutside={(e) => e.preventDefault()}
 				onEscapeKeyDown={() => stepsCtx.goToPrevStep()}
 				className={cnJoin(
@@ -440,13 +464,13 @@ function AppointmentDialog(props: DialogMainContentProps) {
 						"max-w-[341px] gap-8 px-6 py-8 md:max-w-[650px] md:gap-9 md:px-10"
 					:	"w-[292px] gap-2 pt-6 pb-[56px] md:max-w-[372px]"
 				)}
-				withCloseBtn={false}
+				withCloseButton={false}
 			>
 				<Show.Root when={matchDoctorData?.data}>
 					<Show.Content>
 						<StepperList className="mb-4 md:mb-6" />
 
-						<Dialog.Header className="flex flex-col items-center gap-2">
+						<DialogAnimated.Header className="flex flex-col items-center gap-2">
 							<figure className="flex flex-col items-center gap-2">
 								<Image
 									src={matchedDoctor?.avatar ?? (doctorAvatar as string)}
@@ -469,12 +493,12 @@ function AppointmentDialog(props: DialogMainContentProps) {
 								</figcaption>
 							</figure>
 
-							<Dialog.Title className="text-[18px] font-bold text-medinfo-dark-3">
+							<DialogAnimated.Title className="text-[18px] font-bold text-medinfo-dark-3">
 								{capitalize(matchedDoctor?.specialty)}
-							</Dialog.Title>
-						</Dialog.Header>
+							</DialogAnimated.Title>
+						</DialogAnimated.Header>
 
-						<Dialog.Footer className="flex flex-col items-center gap-3 md:gap-5">
+						<DialogAnimated.Footer className="flex flex-col items-center gap-3 md:gap-5">
 							<div className="flex flex-col items-center gap-4 md:flex-row-reverse md:gap-6">
 								<Button
 									isLoading={bookAppointmentMutationResult.isPending}
@@ -512,28 +536,28 @@ function AppointmentDialog(props: DialogMainContentProps) {
 								</span>{" "}
 								rematches left
 							</p>
-						</Dialog.Footer>
+						</DialogAnimated.Footer>
 					</Show.Content>
 
 					<Show.Fallback>
-						<Dialog.Close className="self-end" asChild={true}>
+						<DialogAnimated.Close className="self-end" asChild={true}>
 							<Steps.PrevTrigger>
 								<CloseIcon />
 							</Steps.PrevTrigger>
-						</Dialog.Close>
+						</DialogAnimated.Close>
 
-						<Dialog.Header className="items-center gap-8">
+						<DialogAnimated.Header className="items-center gap-8">
 							<GreenSpinnerIcon className="animate-spin md:size-[100px]" />
-							<Dialog.Title
+							<DialogAnimated.Title
 								className="text-center text-base font-normal text-medinfo-dark-4 md:px-4"
 							>
 								Matching you to a doctor, please hold on.
-							</Dialog.Title>
-						</Dialog.Header>
+							</DialogAnimated.Title>
+						</DialogAnimated.Header>
 					</Show.Fallback>
 				</Show.Root>
-			</Dialog.Content>
-		</Dialog.Root>
+			</DialogAnimated.Content>
+		</DialogAnimated.Root>
 	);
 }
 

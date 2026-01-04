@@ -39,7 +39,7 @@ type CreateMeetingOptions = {
 };
 
 const callZoomApi = createFetchClient({
-	auth: getZoomAccessToken(),
+	auth: () => getZoomAccessToken(),
 	schema: zoomMainApiSchema,
 });
 
@@ -103,7 +103,7 @@ export const createMeeting = async (options: CreateMeetingOptions) => {
 	return result.data;
 };
 
-export const deleteMeeting = async (meetingId: number) => {
+export const deleteMeeting = async (meetingId: string) => {
 	const result = await callZoomApi("@delete/https://api.zoom.us/v2/meetings/:meetingId", {
 		params: { meetingId },
 	});

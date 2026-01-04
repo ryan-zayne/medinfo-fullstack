@@ -1,16 +1,28 @@
+import CalendarIcon from "@/components/icons/CalendarIcon";
 import CommunityIcon from "@/components/icons/CommunityIcon";
 import DashboardIcon from "@/components/icons/DashboardIcon";
+import LogoutIcon from "@/components/icons/LogoutIcon";
 import MessageIcon from "@/components/icons/MessageIcon";
 import ProfileIcon from "@/components/icons/ProfileIcon";
 import SettingsIcon from "@/components/icons/SettingsIcon";
 import type { MenuItem } from "../../-components/HeaderShared";
 
-export const menuItems: MenuItem[] = [
+export const menuItems = [
 	{
 		href: "/dashboard/patient",
 		icon: <DashboardIcon fill="#FFFFFF" />,
 		iconActive: <DashboardIcon fill="#344E41" />,
 		title: "Dashboard",
+	},
+	{
+		children: [
+			{ href: "/dashboard/patient/appointments/book", title: "Book Appointment" },
+			{ href: "/dashboard/patient/appointments/upcoming", title: "Upcoming" },
+			{ href: "/dashboard/patient/appointments/history", title: "History" },
+		],
+		icon: <CalendarIcon fill="#FFFFFF" />,
+		iconActive: <CalendarIcon fill="#344E41" />,
+		title: "Appointments",
 	},
 	{
 		href: "/dashboard/patient/messages",
@@ -36,4 +48,10 @@ export const menuItems: MenuItem[] = [
 		iconActive: <SettingsIcon fill="#344E41" />,
 		title: "Settings",
 	},
-];
+	{
+		href: null,
+		icon: <LogoutIcon fill="#FFFFFF" />,
+		iconActive: <LogoutIcon fill="#344E41" />,
+		title: "Logout",
+	},
+] satisfies MenuItem[];
