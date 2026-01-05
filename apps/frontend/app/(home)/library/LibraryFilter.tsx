@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
+import { Suspense } from "react";
 import { IconBox, NavLink, Switch } from "@/components/common";
 import { For } from "@/components/common/for";
 import { SearchIcon } from "@/components/icons";
@@ -10,6 +11,7 @@ import { allDiseasesQuery } from "@/lib/react-query/queryOptions";
 import { cnJoin } from "@/lib/utils/cn";
 import { DiseaseCard, DiseaseCardSkeleton } from "./DiseaseCard";
 
+// eslint-disable-next-line react-refresh/only-export-components
 function LibraryFilter() {
 	const allDiseasesQueryResult = useQuery(allDiseasesQuery());
 
@@ -121,4 +123,10 @@ function LibraryFilter() {
 		</>
 	);
 }
-export default LibraryFilter;
+
+// eslint-disable-next-line react-refresh/only-export-components, unicorn/no-anonymous-default-export
+export default () => (
+	<Suspense>
+		<LibraryFilter />
+	</Suspense>
+);
