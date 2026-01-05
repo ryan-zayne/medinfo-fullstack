@@ -23,7 +23,7 @@
 		"@faker-js/faker": "^10.2.0",
 		"@medinfo/env": "workspace:*",
 		"@node-rs/argon2": "^2.0.2",
-		"@zayne-labs/tsconfig": "0.11.15",
+		"@zayne-labs/tsconfig": "0.11.16",
 		"consola": "3.4.2",
 		"cross-env": "^10.1.0",
 		"drizzle-kit": "0.31.8",

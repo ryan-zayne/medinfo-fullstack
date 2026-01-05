@@ -1,4 +1,3 @@
-/* eslint-disable react-you-might-not-need-an-effect/no-derived-state */
 "use client";
 
 import {

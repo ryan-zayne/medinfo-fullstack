@@ -28,7 +28,7 @@
 		"@zayne-labs/callapi": "1.11.38",
 		"@zayne-labs/toolkit-core": "0.12.20",
 		"@zayne-labs/toolkit-type-helpers": "0.12.20",
-		"@zayne-labs/tsconfig": "^0.11.15",
+		"@zayne-labs/tsconfig": "^0.11.16",
 		"arctic": "^3.7.0",
 		"cloudinary": "^2.8.0",
 		"consola": "3.4.2",

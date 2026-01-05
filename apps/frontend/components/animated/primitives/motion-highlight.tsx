@@ -1,4 +1,3 @@
-/* eslint-disable react-you-might-not-need-an-effect/no-adjust-state-on-prop-change */
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable react-you-might-not-need-an-effect/no-derived-state */
 /* eslint-disable react-x/no-unstable-default-props */
@@ -180,8 +179,7 @@ function MotionHighlightRoot<T extends React.ElementType = "div">(props: Highlig
 
 			setBoundsState((prev) => {
 				if (
-					prev
-					&& prev.top === newBounds.top
+					prev?.top === newBounds.top
 					&& prev.left === newBounds.left
 					&& prev.width === newBounds.width
 					&& prev.height === newBounds.height
@@ -426,8 +424,7 @@ function MotionHighlightItem<T extends React.ElementType = "div">(props: Highlig
 
 			if (shouldUpdateBounds) {
 				if (
-					previousBounds
-					&& previousBounds.top === bounds.top
+					previousBounds?.top === bounds.top
 					&& previousBounds.left === bounds.left
 					&& previousBounds.width === bounds.width
 					&& previousBounds.height === bounds.height

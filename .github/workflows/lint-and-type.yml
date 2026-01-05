@@ -35,4 +35,4 @@ jobs:
          - name: Run lint test
            run: |
               pnpm lint:type-check
-              pnpm lint:eslint
+              pnpm lint:eslint:root
