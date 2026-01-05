@@ -25,7 +25,7 @@ export const WhiteSpinnerIcon = (props: React.SVGProps<SVGSVGElement>) => (
 				attributeName="transform"
 				dur="2s"
 				repeatCount="indefinite"
-				variant="rotate"
+				type="rotate"
 				values="0 12 12;360 12 12"
 			/>
 		</g>
