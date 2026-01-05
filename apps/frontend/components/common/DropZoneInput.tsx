@@ -68,7 +68,7 @@ export function DropZoneInputImagePreview(props: ImagePreviewProps) {
 						className="h-12 gap-4 md:h-[66px]"
 						renderPreview={{
 							default: (
-								<span className="block size-[40px]">
+								<span className="block size-10">
 									<IconBox icon="solar:file-outline" className="size-full" />
 								</span>
 							),
@@ -91,7 +91,7 @@ export function DropZoneInputImagePreview(props: ImagePreviewProps) {
 
 							text: {
 								node: (
-									<span className="block size-[40px]">
+									<span className="block size-10">
 										<IconBox icon="solar:document-medicine-linear" className="size-full" />
 									</span>
 								),
@@ -102,7 +102,7 @@ export function DropZoneInputImagePreview(props: ImagePreviewProps) {
 					<DropZone.FileItemMetadata />
 
 					<DropZone.FileItemDelete>
-						<IconBox icon="lucide:trash-2" className="size-[20px] text-red-500 active:scale-110" />
+						<IconBox icon="lucide:trash-2" className="size-5 text-red-500 active:scale-110" />
 					</DropZone.FileItemDelete>
 				</DropZone.FileItem>
 			)}

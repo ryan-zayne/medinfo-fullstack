@@ -1,3 +1,5 @@
+"use client";
+
 import { createCustomContext, useControllableState } from "@zayne-labs/toolkit-react";
 import type { DiscriminatedRenderProps, InferProps } from "@zayne-labs/toolkit-react/utils";
 import { Dialog as DialogPrimitive } from "radix-ui";

@@ -1,3 +1,5 @@
+"use client";
+
 import type { InferProps } from "@zayne-labs/toolkit-react/utils";
 import { Select as SelectPrimitive } from "radix-ui";
 import { cnMerge } from "@/lib/utils/cn";

@@ -25,4 +25,4 @@ function Overlay(props: OverlayProps) {
 	);
 }
 
-export default Overlay;
+export { Overlay };

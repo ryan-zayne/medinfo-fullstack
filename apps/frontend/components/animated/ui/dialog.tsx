@@ -1,3 +1,5 @@
+"use client";
+
 import type { InferProps } from "@zayne-labs/toolkit-react/utils";
 import { IconBox } from "@/components/common/IconBox";
 import { cnMerge } from "@/lib/utils/cn";
