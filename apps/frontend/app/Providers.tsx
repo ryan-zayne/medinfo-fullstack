@@ -2,6 +2,7 @@
 
 import { ProgressProvider } from "@bprogress/next/app";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { getQueryClient } from "@/lib/react-query/queryClient";
 import { sessionQuery } from "@/lib/react-query/queryOptions";
 import { HydrationBoundary } from "./HydrationBoundary";
@@ -28,7 +29,7 @@ function Providers(props: ProvidersProps) {
 				options={{ showSpinner: true }}
 				shallowRouting={true}
 			>
-				{children}
+				<NuqsAdapter>{children}</NuqsAdapter>
 			</ProgressProvider>
 
 			<ReactQueryDevtools buttonPosition="bottom-left" initialIsOpen={false} />

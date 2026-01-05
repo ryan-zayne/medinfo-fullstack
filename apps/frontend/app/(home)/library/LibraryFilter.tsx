@@ -1,18 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { IconBox } from "@/components/common";
-import { getElementList } from "@/components/common/for";
+import { useQuery } from "@tanstack/react-query";
+import { parseAsStringLiteral, useQueryState } from "nuqs";
+import { IconBox, NavLink, Switch } from "@/components/common";
+import { For } from "@/components/common/for";
 import { SearchIcon } from "@/components/icons";
 import { DropdownMenu } from "@/components/ui";
+import { allDiseasesQuery } from "@/lib/react-query/queryOptions";
 import { cnJoin } from "@/lib/utils/cn";
-import { DiseaseCard, type ScrollableAlternateDiseaseCardsProps } from "./DiseaseCard";
+import { DiseaseCard, DiseaseCardSkeleton } from "./DiseaseCard";
 
-function LibraryFilter(props: ScrollableAlternateDiseaseCardsProps) {
-	const { diseases } = props;
+function LibraryFilter() {
+	const allDiseasesQueryResult = useQuery(allDiseasesQuery());
 
-	const [filter, setFilter] = useState<"grid" | "list">("grid");
-	const [CardList] = getElementList();
+	const [view, setView] = useQueryState(
+		"view",
+		parseAsStringLiteral(["grid", "list"]).withDefault("grid")
+	);
 
 	return (
 		<>
@@ -23,7 +27,7 @@ function LibraryFilter(props: ScrollableAlternateDiseaseCardsProps) {
 							border-[1.4px] border-medinfo-primary-main px-4 font-medium
 							data-placeholder:text-medinfo-dark-4 lg:w-[220px]"
 					>
-						<p className="text-sm font-medium md:text-base">{filter}</p>
+						<p className="text-sm font-medium md:text-base">{view}</p>
 
 						<IconBox
 							icon="lucide:chevron-down"
@@ -38,8 +42,8 @@ function LibraryFilter(props: ScrollableAlternateDiseaseCardsProps) {
 						align="start"
 					>
 						<DropdownMenu.RadioGroup
-							value={filter}
-							onValueChange={(value: string) => setFilter(value as typeof filter)}
+							value={view}
+							onValueChange={(value) => void setView(value as typeof view)}
 						>
 							<DropdownMenu.RadioItem
 								withIndicator={false}
@@ -64,7 +68,7 @@ function LibraryFilter(props: ScrollableAlternateDiseaseCardsProps) {
 				</DropdownMenu.Root>
 
 				<form
-					className="flex h-full items-center gap-[18px] rounded-lg border-[1.4px]
+					className="flex h-full items-center gap-4.5 rounded-lg border-[1.4px]
 						border-medinfo-primary-main bg-white px-4 focus-within:ring-2
 						focus-within:ring-medinfo-primary-lighter focus-visible:outline-hidden lg:w-[500px]"
 				>
@@ -79,17 +83,40 @@ function LibraryFilter(props: ScrollableAlternateDiseaseCardsProps) {
 				</form>
 			</section>
 
-			<section>
-				<CardList
-					className={cnJoin(
-						"grid w-full gap-y-6 lg:gap-y-12",
-						filter === "grid"
-							&& `auto-rows-[225px] grid-cols-2 justify-items-center gap-x-4 lg:auto-rows-[400px]
-							lg:gap-x-7`
-					)}
-					each={diseases}
-					renderItem={(disease, index) => <DiseaseCard key={index} type={filter} disease={disease} />}
-				/>
+			<section
+				className={cnJoin(
+					"grid w-full gap-y-6 lg:gap-y-12",
+					view === "grid"
+						&& `auto-rows-[225px] grid-cols-2 justify-items-center gap-x-4 lg:auto-rows-[400px]
+						lg:gap-x-7`
+				)}
+			>
+				<Switch.Root>
+					<Switch.Match when={allDiseasesQueryResult.isPending}>
+						<For each={6} renderItem={(index) => <DiseaseCardSkeleton key={index} type={view} />} />
+					</Switch.Match>
+
+					<Switch.Match when={allDiseasesQueryResult.data?.data.diseases}>
+						{(diseases) => (
+							<For
+								each={diseases}
+								renderItem={(disease) => (
+									<DiseaseCard key={disease.name} type={view} disease={disease} />
+								)}
+							/>
+						)}
+					</Switch.Match>
+				</Switch.Root>
+			</section>
+
+			<section className="flex justify-center">
+				<NavLink
+					href="#"
+					transitionType="regular"
+					className="inline-block text-center text-medinfo-primary-main lg:text-[20px] lg:font-medium"
+				>
+					More results ...({allDiseasesQueryResult.data?.data.pagination.total})
+				</NavLink>
 			</section>
 		</>
 	);

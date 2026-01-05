@@ -61,16 +61,16 @@ export function DailyTipCardSkeleton({ className }: { className?: string }) {
 			)}
 		>
 			<Card.Header className="h-[117px] md:h-[176px]">
-				<Skeleton className="size-full rounded-t-[16px] rounded-b-none" />
+				<Skeleton className="size-full rounded-t-[16px] rounded-b-none bg-medinfo-light-1" />
 			</Card.Header>
 
-			<Card.Content className="grow px-3 pt-3 md:p-7">
-				<Skeleton className="mb-2 h-4 w-full" />
-				<Skeleton className="h-4 w-2/3" />
+			<Card.Content className="flex grow flex-col gap-2 px-3 pt-3 md:p-7">
+				<Skeleton className="h-4 w-full bg-medinfo-light-1" />
+				<Skeleton className="h-4 w-2/3 bg-medinfo-light-1" />
 			</Card.Content>
 
 			<Card.Footer className="px-3 md:px-7">
-				<Skeleton className="h-4 w-24" />
+				<Skeleton className="h-4 w-24 bg-medinfo-light-1" />
 			</Card.Footer>
 		</Card.Root>
 	);
@@ -97,19 +97,24 @@ export function ScrollableTipCards(props: { tipId?: string }) {
 					</Switch.Match>
 
 					<Switch.Match when={healthTipsQueryResult.data?.data}>
-						<For
-							each={healthTipsQueryResult.data?.data ?? []}
-							renderItem={(tip) => (
-								<Carousel.Item key={tip.id} className="w-fit cursor-grab active:cursor-grabbing">
-									<DailyTipCard
-										id={tip.id}
-										imageUrl={tip.imageUrl}
-										title={tip.title}
-										imageAlt={tip.imageAlt}
-									/>
-								</Carousel.Item>
-							)}
-						/>
+						{(tips) => (
+							<For
+								each={tips}
+								renderItem={(tip) => (
+									<Carousel.Item
+										key={tip.id}
+										className="w-fit cursor-grab active:cursor-grabbing"
+									>
+										<DailyTipCard
+											id={tip.id}
+											imageUrl={tip.imageUrl}
+											title={tip.title}
+											imageAlt={tip.imageAlt}
+										/>
+									</Carousel.Item>
+								)}
+							/>
+						)}
 					</Switch.Match>
 				</Switch.Root>
 			</Carousel.Content>

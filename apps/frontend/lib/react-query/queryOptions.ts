@@ -28,3 +28,15 @@ export const healthTipsQuery = (options: { tipId?: string } = {}) => {
 		staleTime: Infinity,
 	});
 };
+
+export const allDiseasesQuery = () => {
+	return queryOptions({
+		queryFn: () => {
+			return callBackendApiForQuery("@get/diseases/all", {
+				meta: { toast: { success: false } },
+			});
+		},
+		queryKey: ["diseases"],
+		staleTime: Infinity,
+	});
+};

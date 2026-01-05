@@ -6,7 +6,7 @@ import Image from "next/image";
 import type { z } from "zod";
 import { IconBox, NavLink } from "@/components/common";
 import { getElementList } from "@/components/common/for";
-import { Button, Card } from "@/components/ui";
+import { Button, Card, Skeleton } from "@/components/ui";
 import { cnJoin } from "@/lib/utils/cn";
 import { tipPlaceHolder } from "@/public/assets/images/landing-page";
 
@@ -26,7 +26,6 @@ export function DiseaseCard(props: DiseaseCardProps) {
 		<Card.Root
 			as="li"
 			className={cnJoin(
-				"border-none shadow-none",
 				type === "grid" && "relative h-full w-fit max-lg:max-h-[176px]",
 				type === "list"
 					&& "flex w-full gap-[44px] rounded-[16px] border-2 border-medinfo-primary-main p-6"
@@ -57,7 +56,7 @@ export function DiseaseCard(props: DiseaseCardProps) {
 						lg:bottom-[calc((400px-182px)/2)] lg:h-[182px] lg:max-w-[229px] lg:p-6`
 				)}
 			>
-				<div>
+				<div className={cnJoin(type === "list" && "flex flex-col gap-4")}>
 					<h4
 						className={cnJoin(
 							"text-[18px] text-medinfo-primary-main",
@@ -69,9 +68,7 @@ export function DiseaseCard(props: DiseaseCardProps) {
 					</h4>
 
 					{type === "list" && (
-						<p className="mt-[16px] hidden text-sm text-medinfo-dark-1 lg:block">
-							{disease.description}
-						</p>
+						<p className="hidden text-sm text-medinfo-dark-1 lg:block">{disease.description}</p>
 					)}
 				</div>
 
@@ -83,12 +80,83 @@ export function DiseaseCard(props: DiseaseCardProps) {
 
 				<NavLink
 					href={`/library/disease/${disease.name}`}
-					className="inline-flex w-fit items-center gap-[14px] text-medinfo-primary-main lg:gap-4
+					className="inline-flex w-fit items-center gap-3.5 text-medinfo-primary-main lg:gap-4
 						lg:text-[20px] lg:font-medium"
 				>
 					See more
 					<IconBox icon="lucide:chevron-right" className="size-5 lg:size-6" />
 				</NavLink>
+			</Card.Content>
+		</Card.Root>
+	);
+}
+
+export type DiseaseCardSkeletonProps = {
+	type: "grid" | "list";
+};
+
+export function DiseaseCardSkeleton(props: DiseaseCardSkeletonProps) {
+	const { type } = props;
+
+	return (
+		<Card.Root
+			as="li"
+			className={cnJoin(
+				type === "grid" && "relative h-full w-fit max-lg:max-h-[176px]",
+				type === "list"
+					&& "flex w-full gap-6 rounded-2xl border-2 border-medinfo-primary-main p-4 lg:gap-11 lg:p-6"
+			)}
+		>
+			<Card.Header className={cnJoin(type === "list" && "shrink-0")}>
+				<Skeleton
+					className={cnJoin(
+						"bg-medinfo-light-1",
+						type === "grid" && "h-44 w-full min-w-40 rounded-[7px] lg:h-100 lg:w-92 lg:rounded-2xl",
+						type === "list" && "size-[68px] rounded-[4px] lg:size-[202px] lg:rounded-[12px]"
+					)}
+				/>
+			</Card.Header>
+
+			<Card.Content
+				className={cnJoin(
+					"flex flex-col justify-between",
+					type === "grid"
+						&& `absolute right-0 -bottom-[calc(95px/2)] h-[95px] min-w-[120px] rounded-2xl border-2
+						border-medinfo-primary-main bg-white p-2 lg:-right-[calc(3/5*229px)]
+						lg:bottom-[calc((400px-182px)/2)] lg:h-[182px] lg:max-w-[229px] lg:min-w-[200px] lg:p-6`,
+					type === "list" && "grow gap-2 lg:gap-4"
+				)}
+			>
+				<div className={cnJoin(type === "list" && "flex flex-col gap-2 lg:gap-3")}>
+					<Skeleton
+						className={cnJoin(
+							"bg-medinfo-light-1",
+							type === "grid" && "h-5 w-20 lg:h-7 lg:w-30",
+							type === "list" && "h-5 w-28 lg:h-8 lg:w-48"
+						)}
+					/>
+
+					{type === "list" && (
+						<div className="flex flex-col gap-2">
+							<Skeleton
+								className="h-3 w-full max-w-[400px] bg-medinfo-light-1 lg:h-4 lg:max-w-[500px]"
+							/>
+							<Skeleton
+								className="h-3 w-4/5 max-w-[320px] bg-medinfo-light-1 lg:h-4 lg:max-w-[400px]"
+							/>
+							<Skeleton className="hidden h-4 w-3/5 max-w-[300px] bg-medinfo-light-1 lg:block" />
+						</div>
+					)}
+				</div>
+
+				{type === "grid" && (
+					<Skeleton className="hidden h-4 w-[100px] bg-medinfo-light-1 lg:block lg:w-[180px]" />
+				)}
+
+				<div className="flex items-center gap-3.5 lg:gap-4">
+					<Skeleton className="h-4 w-[60px] bg-medinfo-light-1 lg:h-5 lg:w-[80px]" />
+					<Skeleton className="size-5 rounded-full bg-medinfo-light-1 lg:size-6" />
+				</div>
 			</Card.Content>
 		</Card.Root>
 	);
