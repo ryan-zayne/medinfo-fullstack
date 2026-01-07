@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { notFound } from "next/navigation";
 import { Main } from "@/app/(home)/-components";
 import { ForWithWrapper } from "@/components/common/for";
 import { callBackendApi } from "@/lib/api/callBackendApi";
@@ -13,7 +14,7 @@ async function DiseaseDetailsPage({ params }: PageProps<"/library/disease/[name]
 	]);
 
 	if (singleDisease.error) {
-		return null;
+		return notFound();
 	}
 
 	return (
@@ -30,7 +31,7 @@ async function DiseaseDetailsPage({ params }: PageProps<"/library/disease/[name]
 
 				<section
 					id="Ads"
-					className="scrollbar-hidden hidden max-h-[460px] overflow-auto lg:flex lg:flex-col lg:gap-2"
+					className="scrollbar-hidden flex max-h-[460px] flex-col gap-2 overflow-auto max-lg:hidden"
 				>
 					<AlternateDiseaseCard type="list" linkToAd="https://www.google.com" />
 					<AlternateDiseaseCard type="list" linkToAd="https://www.google.com" />
