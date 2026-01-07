@@ -82,7 +82,7 @@ export function ScrollableTipCards(props: { tipId?: string }) {
 	const healthTipsQueryResult = useQuery(healthTipsQuery({ tipId }));
 
 	return (
-		<Carousel.Root className="mt-6 flex w-full flex-col items-center gap-3.5 lg:gap-10">
+		<Carousel.Root className="mt-6 w-full">
 			<Carousel.Content className="gap-5 select-none">
 				<Switch.Root>
 					<Switch.Match when={healthTipsQueryResult.isPending}>

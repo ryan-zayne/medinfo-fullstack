@@ -1,12 +1,11 @@
 "use client";
 
 import type { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
-import { useDragScroll } from "@zayne-labs/ui-react/ui/drag-scroll";
 import Image from "next/image";
 import type { z } from "zod";
 import { IconBox, NavLink } from "@/components/common";
-import { getElementList } from "@/components/common/for";
-import { Button, Card, Skeleton } from "@/components/ui";
+import { For } from "@/components/common/for";
+import { Button, Card, Carousel, Skeleton } from "@/components/ui";
 import { cnJoin } from "@/lib/utils/cn";
 import { tipPlaceHolder } from "@/public/assets/images/landing-page";
 
@@ -28,7 +27,7 @@ export function DiseaseCard(props: DiseaseCardProps) {
 			className={cnJoin(
 				type === "grid" && "relative h-full w-fit max-lg:max-h-[176px]",
 				type === "list"
-					&& "flex w-full gap-[44px] rounded-[16px] border-2 border-medinfo-primary-main p-6"
+					&& "w-full flex-row gap-[44px] rounded-[16px] border-2 border-medinfo-primary-main p-6"
 			)}
 		>
 			<Card.Header>
@@ -104,7 +103,8 @@ export function DiseaseCardSkeleton(props: DiseaseCardSkeletonProps) {
 			className={cnJoin(
 				type === "grid" && "relative h-full w-fit max-lg:max-h-[176px]",
 				type === "list"
-					&& "flex w-full gap-6 rounded-2xl border-2 border-medinfo-primary-main p-4 lg:gap-11 lg:p-6"
+					&& `w-full flex-row gap-6 rounded-2xl border-2 border-medinfo-primary-main p-4 lg:gap-11
+					lg:p-6`
 			)}
 		>
 			<Card.Header className={cnJoin(type === "list" && "shrink-0")}>
@@ -271,21 +271,18 @@ export type ScrollableAlternateDiseaseCardsProps = {
 export function ScrollableAlternateDiseaseCards(props: ScrollableAlternateDiseaseCardsProps) {
 	const { diseases } = props;
 
-	const { getItemProps, getRootProps } = useDragScroll<HTMLUListElement>({
-		classNames: {
-			base: "flex justify-between gap-5 lg:mt-10",
-		},
-	});
-
-	const [CardList] = getElementList();
-
 	return (
-		<CardList
-			{...getRootProps()}
-			each={diseases}
-			renderItem={(disease, index) => (
-				<AlternateDiseaseCard key={index} type="grid" disease={disease} {...getItemProps()} />
-			)}
-		/>
+		<Carousel.Root className="w-full lg:mt-10">
+			<Carousel.Content className="gap-5 select-none">
+				<For
+					each={diseases}
+					renderItem={(disease) => (
+						<Carousel.Item key={disease.name} className="w-fit cursor-grab active:cursor-grabbing">
+							<AlternateDiseaseCard type="grid" disease={disease} />
+						</Carousel.Item>
+					)}
+				/>
+			</Carousel.Content>
+		</Carousel.Root>
 	);
 }

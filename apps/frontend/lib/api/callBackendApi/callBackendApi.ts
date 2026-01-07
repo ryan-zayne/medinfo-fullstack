@@ -29,10 +29,8 @@ export const BASE_API_URL = `${BACKEND_HOST}/api/v1`;
 export const sharedBaseConfig = defineBaseConfig({
 	baseURL: BASE_API_URL,
 	credentials: "include",
-	dedupe: {
-		cacheScope: "global",
-		cacheScopeKey: (ctx) => ctx.options.baseURL,
-	},
+	dedupeCacheScope: "global",
+	dedupeCacheScopeKey: (ctx) => ctx.options.baseURL,
 
 	plugins: [
 		authErrorRedirectPlugin({

@@ -107,51 +107,58 @@ const healthTipRoutes = defineSchemaRoutes({
 	},
 });
 
-const diseaseRoutes = defineSchemaRoutes({
-	"@delete/diseases/delete": {
-		body: InsertDiseaseSchema.pick({ name: true }),
-		data: withBaseSuccessResponse(z.null()),
-	},
+const diseaseRoutes = () => {
+	const DiseaseDataSchema = InsertDiseaseSchema.pick({
+		description: true,
+		image: true,
+		name: true,
+		precautions: true,
+		symptoms: true,
+	});
 
-	"@get/diseases/all": {
-		data: withBaseSuccessResponse(
-			z.object({
-				diseases: z.array(
-					// eslint-disable-next-line perfectionist/sort-objects
-					InsertDiseaseSchema.pick({ name: true, description: true, image: true })
-				),
-				pagination: z.object({
-					limit: z.int().positive(),
-					page: z.int().positive(),
-					total: z.int().positive(),
-				}),
-			})
-		),
-		query: z
-			.object({
-				limit: stringWithNumberValidation(),
-				page: stringWithNumberValidation(),
-				random: stringWithBooleanValidation(),
-			})
-			.partial()
-			.optional(),
-	},
+	return defineSchemaRoutes({
+		"@delete/diseases/delete": {
+			body: DiseaseDataSchema.pick({ name: true }),
+			data: withBaseSuccessResponse(z.null()),
+		},
 
-	"@get/diseases/one/:name": {
-		data: withBaseSuccessResponse(InsertDiseaseSchema),
-		params: z.object({ name: z.string() }),
-	},
+		"@get/diseases/all": {
+			data: withBaseSuccessResponse(
+				z.object({
+					diseases: DiseaseDataSchema.omit({ precautions: true, symptoms: true }).array(),
+					pagination: z.object({
+						limit: z.int().positive(),
+						page: z.int().positive(),
+						total: z.int().positive(),
+					}),
+				})
+			),
+			query: z
+				.object({
+					limit: stringWithNumberValidation(),
+					page: stringWithNumberValidation(),
+					random: stringWithBooleanValidation(),
+				})
+				.partial()
+				.optional(),
+		},
 
-	"@patch/diseases/update": {
-		body: InsertDiseaseSchema.partial().extend({ name: InsertDiseaseSchema.shape.name }),
-		data: withBaseSuccessResponse(InsertDiseaseSchema),
-	},
+		"@get/diseases/one/:name": {
+			data: withBaseSuccessResponse(DiseaseDataSchema),
+			params: z.object({ name: z.string() }),
+		},
 
-	"@post/diseases/add": {
-		body: InsertDiseaseSchema,
-		data: withBaseSuccessResponse(InsertDiseaseSchema),
-	},
-});
+		"@patch/diseases/update": {
+			body: DiseaseDataSchema.partial().extend({ name: InsertDiseaseSchema.shape.name }),
+			data: withBaseSuccessResponse(DiseaseDataSchema),
+		},
+
+		"@post/diseases/add": {
+			body: DiseaseDataSchema,
+			data: withBaseSuccessResponse(DiseaseDataSchema),
+		},
+	});
+};
 
 const PasswordSchema = z.string().min(8, "Password must be at least 8 characters long");
 
@@ -355,7 +362,7 @@ const appointmentsRoutes = () => {
 export const backendApiSchema = defineSchema(
 	{
 		...defaultSchemaRoute,
-		...diseaseRoutes,
+		...diseaseRoutes(),
 		...healthTipRoutes,
 		...authRoutes(),
 		...appointmentsRoutes(),
