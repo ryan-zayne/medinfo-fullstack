@@ -3,28 +3,29 @@ import * as cookieHelpers from "hono/cookie";
 import type { CookieOptions } from "hono/utils/cookie";
 import { ENVIRONMENT } from "@/config/env";
 
-type PossibleCookieNames =
-	| "google_code_verifier"
-	| "google_oauth_state"
-	| "zayneAccessToken"
-	| "zayneRefreshToken";
+type ZayneCookieNames = "zayneAccessToken" | "zayneRefreshToken";
+
+type GoogleCookieNames = "google_code_verifier" | "google_oauth_state";
+
+type PossibleCookieNames = GoogleCookieNames | ZayneCookieNames;
 
 export const getCookie = (ctx: Context, name: PossibleCookieNames) => cookieHelpers.getCookie(ctx, name);
 
+export const getZayneCookieHeader = (ctx: Context, name: ZayneCookieNames) => ctx.req.header(name);
+
 export const setCookie = (
 	ctx: Context,
-	name: PossibleCookieNames,
-	value: string,
-	options?: CookieOptions
+	options: CookieOptions & { name: PossibleCookieNames; value: string }
 ) => {
 	const isProduction = ENVIRONMENT.NODE_ENV === "production";
+	const { name, value, ...restOptions } = options;
 
 	cookieHelpers.setCookie(ctx, name, value, {
 		httpOnly: true,
 		partitioned: isProduction,
 		sameSite: isProduction ? "none" : "lax",
 		secure: isProduction,
-		...options,
+		...restOptions,
 	});
 };
 

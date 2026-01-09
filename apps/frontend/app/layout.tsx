@@ -7,10 +7,6 @@ import { cnJoin } from "@/lib/utils/cn";
 import { Providers } from "./Providers";
 import "../tailwind.css";
 
-type RootLayoutProps = {
-	children: React.ReactNode;
-};
-
 const workSans = Work_Sans({
 	subsets: ["latin"],
 	variable: "--font-work-sans",
@@ -28,7 +24,7 @@ export const metadata: Metadata = {
 	title: "MedInfo",
 };
 
-function RootLayout({ children }: RootLayoutProps) {
+function RootLayout({ children }: LayoutProps<"/">) {
 	return (
 		<html lang="en" data-theme="light">
 			<body className={cnJoin(roboto.variable, workSans.variable)}>

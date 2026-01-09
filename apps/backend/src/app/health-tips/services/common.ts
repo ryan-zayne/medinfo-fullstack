@@ -26,7 +26,7 @@ const healthTipIds = [
 ];
 
 export const getRandomHealthTipIds = (count: number) => {
-	const randomNumbers = generateRandomNumbers({ count, max: healthTipIds.length });
+	const randomNumbers = generateRandomNumbers({ count, max: healthTipIds.length - 1 });
 
 	const randomHealthTipIds = randomNumbers.map((number) => healthTipIds[number] as number);
 

@@ -1,13 +1,22 @@
+import { healthTipsQuery, sessionQuery } from "@/lib/react-query/queryOptions";
+import { HydrationBoundary } from "../HydrationBoundary";
 import { Footer, NavBar } from "./-components";
 
-function GlobalLayout({ children }: { children: React.ReactNode }) {
+function HomeLayout({ children }: LayoutProps<"/">) {
 	return (
 		<div className="flex min-h-svh w-full flex-col items-center">
-			<NavBar />
-			{children}
+			<HydrationBoundary
+				onPrefetch={(client) => [
+					client.prefetchQuery(sessionQuery()),
+					client.prefetchQuery(healthTipsQuery()),
+				]}
+			>
+				<NavBar />
+				{children}
+			</HydrationBoundary>
 			<Footer />
 		</div>
 	);
 }
 
-export default GlobalLayout;
+export default HomeLayout;

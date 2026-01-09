@@ -1,5 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 import { isServer } from "@zayne-labs/toolkit-core";
+import { cache } from "react";
 
 const makeQueryClient = () => {
 	return new QueryClient({
@@ -11,11 +12,13 @@ const makeQueryClient = () => {
 	});
 };
 
+const makeQueryClientOnServer = cache(makeQueryClient);
+
 let browserQueryClient: QueryClient | undefined;
 
 export const getQueryClient = () => {
 	if (isServer()) {
-		return makeQueryClient();
+		return makeQueryClientOnServer();
 	}
 
 	browserQueryClient ??= makeQueryClient();

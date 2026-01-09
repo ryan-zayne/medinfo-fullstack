@@ -24,7 +24,7 @@ export const healthTipsQuery = (options: { tipId?: string } = {}) => {
 				query: { limit: 10 },
 			});
 		},
-		queryKey: ["health-tips", ...(tipId ? [tipId] : [])],
+		queryKey: ["health-tips", tipId ? `page-id-${tipId}` : "home-page"],
 		staleTime: Infinity,
 	});
 };

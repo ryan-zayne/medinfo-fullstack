@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { IconBox } from "@/components/common";
 import { ForWithWrapper } from "@/components/common/for";
-import { Button } from "@/components/ui";
 import { cnJoin } from "@/lib/utils/cn";
 import { feature1, feature2, feature3, hero } from "@/public/assets/images/landing-page";
 import { AccordionFaqs, Main } from "./-components";
@@ -64,8 +63,8 @@ function HomePage() {
 				<div className="flex flex-col items-center max-md:text-center md:items-start">
 					<h1
 						className="text-[clamp(32px,5.2vw,68px)] leading-10 font-bold text-medinfo-primary-main
-							md:leading-[76px] md:text-balance [&:hover>span]:text-medinfo-secondary-darker
-							[&>span]:[transition:color_400ms_ease-out]"
+							md:leading-[76px] md:text-balance [&>span]:[transition:color_400ms_ease-out]
+							hover:[&>span]:text-medinfo-secondary-darker"
 					>
 						Free <span>access</span> to knowledge and an easy chit-chat with the best{" "}
 						<span>doctors</span>
@@ -80,9 +79,7 @@ function HomePage() {
 						just the way it should be.
 					</p>
 
-					<Button asChild={true} className="mt-6">
-						<CallToActionLink />
-					</Button>
+					<CallToActionLink buttonProps={{ className: "mt-6" }} />
 				</div>
 
 				<div
@@ -133,14 +130,15 @@ function HomePage() {
 								<span
 									className="absolute inset-0 flex items-end rounded-[16px]
 										bg-medinfo-primary-main p-7 font-normal text-white opacity-0
-										[transition:opacity_300ms_ease] group-hover:opacity-100 md:text-[18px]"
+										transition-opacity duration-500 ease-in-out group-hover:opacity-100
+										md:text-[18px]"
 								>
 									{coreService.description}
 								</span>
 							</div>
 
 							<p
-								className="mt-4 text-[22px] font-medium [transition:opacity_300ms_ease]
+								className="mt-4 text-[22px] font-medium transition-opacity duration-500 ease-in-out
 									group-hover:opacity-0 md:text-[24px] md:font-semibold"
 							>
 								{coreService.title}
@@ -217,13 +215,6 @@ function HomePage() {
 					Did you know?
 				</h2>
 
-				{/*
-				 * NOTE - The Await passes the result of the promise to the ScrollableTipCards component as a `result` prop via the Slot component and the `asChild` prop
-				 * This is a hack necessary to avoid turning this page into a client component due to the use of the Await component's render prop
-				 */}
-				{/* <AwaitRoot promise={tipsResultPromise} asChild={true}>
-					<ScrollableTipCards />
-				</AwaitRoot> */}
 				<ScrollableTipCards />
 			</section>
 

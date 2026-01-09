@@ -85,18 +85,25 @@ const authRoutes = new Hono()
 
 		const newZayneAccessTokenResult = generateAccessToken(newUser);
 
-		setCookie(ctx, "zayneAccessToken", newZayneAccessTokenResult.token, {
+		setCookie(ctx, {
 			expires: newZayneAccessTokenResult.expiresAt,
+			name: "zayneAccessToken",
+			value: newZayneAccessTokenResult.token,
 		});
 
-		setCookie(ctx, "zayneRefreshToken", newZayneRefreshTokenResult.token, {
+		setCookie(ctx, {
 			expires: newZayneRefreshTokenResult.expiresAt,
+			name: "zayneRefreshToken",
+			value: newZayneRefreshTokenResult.token,
 		});
 
 		// TODO: Send Verification email
 
 		return AppJsonResponse(ctx, {
-			data: { user: getNecessaryUserDetails(newUser) },
+			data: {
+				tokens: { access: newZayneAccessTokenResult, refresh: newZayneRefreshTokenResult },
+				user: getNecessaryUserDetails(newUser),
+			},
 			message: "Account created successfully",
 			schema: backendApiSchemaRoutes["@post/auth/signup"].data,
 		});
@@ -193,16 +200,23 @@ const authRoutes = new Hono()
 
 			const newZayneAccessTokenResult = generateAccessToken(currentUser);
 
-			setCookie(ctx, "zayneAccessToken", newZayneAccessTokenResult.token, {
+			setCookie(ctx, {
 				expires: newZayneAccessTokenResult.expiresAt,
+				name: "zayneAccessToken",
+				value: newZayneAccessTokenResult.token,
 			});
 
-			setCookie(ctx, "zayneRefreshToken", newZayneRefreshTokenResult.token, {
+			setCookie(ctx, {
 				expires: newZayneRefreshTokenResult.expiresAt,
+				name: "zayneRefreshToken",
+				value: newZayneRefreshTokenResult.token,
 			});
 
 			return AppJsonResponse(ctx, {
-				data: { user: getNecessaryUserDetails(updatedUser) },
+				data: {
+					tokens: { access: newZayneAccessTokenResult, refresh: newZayneRefreshTokenResult },
+					user: getNecessaryUserDetails(updatedUser),
+				},
 				message: "Signed in successfully",
 				schema: backendApiSchemaRoutes["@post/auth/signin"].data,
 			});
@@ -214,14 +228,16 @@ const authRoutes = new Hono()
 		(ctx) => {
 			const { authURL, codeVerifier, cookiesExpireAt, state } = createGoogleAuthURL();
 
-			setCookie(ctx, "google_code_verifier", codeVerifier, {
+			setCookie(ctx, {
 				expires: cookiesExpireAt,
-				sameSite: "lax",
+				name: "google_code_verifier",
+				value: codeVerifier,
 			});
 
-			setCookie(ctx, "google_oauth_state", state, {
+			setCookie(ctx, {
 				expires: cookiesExpireAt,
-				sameSite: "lax",
+				name: "google_oauth_state",
+				value: state,
 			});
 
 			return AppJsonResponse(ctx, {
@@ -296,12 +312,16 @@ const authRoutes = new Hono()
 					.where(eq(users.id, newUser.id));
 			}
 
-			setCookie(ctx, "zayneAccessToken", newZayneAccessTokenResult.token, {
+			setCookie(ctx, {
 				expires: newZayneAccessTokenResult.expiresAt,
+				name: "zayneAccessToken",
+				value: newZayneAccessTokenResult.token,
 			});
 
-			setCookie(ctx, "zayneRefreshToken", newZayneRefreshTokenResult.token, {
+			setCookie(ctx, {
 				expires: newZayneRefreshTokenResult.expiresAt,
+				name: "zayneRefreshToken",
+				value: newZayneRefreshTokenResult.token,
 			});
 
 			return ctx.redirect(redirectURL);

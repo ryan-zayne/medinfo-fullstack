@@ -62,9 +62,7 @@ function DesktopNavigation(props: { className?: string }) {
 					<SearchIcon variant="green" />
 				</Button>
 
-				<Button asChild={true}>
-					<CallToActionLink />
-				</Button>
+				<CallToActionLink />
 			</div>
 		</section>
 	);
@@ -111,9 +109,7 @@ function MobileNavigation(props: MobileNavProps) {
 					<SearchIcon variant="white" />
 				</Button>
 
-				<Button theme="secondary-inverted" asChild={true}>
-					<CallToActionLink />
-				</Button>
+				<CallToActionLink buttonProps={{ theme: "secondary-inverted" }} />
 			</div>
 		</section>
 	);

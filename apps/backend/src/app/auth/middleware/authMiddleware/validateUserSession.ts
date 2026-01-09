@@ -98,7 +98,7 @@ type NewSession = {
 /**
  * @description This function is used to validate the refresh token and generate a new access token
  */
-const refreshUserSession = async (zayneRefreshToken: string): Promise<NewSession> => {
+export const refreshUserSession = async (zayneRefreshToken: string): Promise<NewSession> => {
 	try {
 		const currentUser = await getAndVerifyUserFromToken({ variant: "refreshToken", zayneRefreshToken });
 

@@ -13,8 +13,10 @@ const authMiddleware = createMiddleware<HonoAppBindings>(async (ctx, next) => {
 	});
 
 	if (newZayneAccessTokenResult) {
-		setCookie(ctx, "zayneAccessToken", newZayneAccessTokenResult.token, {
+		setCookie(ctx, {
 			expires: newZayneAccessTokenResult.expiresAt,
+			name: "zayneAccessToken",
+			value: newZayneAccessTokenResult.token,
 		});
 	}
 

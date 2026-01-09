@@ -1,7 +1,7 @@
 "use client";
 
+import { useRouter } from "@bprogress/next";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { use } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";

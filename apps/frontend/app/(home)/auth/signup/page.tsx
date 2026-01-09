@@ -1,9 +1,9 @@
 "use client";
 
+import { useRouter } from "@bprogress/next";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignUpSchema as SignUpSchemaPrimitive } from "@medinfo/shared/validation/backendApiSchema";
 import { toFormData } from "@zayne-labs/callapi/utils";
-import { useRouter } from "next/navigation";
 import { use } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";

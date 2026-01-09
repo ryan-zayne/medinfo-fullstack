@@ -213,6 +213,11 @@ const authRoutes = () => {
 		...DoctorRequiredSchema.shape,
 	});
 
+	const TokenObjectSchema = z.object({
+		expiresAt: z.preprocess((value: string) => new Date(value), z.date()),
+		token: z.string(),
+	});
+
 	return defineSchemaRoutes({
 		"@get/auth/google": {
 			data: withBaseSuccessResponse(z.object({ authURL: z.url() })),
@@ -235,7 +240,11 @@ const authRoutes = () => {
 		},
 
 		"@get/auth/session": {
-			data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
+			data: withBaseSuccessResponse(
+				z.object({
+					user: UserDataSchema,
+				})
+			),
 		},
 
 		"@get/auth/signout": {
@@ -247,12 +256,28 @@ const authRoutes = () => {
 				email: z.email("Please enter a valid email"),
 				password: PasswordSchema,
 			}),
-			data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
+			data: withBaseSuccessResponse(
+				z.object({
+					tokens: z.object({
+						access: TokenObjectSchema,
+						refresh: TokenObjectSchema,
+					}),
+					user: UserDataSchema,
+				})
+			),
 		},
 
 		"@post/auth/signup": {
 			body: z.instanceof(FormData),
-			data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
+			data: withBaseSuccessResponse(
+				z.object({
+					tokens: z.object({
+						access: TokenObjectSchema,
+						refresh: TokenObjectSchema,
+					}),
+					user: UserDataSchema,
+				})
+			),
 		},
 	});
 };

@@ -1,7 +1,7 @@
 "use client";
 
+import { useRouter } from "@bprogress/next";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import CommentIcon from "@/components/icons/CommentIcon";
 import ViewIcon from "@/components/icons/ViewIcon";
 import { Button } from "@/components/ui";
