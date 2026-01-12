@@ -143,8 +143,8 @@ function MobileHeader(props: MobileHeaderProps) {
 					<ForWithWrapper
 						each={menuItems}
 						as="nav"
-						className="mt-8 flex w-full max-w-[300px] flex-col justify-start gap-2 px-6 font-medium
-							text-nowrap lg:text-[22px]"
+						className="mt-8 flex w-full max-w-[300px] flex-col gap-2 px-6 font-medium text-nowrap
+							lg:text-[22px]"
 						renderItem={(item) => (
 							<Fragment key={item.title}>
 								{isString(item.href) && (
@@ -183,7 +183,6 @@ function MobileHeader(props: MobileHeaderProps) {
 												renderItem={(child) => (
 													<NavLink
 														key={child.href}
-														transitionType="navbar"
 														href={child.href}
 														className={cnMerge(
 															`ml-10 flex h-10 items-center rounded-lg border
@@ -207,7 +206,7 @@ function MobileHeader(props: MobileHeaderProps) {
 										transitionType="navbar"
 										href="#"
 										onClick={() => {}}
-										className="flex items-center gap-4 py-2"
+										className="flex w-fit items-center gap-4 py-2"
 									>
 										{item.icon}
 										{item.title}

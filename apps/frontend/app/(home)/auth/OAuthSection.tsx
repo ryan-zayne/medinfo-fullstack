@@ -1,3 +1,5 @@
+"use client";
+
 import { useRouter } from "@bprogress/next";
 import { useMutation } from "@tanstack/react-query";
 import type { z } from "zod";
@@ -37,11 +39,11 @@ function OAuthSection(props: { userRole: z.infer<typeof SignUpSchema>["role"] })
 					isLoading={googleAuthMutationResult.isPending}
 					onClick={onGoogleOAuthRequest}
 				>
-					<IconBox icon="icon-park-outline:google" className="size-[18px] lg:size-6" />
+					<IconBox icon="icon-park-outline:google" className="size-4.5 lg:size-6" />
 				</Button>
 
 				<Button size="icon" theme="secondary" className="rounded-[8px]">
-					<IconBox icon="basil:facebook-outline" className="size-[18px] lg:size-6" />
+					<IconBox icon="basil:facebook-outline" className="size-4.5 lg:size-6" />
 				</Button>
 			</div>
 		</>

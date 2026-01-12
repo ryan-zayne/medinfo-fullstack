@@ -88,13 +88,7 @@ const diseasesRoutes = new Hono()
 
 			const [newDisease] = await db
 				.insert(diseases)
-				.values({
-					description,
-					image,
-					name,
-					precautions,
-					symptoms,
-				})
+				.values({ description, image, name, precautions, symptoms })
 				.returning();
 
 			if (!newDisease) {
@@ -119,13 +113,7 @@ const diseasesRoutes = new Hono()
 
 			const [updatedDisease] = await db
 				.update(diseases)
-				.set({
-					description,
-					image,
-					name,
-					precautions,
-					symptoms,
-				})
+				.set({ description, image, name, precautions, symptoms })
 				.where(eq(diseases.name, name))
 				.returning();
 

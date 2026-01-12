@@ -17,19 +17,19 @@ services:
          timeout: 5s
          retries: 3
 
-   medinfo-db-setup:
-      build:
-         context: .
-         dockerfile: packages/db/Dockerfile
-      container_name: medinfo-db-setup
-      depends_on:
-         medinfo-postgres-db:
-            condition: service_healthy
-      env_file:
-         - ./apps/backend/.env
-      networks:
-         - medinfo-network
-      restart: no
+   #  medinfo-db-setup:
+   #     build:
+   #        context: .
+   #        dockerfile: packages/db/Dockerfile
+   #     container_name: medinfo-db-setup
+   #     depends_on:
+   #        medinfo-postgres-db:
+   #           condition: service_healthy
+   #     env_file:
+   #        - ./apps/backend/.env
+   #     networks:
+   #        - medinfo-network
+   #     restart: no
 
    medinfo-backend:
       build:
@@ -37,9 +37,9 @@ services:
          dockerfile: apps/backend/Dockerfile
       container_name: medinfo-backend
       restart: unless-stopped
-      depends_on:
-         medinfo-db-setup:
-            condition: service_completed_successfully
+      # depends_on:
+      #    medinfo-db-setup:
+      #       condition: service_completed_successfully
       networks:
          - medinfo-network
       ports:

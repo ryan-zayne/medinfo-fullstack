@@ -14,7 +14,6 @@ export const handleCookieRelay = async (nextjsRequest: Request, nextjsResponse: 
 		headers: {
 			Cookie: cookieHeader,
 		},
-
 		onResponse: (ctx) => {
 			const responseCookies = ctx.response.headers.get("set-cookie");
 
@@ -23,8 +22,11 @@ export const handleCookieRelay = async (nextjsRequest: Request, nextjsResponse: 
 			// == Attach the backend's Set-Cookie header to the outgoing Next.js response.
 			nextjsResponse.headers.set("set-cookie", responseCookies);
 		},
-
+		// == Turn off all base plugins
 		plugins: [],
+		// == Turn off all internal data-parsing and validation
+		resultMode: "fetchApi",
+		throwOnError: true,
 	});
 
 	return nextjsResponse;
