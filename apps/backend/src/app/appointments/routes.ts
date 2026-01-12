@@ -99,6 +99,7 @@ const appointmentsRoutes = new Hono()
 					meetingURL: zoomMeetingDetails.join_url,
 					patientId: currentUser.id,
 					reason,
+					status: "confirmed",
 				})
 				.returning();
 
@@ -142,10 +143,12 @@ const appointmentsRoutes = new Hono()
 
 			const appointmentsResult = await db
 				.select({
+					cancelledAt: appointments.cancelledAt,
 					dateOfAppointment: appointments.dateOfAppointment,
 					id: appointments.id,
 					meetingId: appointments.meetingId,
 					meetingURL: appointments.meetingURL,
+					patientAvatar: users.avatar,
 					patientName: users.fullName,
 					reason: appointments.reason,
 					status: appointments.status,
@@ -185,7 +188,9 @@ const appointmentsRoutes = new Hono()
 
 			const appointmentsResult = await db
 				.select({
+					cancelledAt: appointments.cancelledAt,
 					dateOfAppointment: appointments.dateOfAppointment,
+					doctorAvatar: users.avatar,
 					doctorName: users.fullName,
 					id: appointments.id,
 					meetingId: appointments.meetingId,
@@ -243,7 +248,10 @@ const appointmentsRoutes = new Hono()
 			}
 
 			await Promise.all([
-				db.delete(appointments).where(eq(appointments.id, appointmentId)),
+				db
+					.update(appointments)
+					.set({ cancelledAt: new Date(), status: "cancelled" })
+					.where(eq(appointments.id, appointmentId)),
 				deleteMeeting(meetingId),
 			]);
 

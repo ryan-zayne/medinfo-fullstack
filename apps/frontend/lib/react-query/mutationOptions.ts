@@ -47,3 +47,16 @@ export const bookAppointmentMutation = () => {
 		mutationKey: ["appointments", "book"],
 	});
 };
+
+export const cancelAppointmentMutation = () => {
+	return mutationOptions({
+		mutationFn: (
+			bodyData: z.infer<(typeof backendApiSchemaRoutes)["@delete/appointments/cancel"]["body"]>
+		) => {
+			return callBackendApiForQuery("@delete/appointments/cancel", {
+				body: bodyData,
+			});
+		},
+		mutationKey: ["appointments", "cancel"],
+	});
+};

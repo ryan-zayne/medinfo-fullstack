@@ -4,6 +4,7 @@ import { users } from "./auth";
 
 export const appointments = pg.pgTable("appointments", {
 	allergies: pg.text().notNull().default("none"),
+	cancelledAt: pg.timestamp({ withTimezone: true }),
 	createdAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
 	dateOfAppointment: pg.timestamp({ mode: "string", withTimezone: true }).notNull(),
 	doctorId: pg.uuid().references(() => users.id, { onDelete: "cascade" }),

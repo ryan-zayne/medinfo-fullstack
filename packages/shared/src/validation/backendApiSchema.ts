@@ -300,6 +300,7 @@ export const DoctorUserSchema = SelectUserSchema.pick({
 
 const appointmentsRoutes = () => {
 	const AppointmentDetailsSchema = SelectAppointmentSchema.pick({
+		cancelledAt: true,
 		dateOfAppointment: true,
 		id: true,
 		meetingId: true,
@@ -322,7 +323,9 @@ const appointmentsRoutes = () => {
 		"@get/appointments/doctor/all": {
 			data: withBaseSuccessResponse(
 				z.object({
-					appointments: z.array(AppointmentDetailsSchema.extend({ patientName: z.string() })),
+					appointments: z.array(
+						AppointmentDetailsSchema.extend({ patientAvatar: z.string(), patientName: z.string() })
+					),
 					pagination: PaginationSchema,
 				})
 			),
@@ -333,7 +336,9 @@ const appointmentsRoutes = () => {
 		"@get/appointments/patient/all": {
 			data: withBaseSuccessResponse(
 				z.object({
-					appointments: z.array(AppointmentDetailsSchema.extend({ doctorName: z.string() })),
+					appointments: z.array(
+						AppointmentDetailsSchema.extend({ doctorAvatar: z.string(), doctorName: z.string() })
+					),
 					pagination: PaginationSchema,
 				})
 			),

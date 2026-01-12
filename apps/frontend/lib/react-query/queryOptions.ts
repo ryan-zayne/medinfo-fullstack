@@ -40,3 +40,19 @@ export const allDiseasesQuery = () => {
 		staleTime: Infinity,
 	});
 };
+
+export const patientAppointmentsQuery = () => {
+	return queryOptions({
+		queryFn: () => {
+			return callBackendApiForQuery("@get/appointments/patient/all", {
+				meta: { toast: { success: false } },
+				query: { limit: 100 },
+			});
+		},
+		queryKey: ["appointments", "patient"],
+	});
+};
+
+export type PatientAppointmentQueryResultType = Awaited<
+	ReturnType<NonNullable<ReturnType<typeof patientAppointmentsQuery>["select"]>>
+>;

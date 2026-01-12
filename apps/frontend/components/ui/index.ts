@@ -9,3 +9,4 @@ export { Form } from "./form";
 export * as Popover from "./popover";
 export * as Select from "./select";
 export { Skeleton } from "./skeleton";
+export * as Avatar from "./avatar";
