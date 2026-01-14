@@ -226,6 +226,15 @@ const authRoutes = new Hono()
 		"/google",
 		validateWithZodMiddleware("query", backendApiSchemaRoutes["@get/auth/google"].query),
 		(ctx) => {
+			const { role } = ctx.req.valid("query");
+
+			if (role !== "patient") {
+				throw new AppError({
+					code: 401,
+					message: "Only patients are allowed to signup with google",
+				});
+			}
+
 			const { authURL, codeVerifier, cookiesExpireAt, state } = createGoogleAuthURL();
 
 			setCookie(ctx, {
