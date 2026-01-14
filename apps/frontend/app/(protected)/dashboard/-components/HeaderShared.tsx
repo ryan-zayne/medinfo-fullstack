@@ -4,11 +4,13 @@ import { useToggle } from "@zayne-labs/toolkit-react";
 import { isString, type UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
 import { usePathname } from "next/navigation";
 import { Fragment } from "react";
+import { AvatarGroupAnimated } from "@/components/animated/ui";
 import * as Collapsible from "@/components/animated/ui/collapsible";
 import { For, ForWithWrapper, IconBox, Logo, NavLink } from "@/components/common";
 import type { MainAppRoutes } from "@/components/common/NavLink";
 import { HamburgerIcon, NotificationIcon, SearchIcon, XIcon } from "@/components/icons";
-import { Button, Form } from "@/components/ui";
+import { Avatar, Button, Form } from "@/components/ui";
+import type { SessionQueryResultType } from "@/lib/react-query/queryOptions";
 import { capitalize } from "@/lib/utils";
 import { cnMerge } from "@/lib/utils/cn";
 
@@ -37,10 +39,11 @@ export type MenuItem = UnionDiscriminator<
 
 type HeaderProps = {
 	menuItems: MenuItem[];
+	sessionQueryData: SessionQueryResultType | undefined;
 };
 
 function HeaderShared(props: HeaderProps) {
-	const { menuItems } = props;
+	const { menuItems, sessionQueryData } = props;
 	const pathName = usePathname();
 
 	const activePath = capitalize(pathName.split("/").at(-1));
@@ -48,7 +51,11 @@ function HeaderShared(props: HeaderProps) {
 
 	return (
 		<>
-			<DesktopHeader activeTitle={activeTitle} className="max-lg:hidden" />
+			<DesktopHeader
+				sessionQueryData={sessionQueryData}
+				activeTitle={activeTitle}
+				className="max-lg:hidden"
+			/>
 
 			<MobileHeader activeTitle={activeTitle} menuItems={menuItems} className="lg:hidden" />
 		</>
@@ -60,10 +67,11 @@ export { HeaderShared };
 type DesktopHeaderProps = {
 	activeTitle: string | undefined;
 	className?: string;
+	sessionQueryData: SessionQueryResultType | undefined;
 };
 
 function DesktopHeader(props: DesktopHeaderProps) {
-	const { activeTitle, className } = props;
+	const { activeTitle, className, sessionQueryData } = props;
 
 	return (
 		<header
@@ -87,7 +95,26 @@ function DesktopHeader(props: DesktopHeaderProps) {
 
 			<div className="flex items-center space-x-10">
 				<NotificationIcon />
-				<div className="size-10 rounded-full bg-gray-300" />
+				<AvatarGroupAnimated.Root className="space-x-0" translate="5%">
+					<Avatar.Root className="size-14 rounded-full border border-medinfo-light-2">
+						<Avatar.Image
+							src={sessionQueryData?.data.user.avatar}
+							alt={sessionQueryData?.data.user.fullName}
+						/>
+						<Avatar.Fallback
+							className="bg-medinfo-secondary-main text-lg font-bold text-medinfo-primary-darker"
+						>
+							{sessionQueryData?.data.user.firstName[0]}
+							{sessionQueryData?.data.user.lastName[0]}
+						</Avatar.Fallback>
+
+						<AvatarGroupAnimated.Tooltip
+							classNames={{ base: "bg-medinfo-primary-darker text-white" }}
+						>
+							{sessionQueryData?.data.user.fullName}
+						</AvatarGroupAnimated.Tooltip>
+					</Avatar.Root>
+				</AvatarGroupAnimated.Root>
 			</div>
 		</header>
 	);

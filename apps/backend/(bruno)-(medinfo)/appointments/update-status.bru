@@ -1,0 +1,33 @@
+meta {
+  name: update-status
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{baseURL-dev}}/appointments/status
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "appointmentId": "replace-with-valid-appointment-uuid",
+    "status": "confirmed"
+  }
+}
+
+docs {
+  # Update Appointment Status
+
+  Allows a doctor to update the status of an appointment.
+
+  ## Request Body
+
+  - `appointmentId` (string, required): The UUID of the appointment.
+  - `status` (string, required): The new status. Must be either "confirmed" or "completed".
+
+  ## Success Response (200 OK)
+
+  Returns a success message upon status update.
+}

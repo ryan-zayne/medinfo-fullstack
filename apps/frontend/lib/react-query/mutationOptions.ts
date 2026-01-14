@@ -60,3 +60,15 @@ export const cancelAppointmentMutation = () => {
 		mutationKey: ["appointments", "cancel"],
 	});
 };
+export const updateAppointmentStatusMutation = () => {
+	return mutationOptions({
+		mutationFn: (
+			bodyData: z.infer<(typeof backendApiSchemaRoutes)["@patch/appointments/status"]["body"]>
+		) => {
+			return callBackendApiForQuery("@patch/appointments/status", {
+				body: bodyData,
+			});
+		},
+		mutationKey: ["appointments", "status"],
+	});
+};

@@ -56,3 +56,18 @@ export const patientAppointmentsQuery = () => {
 export type PatientAppointmentQueryResultType = Awaited<
 	ReturnType<NonNullable<ReturnType<typeof patientAppointmentsQuery>["select"]>>
 >;
+export const doctorAppointmentsQuery = () => {
+	return queryOptions({
+		queryFn: () => {
+			return callBackendApiForQuery("@get/appointments/doctor/all", {
+				meta: { toast: { success: false } },
+				query: { limit: 100 },
+			});
+		},
+		queryKey: ["appointments", "doctor"],
+	});
+};
+
+export type DoctorAppointmentQueryResultType = Awaited<
+	ReturnType<NonNullable<ReturnType<typeof doctorAppointmentsQuery>["select"]>>
+>;

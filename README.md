@@ -26,7 +26,7 @@ This project is a monorepo managed by **TurboRepo** and **pnpm workspaces**.
 ### Prerequisites
 
 - Node.js 18+
-- pnpm 10.27.0+
+- pnpm 10.28.0+
 - PostgreSQL
 
 ### Installation

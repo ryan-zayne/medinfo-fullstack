@@ -1,4 +1,5 @@
-import { checkUserSession } from "../utils/session";
+import { callBackendApi } from "../../callBackendApi";
+import { sessionDedupeOptions } from "../utils/session";
 
 export const handleCookieRelay = async (nextjsRequest: Request, nextjsResponse: Response) => {
 	const cookieHeader = nextjsRequest.headers.get("cookie");
@@ -10,24 +11,22 @@ export const handleCookieRelay = async (nextjsRequest: Request, nextjsResponse: 
 
 	if (!hasRefreshToken || hasAccessToken) return;
 
-	await checkUserSession({
+	const backendResponse = await callBackendApi("@get/auth/session", {
+		...sessionDedupeOptions,
 		headers: {
 			Cookie: cookieHeader,
 		},
-		onResponse: (ctx) => {
-			const responseCookies = ctx.response.headers.get("set-cookie");
-
-			if (!responseCookies) return;
-
-			// == Attach the backend's Set-Cookie header to the outgoing Next.js response.
-			nextjsResponse.headers.set("set-cookie", responseCookies);
-		},
 		// == Turn off all base plugins
 		plugins: [],
-		// == Turn off all internal data-parsing and validation
 		resultMode: "fetchApi",
-		throwOnError: true,
 	});
+
+	const responseCookies = backendResponse?.headers.get("set-cookie");
+
+	if (!responseCookies) return;
+
+	// == Attach the backend's Set-Cookie header to the outgoing Next.js response.
+	nextjsResponse.headers.set("set-cookie", responseCookies);
 
 	return nextjsResponse;
 };

@@ -79,7 +79,7 @@ medinfo-fullstack/
 ### Prerequisites
 
 - Node.js 18+
-- pnpm 10.27.0 (`corepack enable`)
+- pnpm 10.28.0 (`corepack enable`)
 - PostgreSQL database
 
 ### Setup
@@ -250,15 +250,36 @@ diseasesQuery({ page: 1, limit: 10 });
 // Mutations with toast handling
 googleOAuthMutation();
 bookAppointmentMutation();
+
+// Type inference for query results
+export type PatientAppointmentQueryResultType = Awaited<
+	ReturnType<ReturnType<typeof patientAppointmentsQuery>["queryFn"]>
+>;
 ```
+
+**Key Recommendation**: Use `Awaited<ReturnType<ReturnType<typeof ...Query>["queryFn"]>>` to extract the data type from query options when `select` is not used.
 
 ### Component Library
 
-| Location             | Components                                                                               |
-| -------------------- | ---------------------------------------------------------------------------------------- |
-| `components/common/` | Logo, NavLink, Show, For, ForWithWrapper, Switch, Await, Overlay, DropZoneInput          |
-| `components/icons/`  | Icon components (ArrowBackIcon, CalendarIcon, etc.)                                      |
-| `components/ui/`     | Button, Form, Select, Dialog, Accordion, Carousel, DateTimePicker, DropdownMenu, Popover |
+| Location               | Components                                                                               |
+| ---------------------- | ---------------------------------------------------------------------------------------- |
+| `components/common/`   | Logo, NavLink, Show, For, ForWithWrapper, Switch, Await, Overlay, DropZoneInput          |
+| `components/animated/` | DialogAnimated, AvatarGroupAnimated (Framer Motion powered)                              |
+| `components/icons/`    | Icon components (ArrowBackIcon, CalendarIcon, etc.)                                      |
+| `components/ui/`       | Button, Form, Select, Dialog, Accordion, Carousel, DateTimePicker, DropdownMenu, Popover |
+
+### Reusable Dashboard Patterns
+
+To maximize code reuse across roles (Patient/Doctor), we utilize a **Composable Layout Pattern**:
+
+1. **Shared Page Containers**: `AppointmentPageShared.tsx` provides a unified look for titles, loading skeletons, and empty states.
+2. **Composable Cards**: `AppointmentCardShared.tsx` handles the common visual data, while role-specific actions are passed as `children` or via `Show`/`Switch` slots.
+3. **Declarative Control Flow**:
+   - `<Show when={condition}>` for simple toggles.
+   - `<Switch.Root>` for complex branching (Loading vs Empty vs Content).
+   - `<ForWithWrapper each={data}>` for consistent list mapping and gaps.
+
+4. **Shared Layouts**: Role-specific layouts in `(role)/layout.tsx` wrap `DashboardLayoutShared` with customized sidebar items.
 
 ---
 
@@ -491,10 +512,16 @@ NODE_ENV=
 
 ## Code Conventions
 
-- **No comments** unless explicitly requested
-- Follow existing patterns in each feature module
-- Use shared packages for types and schemas
-- Validate with Zod, throw `AppError` on failure
-- Use `AppJsonResponse` for consistent API responses
-- Run `pnpm lint:eslint` and `pnpm lint:type-check` before committing
-- Component files prefixed with `-` are private (e.g., `-components/NavBar.tsx`)
+- **Absolute Imports**: Always use `@/` path aliases for internal imports to ensure portability.
+- **Private Folders**: Folders or components prefixed with `-` are considered private to their directory (e.g., `-components/LocalComponent.tsx`).
+- **No comments** unless explaining complex business logic.
+- Follow existing patterns in each feature module.
+- Use shared packages for types and schemas.
+- Validate with Zod, throw `AppError` on failure.
+- Use `AppJsonResponse` for consistent API responses.
+- Run `pnpm lint:eslint` and `pnpm lint:type-check` before committing.
+
+### Development Tips
+
+- **Type Checking**: Run `pnpm -C apps/frontend exec tsc --noEmit` to verify frontend types quickly.
+- **Theme Colors**: Use custom theme variables (e.g., `text-medinfo-state-success-main`) instead of standard Tailwind colors where appropriate.

@@ -35,6 +35,16 @@
 	--color-medinfo-state-success-lighter: hsl(151, 68%, 54%);
 	--color-medinfo-state-success-subtle: hsl(150, 70%, 63%);
 
+	--color-medinfo-state-warning-main: hsl(48, 100%, 50%);
+	--color-medinfo-state-warning-darker: hsl(48, 100%, 45%);
+	--color-medinfo-state-warning-lighter: hsl(49, 98%, 64%);
+	--color-medinfo-state-warning-subtle: hsl(53, 97%, 72%);
+
+	--color-medinfo-state-info-main: hsl(216, 100%, 49%);
+	--color-medinfo-state-info-darker: hsl(216, 100%, 38%);
+	--color-medinfo-state-info-lighter: hsl(220, 82%, 65%);
+	--color-medinfo-state-info-subtle: hsl(218, 88%, 80%);
+
 	--color-medinfo-state-error-main: hsl(0, 100%, 62%);
 	--color-medinfo-state-error-darker: hsl(0, 78%, 55%);
 	--color-medinfo-state-error-lighter: hsl(0, 100%, 68%);

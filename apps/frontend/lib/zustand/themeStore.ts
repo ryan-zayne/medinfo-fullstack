@@ -19,7 +19,6 @@ const getPrefersDarkMode = () => {
 	return isBrowser() && globalThis.matchMedia("(prefers-color-scheme: dark)").matches;
 };
 
-// Store Object Initialization
 const themeStoreObjectFn: StateCreator<ThemeStore> = (set, get) => ({
 	actions: {
 		initThemeOnLoad: () => {
@@ -53,7 +52,6 @@ const themeStoreObjectFn: StateCreator<ThemeStore> = (set, get) => ({
 	theme: "system",
 });
 
-// Store hook Creation
 export const useThemeStore = create<ThemeStore>()(
 	persist(themeStoreObjectFn, {
 		migrate: (persistedState) => persistedState,

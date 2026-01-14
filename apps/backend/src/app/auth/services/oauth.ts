@@ -136,7 +136,10 @@ const linkUserToGoogleAccount = async (
 	const [updatedUser] = await db
 		.update(users)
 		.set({
-			avatar: userInfo.picture ?? currentUser.avatar,
+			emailVerifiedAt:
+				userInfo.emailVerified && !currentUser.emailVerifiedAt ?
+					new Date()
+				:	currentUser.emailVerifiedAt,
 			googleId: userInfo.providerId,
 		})
 		.where(eq(users.id, currentUser.id))

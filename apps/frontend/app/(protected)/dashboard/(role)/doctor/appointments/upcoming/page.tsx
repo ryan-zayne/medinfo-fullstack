@@ -3,23 +3,23 @@
 import { useQuery } from "@tanstack/react-query";
 import { AppointmentPageShared } from "@/app/(protected)/dashboard/-components/appointments/AppointmentPageShared";
 import { ForWithWrapper } from "@/components/common";
-import { patientAppointmentsQuery } from "@/lib/react-query/queryOptions";
-import { PatientAppointmentCard } from "../PatientAppointmentCard";
+import { doctorAppointmentsQuery } from "@/lib/react-query/queryOptions";
+import { DoctorAppointmentCard } from "../DoctorAppointmentCard";
 
-function UpcomingAppointmentsPage() {
-	const patientAppointmentsQueryResult = useQuery(patientAppointmentsQuery());
+function DoctorUpcomingAppointmentsPage() {
+	const doctorAppointmentsQueryResult = useQuery(doctorAppointmentsQuery());
 
 	const upcomingAppointments =
-		patientAppointmentsQueryResult.data?.data.appointments.filter(
+		doctorAppointmentsQueryResult.data?.data.appointments.filter(
 			(app) => app.status === "pending" || app.status === "confirmed"
 		) ?? [];
 
 	return (
 		<AppointmentPageShared
 			title="Upcoming Appointments"
-			description="Manage your scheduled consultations with doctors."
+			description="Manage your scheduled consultations with patients."
 			isEmpty={upcomingAppointments.length === 0}
-			isPending={patientAppointmentsQueryResult.isPending}
+			isPending={doctorAppointmentsQueryResult.isPending}
 			emptyState={{
 				icon: "lucide:calendar-off",
 				text: "No upcoming appointments found.",
@@ -30,11 +30,11 @@ function UpcomingAppointmentsPage() {
 				className="flex flex-col gap-4"
 				each={upcomingAppointments}
 				renderItem={(appointment) => (
-					<PatientAppointmentCard key={appointment.id} appointment={appointment} variant="upcoming" />
+					<DoctorAppointmentCard key={appointment.id} appointment={appointment} variant="upcoming" />
 				)}
 			/>
 		</AppointmentPageShared>
 	);
 }
 
-export default UpcomingAppointmentsPage;
+export default DoctorUpcomingAppointmentsPage;

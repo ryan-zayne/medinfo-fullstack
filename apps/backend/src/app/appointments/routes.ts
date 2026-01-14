@@ -99,7 +99,6 @@ const appointmentsRoutes = new Hono()
 					meetingURL: zoomMeetingDetails.join_url,
 					patientId: currentUser.id,
 					reason,
-					status: "confirmed",
 				})
 				.returning();
 
@@ -112,6 +111,7 @@ const appointmentsRoutes = new Hono()
 
 			return AppJsonResponse(ctx, {
 				data: {
+					cancelledAt: newAppointment.cancelledAt,
 					dateOfAppointment: newAppointment.dateOfAppointment,
 					doctorName: doctor.fullName,
 					id: newAppointment.id,
@@ -126,6 +126,7 @@ const appointmentsRoutes = new Hono()
 			});
 		}
 	)
+
 	.get(
 		"/doctor/all",
 		validateWithZodMiddleware("query", backendApiSchemaRoutes["@get/appointments/doctor/all"].query),
@@ -151,6 +152,7 @@ const appointmentsRoutes = new Hono()
 					patientAvatar: users.avatar,
 					patientName: users.fullName,
 					reason: appointments.reason,
+					role: users.role,
 					status: appointments.status,
 				})
 				.from(appointments)
@@ -196,6 +198,7 @@ const appointmentsRoutes = new Hono()
 					meetingId: appointments.meetingId,
 					meetingURL: appointments.meetingURL,
 					reason: appointments.reason,
+					role: users.role,
 					status: appointments.status,
 				})
 				.from(appointments)
@@ -216,16 +219,65 @@ const appointmentsRoutes = new Hono()
 			});
 		}
 	)
+	.patch(
+		"/status",
+		validateWithZodMiddleware("json", backendApiSchemaRoutes["@patch/appointments/status"].body),
+		async (ctx) => {
+			const { appointmentId, status } = ctx.req.valid("json");
+
+			const currentUser = ctx.get("currentUser");
+
+			if (currentUser.role !== "doctor") {
+				throw new AppError({
+					code: 401,
+					message: "Only doctors can update appointment status",
+				});
+			}
+
+			const [appointment] = await db
+				.select({ doctorId: appointments.doctorId, id: appointments.id })
+				.from(appointments)
+				.where(eq(appointments.id, appointmentId))
+				.limit(1);
+
+			if (!appointment) {
+				throw new AppError({
+					code: 404,
+					message: "Appointment not found",
+				});
+			}
+
+			if (appointment.doctorId !== currentUser.id) {
+				throw new AppError({
+					code: 403,
+					message: "Forbidden",
+				});
+			}
+
+			await db.update(appointments).set({ status }).where(eq(appointments.id, appointmentId));
+
+			return AppJsonResponse(ctx, {
+				data: null,
+				message: "Appointment status updated successfully",
+				schema: backendApiSchemaRoutes["@patch/appointments/status"].data,
+			});
+		}
+	)
 	.delete(
 		"/cancel",
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@delete/appointments/cancel"].body),
 		async (ctx) => {
-			const { appointmentId, meetingId } = ctx.req.valid("json");
+			const { appointmentId } = ctx.req.valid("json");
 
 			const currentUser = ctx.get("currentUser");
 
 			const [appointment] = await db
-				.select()
+				.select({
+					doctorId: appointments.doctorId,
+					id: appointments.id,
+					meetingId: appointments.meetingId,
+					patientId: appointments.patientId,
+				})
 				.from(appointments)
 				.where(eq(appointments.id, appointmentId))
 				.limit(1);
@@ -248,11 +300,11 @@ const appointmentsRoutes = new Hono()
 			}
 
 			await Promise.all([
+				deleteMeeting(appointment.meetingId),
 				db
 					.update(appointments)
 					.set({ cancelledAt: new Date(), status: "cancelled" })
 					.where(eq(appointments.id, appointmentId)),
-				deleteMeeting(meetingId),
 			]);
 
 			return AppJsonResponse(ctx, {

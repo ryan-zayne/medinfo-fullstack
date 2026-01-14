@@ -1,19 +1,21 @@
-import type { CallApiConfig } from "@zayne-labs/callapi";
-import { callBackendApi, callBackendApiForQuery, type GlobalMeta } from "../../callBackendApi";
+import { defineInstanceConfig } from "@zayne-labs/callapi/utils";
+import { callBackendApi, callBackendApiForQuery } from "../../callBackendApi";
+
+export const sessionDedupeOptions = defineInstanceConfig({
+	dedupeKey: (ctx) => ctx.options.initURL,
+	dedupeStrategy: "defer",
+});
 
 export const checkUserSessionForQuery = () => {
 	return callBackendApiForQuery("@get/auth/session", {
-		dedupeKey: (ctx) => ctx.options.initURL,
-		dedupeStrategy: "defer",
+		...sessionDedupeOptions,
 		meta: { toast: { success: false } },
 	});
 };
 
-export const checkUserSession = (options?: CallApiConfig<{ Meta: GlobalMeta }>) => {
+export const checkUserSession = () => {
 	return callBackendApi("@get/auth/session", {
-		dedupeKey: (ctx) => ctx.options.initURL,
-		dedupeStrategy: "defer",
-		...(options as object),
-		meta: { toast: { success: false }, ...options?.meta },
+		...sessionDedupeOptions,
+		meta: { toast: { success: false } },
 	});
 };

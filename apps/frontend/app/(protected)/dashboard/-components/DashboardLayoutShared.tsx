@@ -1,8 +1,10 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { Logo } from "@/components/common";
 import EmojiHandIcon from "@/components/icons/EmojiHandIcon";
 import LogoutIcon from "@/components/icons/LogoutIcon";
+import { sessionQuery } from "@/lib/react-query/queryOptions";
 import { HeaderShared, type MenuItem } from "./HeaderShared";
 import { SidebarShared } from "./SidebarShared";
 
@@ -14,11 +16,13 @@ type DashboardLayoutProps = {
 function DashboardLayoutShared(props: DashboardLayoutProps) {
 	const { children, menuItems } = props;
 
+	const sessionQueryResult = useQuery(sessionQuery());
+
 	return (
 		<div className="flex h-full lg:bg-medinfo-light-4">
 			<aside
-				className="hidden py-8 lg:sticky lg:top-0 lg:flex lg:h-screen lg:max-h-[832px] lg:w-[220px]
-					lg:shrink-0 lg:flex-col lg:gap-12 lg:bg-white lg:shadow-md"
+				className="hidden py-8 lg:sticky lg:top-0 lg:flex lg:h-screen lg:max-h-208 lg:w-55 lg:shrink-0
+					lg:flex-col lg:gap-12 lg:bg-white lg:shadow-md"
 			>
 				<Logo className="mx-auto" />
 
@@ -29,7 +33,7 @@ function DashboardLayoutShared(props: DashboardLayoutProps) {
 
 					<div className="flex flex-col gap-8 px-6">
 						<div className="flex items-center gap-0.5">
-							<h1 className="text-[18px]">Hello, John</h1>
+							<h1 className="text-[18px]">Hello, {sessionQueryResult.data?.data.user.firstName}</h1>
 							<span>
 								<EmojiHandIcon />
 							</span>
@@ -44,7 +48,7 @@ function DashboardLayoutShared(props: DashboardLayoutProps) {
 			</aside>
 
 			<main className="flex w-full flex-col">
-				<HeaderShared menuItems={menuItems} />
+				<HeaderShared sessionQueryData={sessionQueryResult.data} menuItems={menuItems} />
 				{children}
 			</main>
 		</div>

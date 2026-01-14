@@ -199,6 +199,7 @@ const authRoutes = () => {
 		avatar: true,
 		email: true,
 		firstName: true,
+		fullName: true,
 		lastName: true,
 		role: true,
 	});
@@ -316,7 +317,7 @@ const appointmentsRoutes = () => {
 
 	return defineSchemaRoutes({
 		"@delete/appointments/cancel": {
-			body: SelectAppointmentSchema.pick({ meetingId: true }).extend({ appointmentId: z.string() }),
+			body: z.object({ appointmentId: z.string() }),
 			data: withBaseSuccessResponse(z.null()),
 		},
 
@@ -324,7 +325,11 @@ const appointmentsRoutes = () => {
 			data: withBaseSuccessResponse(
 				z.object({
 					appointments: z.array(
-						AppointmentDetailsSchema.extend({ patientAvatar: z.string(), patientName: z.string() })
+						AppointmentDetailsSchema.extend({
+							patientAvatar: z.string(),
+							patientName: z.string(),
+							role: SelectUserSchema.shape.role,
+						})
 					),
 					pagination: PaginationSchema,
 				})
@@ -337,13 +342,25 @@ const appointmentsRoutes = () => {
 			data: withBaseSuccessResponse(
 				z.object({
 					appointments: z.array(
-						AppointmentDetailsSchema.extend({ doctorAvatar: z.string(), doctorName: z.string() })
+						AppointmentDetailsSchema.extend({
+							doctorAvatar: z.string(),
+							doctorName: z.string(),
+							role: SelectUserSchema.shape.role,
+						})
 					),
 					pagination: PaginationSchema,
 				})
 			),
 
 			query: z.object({ limit: stringWithNumberValidation() }).partial().optional(),
+		},
+
+		"@patch/appointments/status": {
+			body: z.object({
+				appointmentId: z.string(),
+				status: AppointmentDetailsSchema.shape.status.extract(["completed", "confirmed"]),
+			}),
+			data: withBaseSuccessResponse(z.null()),
 		},
 
 		"@post/appointments/book": {
@@ -365,14 +382,7 @@ const appointmentsRoutes = () => {
 			}),
 
 			data: withBaseSuccessResponse(
-				SelectAppointmentSchema.pick({
-					dateOfAppointment: true,
-					id: true,
-					meetingId: true,
-					meetingURL: true,
-					reason: true,
-					status: true,
-				}).extend({
+				AppointmentDetailsSchema.extend({
 					doctorName: z.string(),
 					patientName: z.string(),
 				})

@@ -12,7 +12,7 @@ const SonnerToaster = (props: ToasterProps) => {
 		<Sonner
 			theme={theme}
 			richColors={true}
-			// eslint-disable-next-line tailwindcss-better/no-unregistered-classes
+			// eslint-disable-next-line tailwindcss-better/no-unknown-classes
 			className="toaster group"
 			position="bottom-right"
 			duration={3000}

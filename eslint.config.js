@@ -35,5 +35,11 @@ export default zayne(
 	{
 		files: ["packages/db/src/migrations/**"],
 		rules: { "unicorn/filename-case": "off" },
+	},
+	{
+		files: ["apps/frontend/components/animated/**"],
+		rules: {
+			"react-x/no-unnecessary-use-ref": "off",
+		},
 	}
 );

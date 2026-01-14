@@ -3,23 +3,23 @@
 import { useQuery } from "@tanstack/react-query";
 import { AppointmentPageShared } from "@/app/(protected)/dashboard/-components/appointments/AppointmentPageShared";
 import { ForWithWrapper } from "@/components/common";
-import { patientAppointmentsQuery } from "@/lib/react-query/queryOptions";
-import { PatientAppointmentCard } from "../PatientAppointmentCard";
+import { doctorAppointmentsQuery } from "@/lib/react-query/queryOptions";
+import { DoctorAppointmentCard } from "../DoctorAppointmentCard";
 
-function AppointmentHistoryPage() {
-	const patientAppointmentsQueryResult = useQuery(patientAppointmentsQuery());
+function DoctorAppointmentHistoryPage() {
+	const doctorAppointmentsQueryResult = useQuery(doctorAppointmentsQuery());
 
 	const historyAppointments =
-		patientAppointmentsQueryResult.data?.data.appointments.filter(
+		doctorAppointmentsQueryResult.data?.data.appointments.filter(
 			(app) => app.status === "completed" || app.status === "cancelled"
 		) ?? [];
 
 	return (
 		<AppointmentPageShared
 			title="Appointment History"
-			description="View your past consultations and their status."
+			description="View your past patient consultations."
+			isPending={doctorAppointmentsQueryResult.isPending}
 			isEmpty={historyAppointments.length === 0}
-			isPending={patientAppointmentsQueryResult.isPending}
 			emptyState={{
 				icon: "lucide:history",
 				text: "No past appointments found.",
@@ -30,11 +30,11 @@ function AppointmentHistoryPage() {
 				className="flex flex-col gap-4"
 				each={historyAppointments}
 				renderItem={(appointment) => (
-					<PatientAppointmentCard key={appointment.id} appointment={appointment} variant="history" />
+					<DoctorAppointmentCard key={appointment.id} appointment={appointment} variant="history" />
 				)}
 			/>
 		</AppointmentPageShared>
 	);
 }
 
-export default AppointmentHistoryPage;
+export default DoctorAppointmentHistoryPage;
