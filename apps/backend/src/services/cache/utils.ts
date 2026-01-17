@@ -62,10 +62,10 @@ export const getFromCache = async <TCacheResult>(
 	return parsedCachedData as TCacheResult;
 };
 
-export const removeFromCache = async (key: string) => {
-	if (!key) {
-		throw new Error("Invalid key provided");
-	}
+export const removeFromCache = async (key: CacheKeyType) => {
+	// if (!key) {
+	// 	throw new Error("Invalid key provided");
+	// }
 
 	const isDeleted = Boolean(await redisCacheClient.del(key));
 

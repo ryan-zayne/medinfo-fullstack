@@ -7,6 +7,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { AppError, AppJsonResponse, getValidatedValue } from "@/lib/utils";
 import { validateWithZodMiddleware } from "@/middleware";
+import { removeFromCache, setCache } from "@/services/cache";
 import { uploadStreamToCloudinary } from "@/services/cloudinary";
 import { authMiddleware } from "./middleware/authMiddleware";
 import { getNecessaryUserDetails } from "./services/common";
@@ -98,6 +99,8 @@ const authRoutes = new Hono()
 		});
 
 		// TODO: Send Verification email
+
+		await setCache(`user:${newUser.id}`, newUser);
 
 		return AppJsonResponse(ctx, {
 			data: {
@@ -211,6 +214,8 @@ const authRoutes = new Hono()
 				name: "zayneRefreshToken",
 				value: newZayneRefreshTokenResult.token,
 			});
+
+			await setCache(`user:${updatedUser.id}`, updatedUser);
 
 			return AppJsonResponse(ctx, {
 				data: {
@@ -329,6 +334,8 @@ const authRoutes = new Hono()
 				value: newZayneRefreshTokenResult.token,
 			});
 
+			await setCache(`user:${user.id}`, user);
+
 			return ctx.redirect(redirectURL);
 		}
 	)
@@ -336,6 +343,8 @@ const authRoutes = new Hono()
 		const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
 
 		const currentUser = ctx.get("currentUser");
+
+		await removeFromCache(`user:${currentUser.id}`);
 
 		const updatedTokenArray = getUpdatedTokenResultArray({ currentUser, zayneRefreshToken });
 

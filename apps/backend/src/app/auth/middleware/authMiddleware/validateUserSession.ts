@@ -3,8 +3,9 @@ import { db } from "@medinfo/db";
 import { users, type SelectUserType } from "@medinfo/db/schema/auth";
 import { defineEnum, type UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
 import { eq } from "drizzle-orm";
-// eslint-disable-next-line import/default
+/* eslint-disable import/default */
 import jwt from "jsonwebtoken";
+/* eslint-enable import/default */
 import {
 	decodeJwtToken,
 	generateAccessToken,
@@ -141,24 +142,6 @@ type ExistingSession = {
 	newZayneAccessTokenResult: null;
 };
 
-const getExistingSession = async (options: {
-	zayneAccessToken: string;
-	zayneRefreshToken: string;
-}): Promise<ExistingSession> => {
-	const { zayneAccessToken, zayneRefreshToken } = options;
-
-	const currentUser = await getAndVerifyUserFromToken({
-		variant: "accessToken",
-		zayneAccessToken,
-		zayneRefreshToken,
-	});
-
-	return {
-		currentUser,
-		newZayneAccessTokenResult: null,
-	};
-};
-
 type TokenPairFromCookies = {
 	zayneAccessToken: string | undefined;
 	zayneRefreshToken: string | undefined;
@@ -180,7 +163,7 @@ const validateUserSession = async (
 		});
 	}
 
-	// == If access token is not present, verify the refresh token and generate new tokens
+	// == If access token is not present, verify the refresh token and generate new session
 	if (!zayneAccessToken) {
 		const newSession = await refreshUserSession(zayneRefreshToken);
 
@@ -188,11 +171,19 @@ const validateUserSession = async (
 	}
 
 	try {
-		const existingSession = await getExistingSession({ zayneAccessToken, zayneRefreshToken });
+		const currentUser = await getAndVerifyUserFromToken({
+			variant: "accessToken",
+			zayneAccessToken,
+			zayneRefreshToken,
+		});
 
-		return existingSession;
+		// == Return Existing session if accessToken is still valid
+		return {
+			currentUser,
+			newZayneAccessTokenResult: null,
+		};
 	} catch (error) {
-		// == Attempt session renewal if the error indicates that the access token is invalid / expired
+		// == Attempt to generate new session if the error indicates that the access token is invalid / expired
 		if (error instanceof jwt.JsonWebTokenError || error instanceof jwt.TokenExpiredError) {
 			const newSession = await refreshUserSession(zayneRefreshToken);
 
