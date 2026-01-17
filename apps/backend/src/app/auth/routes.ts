@@ -15,9 +15,9 @@ import { hashValue, verifyHashedValue } from "./services/hash";
 import {
 	createGoogleAuthURL,
 	findOrCreateUserFromGoogle,
-	getUserInfoFromGoogleAuthClaims,
+	getUserDetailsFromGoogleAuthClaims,
 } from "./services/oauth";
-import { generateAccessToken, generateRefreshToken, getUpdatedTokenArray } from "./services/token";
+import { generateAccessToken, generateRefreshToken, getUpdatedTokenResultArray } from "./services/token";
 
 const authRoutes = new Hono()
 	.basePath("/auth")
@@ -179,7 +179,7 @@ const authRoutes = new Hono()
 
 			const newZayneRefreshTokenResult = generateRefreshToken(currentUser);
 
-			const updatedTokenArray = getUpdatedTokenArray({ currentUser, zayneRefreshToken });
+			const updatedTokenArray = getUpdatedTokenResultArray({ currentUser, zayneRefreshToken });
 
 			const [updatedUser] = await db
 				.update(users)
@@ -280,25 +280,23 @@ const authRoutes = new Hono()
 				});
 			}
 
-			const userInfo = await getUserInfoFromGoogleAuthClaims(code, codeVerifier);
+			const userDetails = await getUserDetailsFromGoogleAuthClaims(code, codeVerifier);
 
 			deleteCookie(ctx, "google_oauth_state");
 
 			deleteCookie(ctx, "google_code_verifier");
 
-			const { redirectURL, user, userVariant } = await findOrCreateUserFromGoogle(userInfo);
+			const { redirectURL, user, variant } = await findOrCreateUserFromGoogle(userDetails);
 
 			const newZayneRefreshTokenResult = generateRefreshToken(user);
 
 			const newZayneAccessTokenResult = generateAccessToken(user);
 
-			if (userVariant === "existing") {
-				const existingUser = user;
-
+			if (variant === "existing-user") {
 				const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
 
-				const updatedTokenArray = getUpdatedTokenArray({
-					currentUser: existingUser,
+				const updatedTokenResultArray = getUpdatedTokenResultArray({
+					currentUser: user,
 					zayneRefreshToken,
 				});
 
@@ -307,18 +305,16 @@ const authRoutes = new Hono()
 					.set({
 						lastLoginAt: new Date(),
 						loginRetryCount: 0,
-						refreshTokenArray: [...updatedTokenArray, newZayneRefreshTokenResult],
+						refreshTokenArray: [...updatedTokenResultArray, newZayneRefreshTokenResult],
 					})
-					.where(eq(users.id, existingUser.id));
+					.where(eq(users.id, user.id));
 			}
 
-			if (userVariant === "new") {
-				const newUser = user;
-
+			if (variant === "new-user") {
 				await db
 					.update(users)
 					.set({ refreshTokenArray: [newZayneRefreshTokenResult] })
-					.where(eq(users.id, newUser.id));
+					.where(eq(users.id, user.id));
 			}
 
 			setCookie(ctx, {
@@ -341,7 +337,7 @@ const authRoutes = new Hono()
 
 		const currentUser = ctx.get("currentUser");
 
-		const updatedTokenArray = getUpdatedTokenArray({ currentUser, zayneRefreshToken });
+		const updatedTokenArray = getUpdatedTokenResultArray({ currentUser, zayneRefreshToken });
 
 		await db
 			.update(users)

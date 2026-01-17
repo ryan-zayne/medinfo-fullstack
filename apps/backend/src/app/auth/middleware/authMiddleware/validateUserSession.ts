@@ -13,6 +13,7 @@ import {
 } from "@/app/auth/services/token";
 import { ENVIRONMENT } from "@/config/env";
 import { AppError } from "@/lib/utils";
+import { getFromCache } from "@/services/cache";
 
 const AUTH_ERROR_MESSAGES = defineEnum({
 	ACCOUNT_SUSPENDED: "Your account is currently suspended",
@@ -45,7 +46,13 @@ const getAndVerifyUserFromToken = async (options: VerifyOptions) => {
 			decodeJwtToken(zayneAccessToken, { secretKey: ENVIRONMENT.ACCESS_SECRET })
 		:	decodeJwtToken(zayneRefreshToken, { secretKey: ENVIRONMENT.REFRESH_SECRET });
 
-	const [currentUser] = await db.select().from(users).where(eq(users.id, decodedPayload.id)).limit(1);
+	const currentUser = await getFromCache(`user:${decodedPayload.id}`, {
+		onCacheMiss: async () => {
+			const [user] = await db.select().from(users).where(eq(users.id, decodedPayload.id)).limit(1);
+
+			return user;
+		},
+	});
 
 	if (!currentUser) {
 		throw new AppError({
@@ -76,7 +83,6 @@ const getAndVerifyUserFromToken = async (options: VerifyOptions) => {
 		});
 	}
 
-	// FIXME - Enable email verification when ready
 	// if (!currentUser.emailVerifiedAt) {
 	// 	throw new AppError({
 	// 		code: 422,

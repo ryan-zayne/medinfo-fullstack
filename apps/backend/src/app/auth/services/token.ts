@@ -109,7 +109,7 @@ export const warnAboutTokenReuse = (options: {
 	console.trace();
 };
 
-export const getUpdatedTokenArray = (options: {
+export const getUpdatedTokenResultArray = (options: {
 	currentUser: SelectUserType;
 	zayneRefreshToken: string | undefined;
 }): SelectUserType["refreshTokenArray"] => {
@@ -130,9 +130,9 @@ export const getUpdatedTokenArray = (options: {
 		return [];
 	}
 
-	const updatedTokenArray = currentUser.refreshTokenArray.filter(
+	const updatedTokenResultArray = currentUser.refreshTokenArray.filter(
 		(item) => item.token !== zayneRefreshToken
 	);
 
-	return updatedTokenArray;
+	return updatedTokenResultArray;
 };

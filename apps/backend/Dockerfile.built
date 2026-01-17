@@ -16,23 +16,20 @@ FROM base AS builder
 # Copy workspace configuration
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-COPY packages/db ./packages/db
-COPY packages/env ./packages/env
-COPY packages/shared ./packages/shared
+# Copy necessary files
 COPY apps/backend ./apps/backend
+COPY packages ./packages
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prefer-offline --ignore-scripts --frozen-lockfile
-
-RUN pnpm --filter=@medinfo/backend build
-
-RUN pnpm --filter=@medinfo/backend --prod --prefer-offline deploy --legacy ./pruned
+# Build and Deploy
+RUN pnpm --filter=@medinfo/backend build && pnpm --filter=@medinfo/backend deploy --prod --prefer-offline  --legacy ./pruned
 
 # ================================================================
 # Stage 3: Runner - Production Image
 # ================================================================
 FROM base AS runner
 
-COPY --from=builder /app/pruned ./
+COPY --from=builder /app/pruned/node_modules ./node_modules
+COPY --from=builder /app/pruned/dist ./dist
 
 EXPOSE 8000
 

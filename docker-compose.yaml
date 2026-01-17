@@ -8,7 +8,7 @@ services:
       ports:
          - 5432:5432
       volumes:
-         - medinfo-postgres-data:/var/lib/postgresql/data
+         - medinfo-postgres-db-data:/var/lib/postgresql/data
       networks:
          - medinfo-network
       healthcheck:
@@ -17,19 +17,33 @@ services:
          timeout: 5s
          retries: 3
 
-   #  medinfo-db-setup:
-   #     build:
-   #        context: .
-   #        dockerfile: packages/db/Dockerfile
-   #     container_name: medinfo-db-setup
-   #     depends_on:
-   #        medinfo-postgres-db:
-   #           condition: service_healthy
-   #     env_file:
-   #        - ./apps/backend/.env
+   medinfo-redis-cache:
+      image: redis:8
+      container_name: medinfo-redis-cache
+      restart: unless-stopped
+      ports:
+         - 6379:6379
+      networks:
+         - medinfo-network
+      healthcheck:
+         test: [CMD, redis-cli, ping]
+         interval: 10s
+         timeout: 5s
+         retries: 3
+
+   #  medinfo-redis-queue:
+   #     image: redis:8
+   #     container_name: medinfo-redis-queue
+   #     restart: unless-stopped
+   #     ports:
+   #        - 6380:6380
    #     networks:
    #        - medinfo-network
-   #     restart: no
+   #     healthcheck:
+   #        test: [CMD, redis-cli, ping]
+   #        interval: 10s
+   #        timeout: 5s
+   #        retries: 3
 
    medinfo-backend:
       build:
@@ -37,15 +51,24 @@ services:
          dockerfile: apps/backend/Dockerfile
       container_name: medinfo-backend
       restart: unless-stopped
-      # depends_on:
-      #    medinfo-db-setup:
-      #       condition: service_completed_successfully
+      depends_on:
+         medinfo-postgres-db:
+            condition: service_healthy
+         medinfo-redis-cache:
+            condition: service_healthy
+         #  medinfo-redis-queue:
+         #     condition: service_healthy
       networks:
          - medinfo-network
       ports:
          - 8000:8000
       env_file:
          - ./apps/backend/.env
+      environment:
+         - DATABASE_URL_DEV=postgresql://postgres:postgres@medinfo-postgres-db:5432/medinfo
+         - REDIS_CACHE_URL_DEV=redis://medinfo-redis-cache:6379
+         - REDIS_QUEUE_URL_DEV=redis://medinfo-redis-queue:6380
+
       healthcheck:
          test: [CMD, wget, --no-verbose, --tries=1, --spider, http://localhost:8000]
          interval: 30s
@@ -54,7 +77,7 @@ services:
          retries: 3
 
 volumes:
-   medinfo-postgres-data:
+   medinfo-postgres-db-data:
 
 networks:
    medinfo-network:

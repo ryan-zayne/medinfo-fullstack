@@ -15,13 +15,15 @@ export const createFeatureExtractionPipeline = () => {
 		if (instance === null) {
 			consola.info(`[HuggingFace] Initializing pipeline...`);
 
-			instance = pipeline(task, model, { progress_callback }).catch((error) => {
-				consola.error(
-					"[HuggingFace] Pipeline creation failed:",
-					(error as Error | undefined)?.message
-				);
-				throw error;
-			});
+			instance = pipeline(task, model, { device: "cpu", dtype: "q4", progress_callback }).catch(
+				(error) => {
+					consola.error(
+						"[HuggingFace] Pipeline creation failed:",
+						(error as Error | undefined)?.message
+					);
+					throw error;
+				}
+			);
 		}
 
 		return instance;

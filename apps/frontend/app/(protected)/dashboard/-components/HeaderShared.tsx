@@ -76,7 +76,7 @@ function DesktopHeader(props: DesktopHeaderProps) {
 	return (
 		<header
 			className={cnMerge(
-				"sticky top-0 z-50 flex items-center justify-between bg-white px-10 py-4 shadow-md",
+				"sticky top-0 z-50 flex items-center justify-between bg-white px-10 py-6 shadow-md",
 				className
 			)}
 		>
@@ -95,7 +95,7 @@ function DesktopHeader(props: DesktopHeaderProps) {
 
 			<div className="flex items-center space-x-10">
 				<NotificationIcon />
-				<AvatarGroupAnimated.Root className="space-x-0" translate="5%">
+				<AvatarGroupAnimated.Root sideOffset={10} translate="5%">
 					<Avatar.Root className="size-14 rounded-full border border-medinfo-light-2">
 						<Avatar.Image
 							src={sessionQueryData?.data.user.avatar}

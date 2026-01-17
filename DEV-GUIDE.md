@@ -434,11 +434,11 @@ Middleware checks tokens in order:
 
 ### Services
 
-| Service             | Image              | Purpose                   |
-| ------------------- | ------------------ | ------------------------- |
-| medinfo-postgres-db | postgres:18-alpine | PostgreSQL database       |
-| medinfo-db-setup    | Custom Dockerfile  | Runs migrations and seeds |
-| medinfo-backend     | Custom Dockerfile  | API server on port 8000   |
+| Service          | Image              | Purpose                   |
+| ---------------- | ------------------ | ------------------------- |
+| medinfo-postgres | postgres:18-alpine | PostgreSQL database       |
+| medinfo-db-setup | Custom Dockerfile  | Runs migrations and seeds |
+| medinfo-backend  | Custom Dockerfile  | API server on port 8000   |
 
 ### Setup Flow
 

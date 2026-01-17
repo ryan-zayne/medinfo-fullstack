@@ -46,7 +46,7 @@ const OAuthClaimsSchema = z.object({
 	sub: z.string(),
 });
 
-const OAuthUserInfoSchema = z.object({
+const OAuthUserDetailsSchema = z.object({
 	dob: z.date().or(z.null()),
 	email: z.string(),
 	emailVerified: z.boolean(),
@@ -71,7 +71,7 @@ const googleDateToJSDate = (
 	return new Date(googleDate.year, monthIndex, googleDate.day);
 };
 
-export const getUserInfoFromGoogleAuthClaims = async (code: string, codeVerifier: string) => {
+export const getUserDetailsFromGoogleAuthClaims = async (code: string, codeVerifier: string) => {
 	const tokens = await google.validateAuthorizationCode(code, codeVerifier).catch((error) => {
 		throw new AppError({
 			cause: error,
@@ -109,7 +109,7 @@ export const getUserInfoFromGoogleAuthClaims = async (code: string, codeVerifier
 		});
 	}
 
-	const userInfo = getValidatedValue(
+	const userDetails = getValidatedValue(
 		{
 			dob: googleDateToJSDate(result.data.birthdays[0]?.date),
 			email: claims.email,
@@ -121,26 +121,23 @@ export const getUserInfoFromGoogleAuthClaims = async (code: string, codeVerifier
 			provider: "google",
 			providerId: claims.sub,
 		},
-		OAuthUserInfoSchema
+		OAuthUserDetailsSchema
 	);
 
-	return userInfo;
+	return userDetails;
 };
 
 const linkUserToGoogleAccount = async (
 	currentUser: SelectUserType,
-	userInfo: z.infer<typeof OAuthUserInfoSchema>
+	userDetails: z.infer<typeof OAuthUserDetailsSchema>
 ) => {
 	if (currentUser.googleId) return;
 
 	const [updatedUser] = await db
 		.update(users)
 		.set({
-			emailVerifiedAt:
-				userInfo.emailVerified && !currentUser.emailVerifiedAt ?
-					new Date()
-				:	currentUser.emailVerifiedAt,
-			googleId: userInfo.providerId,
+			...(userDetails.emailVerified && { emailVerifiedAt: currentUser.emailVerifiedAt ?? new Date() }),
+			googleId: userDetails.providerId,
 		})
 		.where(eq(users.id, currentUser.id))
 		.returning();
@@ -152,12 +149,12 @@ type UserResult =
 	| {
 			redirectURL: string;
 			user: SelectUserType;
-			userVariant: "existing";
+			variant: "existing-user";
 	  }
 	| {
 			redirectURL: string;
 			user: SelectUserType;
-			userVariant: "new";
+			variant: "new-user";
 	  };
 
 const BASE_FRONTEND_HOST =
@@ -170,46 +167,46 @@ const getRedirectURL = (role: SelectUserType["role"]) => {
 };
 
 export const findOrCreateUserFromGoogle = async (
-	userInfo: z.infer<typeof OAuthUserInfoSchema>
+	userDetails: z.infer<typeof OAuthUserDetailsSchema>
 ): Promise<UserResult> => {
-	if (userInfo.provider !== "google") {
+	if (userDetails.provider !== "google") {
 		throw new AppError({
 			code: 400,
-			message: `Invalid provider: ${userInfo.provider}`,
+			message: `Invalid provider: ${userDetails.provider}`,
 		});
 	}
 
 	const [existingUserWithGoogleId] = await db
 		.select()
 		.from(users)
-		.where(eq(users.googleId, userInfo.providerId))
+		.where(eq(users.googleId, userDetails.providerId))
 		.limit(1);
 
 	if (existingUserWithGoogleId) {
 		return {
 			redirectURL: getRedirectURL(existingUserWithGoogleId.role),
 			user: existingUserWithGoogleId,
-			userVariant: "existing",
+			variant: "existing-user",
 		};
 	}
 
 	const [existingUserWithEmail] = await db
 		.select()
 		.from(users)
-		.where(eq(users.email, userInfo.email))
+		.where(eq(users.email, userDetails.email))
 		.limit(1);
 
 	if (existingUserWithEmail) {
-		const updatedUser = await linkUserToGoogleAccount(existingUserWithEmail, userInfo);
+		const updatedUser = await linkUserToGoogleAccount(existingUserWithEmail, userDetails);
 
 		return {
 			redirectURL: getRedirectURL(existingUserWithEmail.role),
 			user: updatedUser ?? existingUserWithEmail,
-			userVariant: "existing",
+			variant: "existing-user",
 		};
 	}
 
-	if (!userInfo.dob) {
+	if (!userDetails.dob) {
 		throw new AppError({
 			code: 400,
 			message:
@@ -217,7 +214,7 @@ export const findOrCreateUserFromGoogle = async (
 		});
 	}
 
-	if (!userInfo.gender) {
+	if (!userDetails.gender) {
 		throw new AppError({
 			code: 400,
 			message: "Failed to get user's gender. Please ensure you set this info on your google account",
@@ -225,21 +222,21 @@ export const findOrCreateUserFromGoogle = async (
 	}
 
 	const avatar =
-		userInfo.picture
-		?? `https://avatar.iran.liara.run/public/${userInfo.gender === "male" ? "boy" : "girl"}`;
+		userDetails.picture
+		?? `https://avatar.iran.liara.run/public/${userDetails.gender === "male" ? "boy" : "girl"}`;
 
 	const [newUser] = await db
 		.insert(users)
 		.values({
 			avatar,
-			dob: userInfo.dob.toISOString(),
-			email: userInfo.email,
-			emailVerifiedAt: userInfo.emailVerified ? new Date() : null,
-			firstName: userInfo.firstName,
-			fullName: `${userInfo.firstName} ${userInfo.lastName}`,
-			gender: userInfo.gender,
-			googleId: userInfo.providerId,
-			lastName: userInfo.lastName,
+			dob: userDetails.dob.toISOString(),
+			email: userDetails.email,
+			emailVerifiedAt: userDetails.emailVerified ? new Date() : null,
+			firstName: userDetails.firstName,
+			fullName: `${userDetails.firstName} ${userDetails.lastName}`,
+			gender: userDetails.gender,
+			googleId: userDetails.providerId,
+			lastName: userDetails.lastName,
 			role: "patient",
 		})
 		.returning();
@@ -254,6 +251,6 @@ export const findOrCreateUserFromGoogle = async (
 	return {
 		redirectURL: getRedirectURL(newUser.role),
 		user: newUser,
-		userVariant: "new",
+		variant: "new-user",
 	};
 };

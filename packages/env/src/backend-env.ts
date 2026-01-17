@@ -26,6 +26,14 @@ export const envSchema = z.object({
 	LOG_LEVEL: z.literal(["debug", "info", "warn", "error", "fatal", "silent"]).default("info"),
 	NODE_ENV: z.literal(["development", "production"]).default("development"),
 	PORT: z.coerce.number().default(8000),
+	REDIS_CACHE_URL_DEV: z
+		.literal(["redis://localhost:6379", "redis://medinfo-redis-cache:6379"])
+		.default("redis://localhost:6379"),
+	REDIS_CACHE_URL_PROD: z.url(),
+	REDIS_QUEUE_URL_DEV: z
+		.literal(["redis://localhost:6380", "redis://medinfo-redis-queue:6380"])
+		.default("redis://localhost:6380"),
+	REDIS_QUEUE_URL_PROD: z.url(),
 	REFRESH_JWT_EXPIRES_IN: z.string().transform((value) => evaluateString<number>(value)),
 	REFRESH_SECRET: z.string(),
 	SEED_PASSWORD: z.string(),

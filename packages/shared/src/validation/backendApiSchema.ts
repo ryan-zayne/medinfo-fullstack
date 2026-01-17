@@ -312,7 +312,7 @@ const appointmentsRoutes = () => {
 
 	const PaginationSchema = z.object({
 		limit: z.int().positive(),
-		total: z.int().positive(),
+		total: z.int().nonnegative(),
 	});
 
 	return defineSchemaRoutes({

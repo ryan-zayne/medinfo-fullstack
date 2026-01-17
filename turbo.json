@@ -10,10 +10,6 @@
 			"dependsOn": ["^build"],
 			"outputs": ["dist/**", ".next/**", "!.next/cache/**", "build", ".vercel"]
 		},
-		"build:dev": {
-			"dependsOn": ["^build"],
-			"outputs": ["dist/**"]
-		},
 		"db:studio": {
 			"cache": false,
 			"persistent": true

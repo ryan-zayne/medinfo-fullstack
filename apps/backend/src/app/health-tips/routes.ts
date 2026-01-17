@@ -3,6 +3,7 @@ import { omitKeys } from "@zayne-labs/toolkit-core";
 import { Hono } from "hono";
 import { AppJsonResponse } from "@/lib/utils/AppJsonResponse";
 import { validateWithZodMiddleware } from "@/middleware";
+import { getFromCache } from "@/services/cache";
 import { getRandomHealthTipIds } from "./services/common";
 import { healthApi } from "./services/healthApi";
 
@@ -16,14 +17,20 @@ const healthTipsRoutes = new Hono()
 
 			const randomHealthTipIds = getRandomHealthTipIds(limit);
 
-			const results = await Promise.all(
-				randomHealthTipIds.map((id) => healthApi.getTopicDetails({ TopicId: id }))
+			const healthTips = await Promise.all(
+				randomHealthTipIds.map((id) =>
+					getFromCache(`health-tip:${id}`, {
+						onCacheMiss: async () => {
+							const tip = await healthApi.getTopicDetails({ TopicId: id });
+
+							return omitKeys(tip.data, ["lastUpdated", "mainContent"]);
+						},
+					})
+				)
 			);
 
-			const data = results.map((result) => omitKeys(result.data, ["lastUpdated", "mainContent"]));
-
 			return AppJsonResponse(ctx, {
-				data,
+				data: healthTips,
 				message: "Health tips retrieved successfully",
 				schema: backendApiSchemaRoutes["@get/health-tips/all"].data,
 			});
@@ -35,10 +42,16 @@ const healthTipsRoutes = new Hono()
 		async (ctx) => {
 			const { id } = ctx.req.valid("param");
 
-			const result = await healthApi.getTopicDetails({ TopicId: id });
+			const healthTip = await getFromCache(`health-tip:${id}`, {
+				onCacheMiss: async () => {
+					const tip = await healthApi.getTopicDetails({ TopicId: id });
+
+					return tip.data;
+				},
+			});
 
 			return AppJsonResponse(ctx, {
-				data: result.data,
+				data: healthTip,
 				message: "Health tip retrieved successfully",
 				schema: backendApiSchemaRoutes["@get/health-tips/one/:id"].data,
 			});

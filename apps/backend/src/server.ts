@@ -3,6 +3,7 @@ import { serve } from "@hono/node-server";
 import { consola } from "consola";
 import { app } from "./app/app";
 import { ENVIRONMENT } from "./config/env";
+import { initializeRedisCacheClient } from "./services/cache";
 
 serve(
 	{
@@ -10,6 +11,8 @@ serve(
 		port: ENVIRONMENT.PORT,
 	},
 	(info) => {
+		void initializeRedisCacheClient();
+
 		const message =
 			ENVIRONMENT.NODE_ENV === "development" ? `http://localhost:${info.port}` : `PORT:${info.port}`;
 

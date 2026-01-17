@@ -8,28 +8,25 @@ RUN corepack enable && corepack prepare pnpm@10.28.0 --activate
 WORKDIR /app
 
 # ================================================================
-# Stage 2: Prepare deps
+# Stage 2: Setup and runner
 # ================================================================
-FROM base AS prepare-deps
+FROM base AS setup-and-runner
 
 # Copy workspace configuration
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Copy necessary files
-COPY packages/db ./packages/db
-COPY packages/env ./packages/env
-COPY packages/shared ./packages/shared
-COPY apps/backend ./apps/backend
+# Copy package manifests (for caching pnpm install)
+COPY apps/backend/package.json ./apps/backend/package.json
+COPY packages/db/package.json ./packages/db/package.json
+COPY packages/env/package.json ./packages/env/package.json
+COPY packages/shared/package.json ./packages/shared/package.json
 
 # Install dependencies
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prefer-offline --prod --ignore-scripts --frozen-lockfile
 
-# ================================================================
-# Stage 3: Runner
-# ================================================================
-FROM base AS runner
-
-COPY --from=prepare-deps /app ./
+# Copy source code
+COPY apps/backend ./apps/backend
+COPY packages ./packages
 
 WORKDIR /app/apps/backend
 
@@ -39,5 +36,4 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:8000/ || exit 1
 
-# CMD ["sh", "-c", "pnpm db:push && pnpm db:seed && pnpm start"]
-CMD ["sh", "-c", "pnpm start"]
+CMD ["sh", "-c", "pnpm --filter=@medinfo/db db:push && pnpm --filter=@medinfo/db db:seed && pnpm start:dev"]
