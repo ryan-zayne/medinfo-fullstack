@@ -5,9 +5,7 @@ import { Footer, NavBar } from "./-components";
 function HomeLayout({ children }: LayoutProps<"/">) {
 	return (
 		<div className="flex min-h-svh w-full flex-col items-center">
-			<HydrationBoundary
-				onPrefetch={(client) => client.prefetchQuery(sessionQuery())}
-			>
+			<HydrationBoundary onPrefetch={(client) => client.prefetchQuery(sessionQuery())}>
 				<NavBar />
 				{children}
 			</HydrationBoundary>
