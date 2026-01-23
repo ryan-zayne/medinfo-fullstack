@@ -1,9 +1,12 @@
 import "@colors/colors";
 import { serve } from "@hono/node-server";
 import { consola } from "consola";
-import { app } from "./app/app";
+import { Hono } from "hono";
+import { app as appRouter } from "./app";
 import { ENVIRONMENT } from "./config/env";
 import { initializeRedisCacheClient } from "./services/cache";
+
+const app = new Hono().route("/", appRouter);
 
 serve(
 	{
@@ -21,4 +24,4 @@ serve(
 );
 
 // Doing this to enable vercel deployment to work
-// export default app;
+export default app as never;

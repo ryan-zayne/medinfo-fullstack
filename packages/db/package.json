@@ -7,6 +7,7 @@
 		"./schema/*": "./src/schema/*.ts"
 	},
 	"scripts": {
+		"build": "tsdown",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "cross-env DB_MIGRATING=true drizzle-kit migrate",
 		"db:push": "drizzle-kit push",
@@ -23,13 +24,13 @@
 		"@faker-js/faker": "^10.2.0",
 		"@medinfo/env": "workspace:*",
 		"@node-rs/argon2": "^2.0.2",
-		"@zayne-labs/tsconfig": "0.11.19",
+		"@zayne-labs/tsconfig": "0.11.21",
 		"consola": "3.4.2",
 		"cross-env": "^10.1.0",
 		"drizzle-kit": "0.31.8",
 		"drizzle-orm": "0.45.1",
 		"drizzle-zod": "0.8.3",
-		"pg": "8.17.1",
+		"pg": "8.17.2",
 		"tsx": "4.21.0",
 		"zod": "catalog:"
 	},

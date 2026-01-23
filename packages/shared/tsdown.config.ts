@@ -2,10 +2,10 @@ import { defineConfig } from "tsdown";
 
 export default defineConfig({
 	clean: true,
-	dts: { newContext: true },
+	dts: true,
 	entry: ["src/**/*.ts"],
 	format: ["esm"],
-	platform: "node",
+	platform: "neutral",
 	sourcemap: true,
 	target: "esnext",
 });

@@ -5,7 +5,6 @@ import { defineBaseConfig } from "@zayne-labs/callapi/utils";
 import { BASE_API_URL } from "./constants";
 import {
 	authErrorRedirectPlugin,
-	nextjsForwardCookiesPlugin,
 	toastPlugin,
 	type AuthErrorRedirectPluginMeta,
 	type NextjsForwardCookiesMeta,
@@ -22,7 +21,7 @@ export const sharedBaseConfig = defineBaseConfig({
 	dedupeCacheScopeKey: (ctx) => ctx.options.baseURL,
 
 	plugins: [
-		nextjsForwardCookiesPlugin(),
+		// nextjsForwardCookiesPlugin(),
 		authErrorRedirectPlugin({
 			redirectRoute: "/auth/signin",
 			routesToExemptFromErrorRedirect: ["/", "/library/**", "/daily-tips/**", "/auth/**"],

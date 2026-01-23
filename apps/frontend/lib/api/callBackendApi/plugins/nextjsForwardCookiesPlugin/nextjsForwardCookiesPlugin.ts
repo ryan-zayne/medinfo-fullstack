@@ -24,9 +24,9 @@ export const nextjsForwardCookiesPlugin = () => {
 				if (!cookieHeader) return;
 
 				ctx.request.headers.cookie = cookieHeader;
-			} catch {
+			} catch (error) {
 				// Handle cases where headers() might be called outside of request context
-				console.warn("NextjsForwardCookiesPlugin: Failed to access headers context.");
+				console.warn("NextjsForwardCookiesPlugin: Failed to access headers context.", error);
 			}
 		},
 	});

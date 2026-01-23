@@ -1,5 +1,6 @@
 import { isBrowser } from "@zayne-labs/toolkit-core";
-import { create, type StateCreator } from "zustand";
+import { createReactStore } from "@zayne-labs/toolkit-react/zustand-compat";
+import type { StateCreator } from "zustand";
 import { persist } from "zustand/middleware";
 
 type ThemeStore = {
@@ -52,7 +53,7 @@ const themeStoreObjectFn: StateCreator<ThemeStore> = (set, get) => ({
 	theme: "system",
 });
 
-export const useThemeStore = create<ThemeStore>()(
+export const useThemeStore = createReactStore<ThemeStore>()(
 	persist(themeStoreObjectFn, {
 		migrate: (persistedState) => persistedState,
 

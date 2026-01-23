@@ -8,6 +8,7 @@ export default defineConfig({
 	format: ["esm"],
 	noExternal: [/@medinfo\//],
 	platform: "node",
+	skipNodeModulesBundle: true,
 	target: "esnext",
 	treeshake: true,
 });
