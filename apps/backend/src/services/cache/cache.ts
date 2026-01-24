@@ -14,7 +14,11 @@ redisCacheClient.on("error", (error) => consola.error("Redis Client Error", erro
 export const initializeRedisCacheClient = async () => {
 	if (redisCacheClient.isOpen) return;
 
-	await redisCacheClient.connect();
+	try {
+		await redisCacheClient.connect();
 
-	consola.info("Connected to Redis Cache Client!");
+		consola.info("Connected to Redis Cache Client!");
+	} catch (error) {
+		consola.error("Failed to connect to Redis Cache Client", error);
+	}
 };
