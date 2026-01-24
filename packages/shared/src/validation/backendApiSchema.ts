@@ -85,14 +85,7 @@ const stringWithBooleanValidation = () => {
 
 const healthTipRoutes = defineSchemaRoutes({
 	"@get/health-tips/all": {
-		data: withBaseSuccessResponse(
-			z.array(
-				HealthTipSchema.omit({
-					lastUpdated: true,
-					mainContent: true,
-				})
-			)
-		),
+		data: withBaseSuccessResponse(HealthTipSchema.array()),
 		query: z
 			.object({
 				limit: stringWithNumberValidation(),

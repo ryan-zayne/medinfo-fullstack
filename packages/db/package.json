@@ -14,7 +14,6 @@
 		"db:seed": "cross-env DB_SEEDING=true tsx src/seed.ts",
 		"db:studio": "drizzle-kit studio",
 		"dev": "tsx watch src/db.ts",
-		"dev:docker": "docker compose up medinfo-postgres-db medinfo-redis-cache",
 		"lint:eslint": "eslint . --max-warnings 0",
 		"lint:format": "prettier --write .",
 		"lint:type-check": "tsc --pretty -p tsconfig.json"

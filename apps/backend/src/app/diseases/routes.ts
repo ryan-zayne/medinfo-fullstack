@@ -28,7 +28,7 @@ const diseasesRoutes = new Hono()
 				random ?
 					baseQuery.orderBy(sql`RANDOM()`).limit(limit)
 				:	baseQuery.orderBy(asc(diseases.id)).where(gt(diseases.id, offset)).limit(limit),
-				random ? [null] : db.select({ value: count() }).from(diseases),
+				random ? [{ value: 0 }] : db.select({ value: count() }).from(diseases),
 			]);
 
 			return AppJsonResponse(ctx, {
@@ -37,7 +37,7 @@ const diseasesRoutes = new Hono()
 					pagination: {
 						limit,
 						page: random ? 1 : page,
-						total: random ? diseasesResult.length : (totalCount?.value ?? 0),
+						total: random ? diseasesResult.length : totalCount.value,
 					},
 				},
 				message: "Diseases retrieved successfully",

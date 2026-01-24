@@ -10,9 +10,10 @@ import { Card, Carousel, Skeleton } from "@/components/ui";
 import { healthTipsQuery } from "@/lib/react-query/queryOptions";
 import { cnMerge } from "@/lib/utils/cn";
 
-export type DailyTipCardProps = z.infer<
-	(typeof backendApiSchemaRoutes)["@get/health-tips/all"]["data"]
->["data"][number] & {
+export type DailyTipCardProps = Omit<
+	z.infer<(typeof backendApiSchemaRoutes)["@get/health-tips/one/:id"]["data"]>["data"],
+	"lastUpdated" | "mainContent"
+> & {
 	className?: string;
 };
 

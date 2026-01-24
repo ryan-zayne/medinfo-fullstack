@@ -9,6 +9,7 @@
 		"build": "tsdown",
 		"compile": "bun build --compile --minify --sourcemap --bytecode ./src/server.ts --outfile server",
 		"dev": "cross-env NODE_ENV=development tsx watch src/server.ts --clear-screen=false",
+		"dev:docker-db": "docker compose up medinfo-postgres-db medinfo-redis-cache",
 		"lint:eslint": "eslint . --max-warnings 0",
 		"lint:format": "prettier --write .",
 		"lint:type-check": "tsc --pretty -p tsconfig.json",

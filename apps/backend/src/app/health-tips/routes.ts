@@ -1,5 +1,4 @@
 import { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
-import { omitKeys } from "@zayne-labs/toolkit-core";
 import { Hono } from "hono";
 import { AppJsonResponse } from "@/lib/utils/AppJsonResponse";
 import { validateWithZodMiddleware } from "@/middleware";
@@ -23,7 +22,7 @@ const healthTipsRoutes = new Hono()
 						onCacheMiss: async () => {
 							const tip = await healthApi.getTopicDetails({ TopicId: id });
 
-							return omitKeys(tip.data, ["lastUpdated", "mainContent"]);
+							return tip.data;
 						},
 					})
 				)
