@@ -2,11 +2,12 @@
 
 import { useToggle } from "@zayne-labs/toolkit-react";
 import { isString, type UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Fragment } from "react";
 import { AvatarGroupAnimated } from "@/components/animated/ui";
 import * as Collapsible from "@/components/animated/ui/collapsible";
-import { For, ForWithWrapper, IconBox, Logo, NavLink } from "@/components/common";
+import { For, ForWithWrapper, IconBox, Logo, NavLink, Show } from "@/components/common";
 import type { MainAppRoutes } from "@/components/common/NavLink";
 import { HamburgerIcon, NotificationIcon, SearchIcon, XIcon } from "@/components/icons";
 import { Avatar, Button, Form } from "@/components/ui";
@@ -97,22 +98,37 @@ function DesktopHeader(props: DesktopHeaderProps) {
 				<NotificationIcon />
 				<AvatarGroupAnimated.Root sideOffset={10} translate="5%">
 					<Avatar.Root className="size-14 rounded-full border border-medinfo-light-2">
-						<Avatar.Image
-							src={sessionQueryData?.data.user.avatar}
-							alt={sessionQueryData?.data.user.fullName}
-						/>
-						<Avatar.Fallback
-							className="bg-medinfo-secondary-main text-lg font-bold text-medinfo-primary-darker"
-						>
-							{sessionQueryData?.data.user.firstName[0]}
-							{sessionQueryData?.data.user.lastName[0]}
-						</Avatar.Fallback>
+						<Show.Root control="content">
+							<Show.Content when={sessionQueryData?.data.user.avatar}>
+								{(definedLogo) => (
+									<Image
+										src={definedLogo}
+										alt={sessionQueryData?.data.user.fullName as string}
+										width={56}
+										height={56}
+										className="size-full rounded-full object-cover"
+									/>
+								)}
+							</Show.Content>
 
-						<AvatarGroupAnimated.Tooltip
-							classNames={{ base: "bg-medinfo-primary-darker text-white" }}
-						>
-							{sessionQueryData?.data.user.fullName}
-						</AvatarGroupAnimated.Tooltip>
+							<Show.Fallback>
+								<span
+									className="bg-medinfo-secondary-main text-lg font-bold
+										text-medinfo-primary-darker"
+								>
+									{sessionQueryData?.data.user.firstName[0]}
+									{sessionQueryData?.data.user.lastName[0]}
+								</span>
+							</Show.Fallback>
+						</Show.Root>
+
+						{sessionQueryData?.data.user.fullName && (
+							<AvatarGroupAnimated.Tooltip
+								classNames={{ base: "bg-medinfo-primary-darker text-white" }}
+							>
+								{sessionQueryData.data.user.fullName}
+							</AvatarGroupAnimated.Tooltip>
+						)}
 					</Avatar.Root>
 				</AvatarGroupAnimated.Root>
 			</div>

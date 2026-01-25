@@ -1,7 +1,7 @@
 import { useControllableState } from "@zayne-labs/toolkit-react";
 import { format } from "date-fns";
 import { ForWithWrapper, IconBox } from "@/components/common";
-import { cnMerge } from "@/lib/utils/cn";
+import { cnJoin, cnMerge } from "@/lib/utils/cn";
 import { buttonVariants } from "../button";
 import { Calendar, CalendarDayButton } from "../calender";
 import { shadcnButtonVariants } from "../constants";
@@ -57,7 +57,7 @@ export function DateTimePicker(props: DatePickerProps) {
 						className
 					)}
 				>
-					<span className={cnMerge(!date && "text-medinfo-dark-4")}>
+					<span className={cnJoin(!date && "text-medinfo-dark-4")}>
 						{date ? format(date, formats?.visibleDate ?? "PPP") : placeholder}
 					</span>
 
@@ -191,7 +191,7 @@ function TimeScrollArea(props: TimeScrollAreaProps) {
 				<ForWithWrapper
 					as="div"
 					className="flex flex-col p-2"
-					each={[...Array(12).keys()].map((i) => i * 5)}
+					each={[...Array(12).keys()].map((index) => index * 5)}
 					renderItem={(minute) => (
 						<button
 							type="button"
