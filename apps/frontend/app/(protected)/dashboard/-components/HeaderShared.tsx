@@ -5,8 +5,7 @@ import { isString, type UnionDiscriminator } from "@zayne-labs/toolkit-type-help
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Fragment } from "react";
-import { AvatarGroupAnimated } from "@/components/animated/ui";
-import * as Collapsible from "@/components/animated/ui/collapsible";
+import { AvatarGroupAnimated, CollapsibleAnimated } from "@/components/animated/ui";
 import { For, ForWithWrapper, IconBox, Logo, NavLink } from "@/components/common";
 import type { MainAppRoutes } from "@/components/common/NavLink";
 import { HamburgerIcon, NotificationIcon, SearchIcon, XIcon } from "@/components/icons";
@@ -196,11 +195,11 @@ function MobileHeader(props: MobileHeaderProps) {
 								)}
 
 								{item.children && (
-									<Collapsible.Root
+									<CollapsibleAnimated.Root
 										className="group/collapsible"
 										defaultOpen={item.children.some((child) => child.href === pathname)}
 									>
-										<Collapsible.Trigger
+										<CollapsibleAnimated.Trigger
 											className="flex w-full items-center justify-between gap-1 py-2 text-left"
 										>
 											<div className="flex items-center gap-4">
@@ -212,9 +211,9 @@ function MobileHeader(props: MobileHeaderProps) {
 												className="size-5 shrink-0 transition-transform duration-200
 													group-data-[state=open]/collapsible:rotate-90"
 											/>
-										</Collapsible.Trigger>
+										</CollapsibleAnimated.Trigger>
 
-										<Collapsible.Content className="flex flex-col gap-3 *:first:mt-3">
+										<CollapsibleAnimated.Content className="flex flex-col gap-3 *:first:mt-3">
 											<For
 												each={item.children}
 												renderItem={(child) => (
@@ -234,8 +233,8 @@ function MobileHeader(props: MobileHeaderProps) {
 													</NavLink>
 												)}
 											/>
-										</Collapsible.Content>
-									</Collapsible.Root>
+										</CollapsibleAnimated.Content>
+									</CollapsibleAnimated.Root>
 								)}
 
 								{item.href === null && (
