@@ -14,8 +14,8 @@ function NavBar() {
 	return (
 		<header
 			className="sticky inset-[0_0_auto_0] z-500 flex w-full items-center justify-between bg-white px-6
-				py-[17px] shadow-[0_4px_8px_hsl(150,20%,25%,0.25)] [transition:box-shadow_0.3s_ease] md:px-10
-				md:py-5 lg:px-[100px]"
+				py-[17px] shadow-[0_4px_8px_theme(--color-medinfo-primary-main/0.25)]
+				[transition:box-shadow_0.3s_ease] md:px-10 md:py-5 lg:px-[100px]"
 		>
 			<Logo className="min-w-fit max-lg:h-[46px] max-lg:w-[60px]" />
 

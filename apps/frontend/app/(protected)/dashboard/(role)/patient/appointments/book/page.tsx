@@ -11,7 +11,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 import { DialogAnimated } from "@/components/animated/ui";
-import { IconBox, Show } from "@/components/common";
+import { IconBox, NavLink, Show } from "@/components/common";
 import { getElementList } from "@/components/common/for";
 import { CloseIcon, GreenSpinnerIcon } from "@/components/icons";
 import { Button, DateTimePicker, Form, Select } from "@/components/ui";
@@ -65,8 +65,15 @@ function AppointmentPage() {
 	return (
 		<Main className="w-full gap-8 max-md:mx-auto max-md:max-w-[400px]">
 			<header>
-				<Button size="icon" theme="primary-inverted" className="border-[0.6px] border-medinfo-light-1">
-					<IconBox icon="lucide:chevron-left" className="size-5 text-medinfo-primary-darker" />
+				<Button
+					size="icon"
+					theme="primary-inverted"
+					className="border-[0.6px] border-medinfo-light-1"
+					asChild={true}
+				>
+					<NavLink href="/dashboard/patient">
+						<IconBox icon="lucide:chevron-left" className="size-5 text-medinfo-primary-darker" />
+					</NavLink>
 				</Button>
 			</header>
 
@@ -74,8 +81,8 @@ function AppointmentPage() {
 				<Steps.Root
 					count={stepperItems.length}
 					linear={true}
-					className="flex flex-col gap-8 rounded-[16px] p-4 shadow-[0_4px_6px_hsl(150,20%,25%,0.25)]
-						md:p-8"
+					className="flex flex-col gap-8 rounded-[16px] p-4
+						shadow-[0_4px_6px_theme(--color-medinfo-primary-main/0.25)] md:p-8"
 				>
 					<StepperList className="mb-7" />
 
@@ -503,7 +510,6 @@ function AppointmentDialog(props: DialogMainContentProps) {
 								<Button
 									isLoading={bookAppointmentMutationResult.isPending}
 									disabled={bookAppointmentMutationResult.isPending}
-									isDisabled={false}
 									theme="primary"
 									onClick={onAccept}
 								>

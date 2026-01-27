@@ -31,7 +31,7 @@ function AvatarFallback(props: React.ComponentProps<typeof AvatarPrimitive.Fallb
 		<AvatarPrimitive.Fallback
 			data-slot="avatar-fallback"
 			className={cnMerge(
-				"flex size-full items-center justify-center rounded-full bg-shadcn-muted",
+				"inline-flex size-full items-center justify-center rounded-full bg-shadcn-muted",
 				className
 			)}
 			{...restOfProps}

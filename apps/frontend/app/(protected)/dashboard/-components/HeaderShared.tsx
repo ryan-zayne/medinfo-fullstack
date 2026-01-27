@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { Fragment } from "react";
 import { AvatarGroupAnimated } from "@/components/animated/ui";
 import * as Collapsible from "@/components/animated/ui/collapsible";
-import { For, ForWithWrapper, IconBox, Logo, NavLink, Show } from "@/components/common";
+import { For, ForWithWrapper, IconBox, Logo, NavLink } from "@/components/common";
 import type { MainAppRoutes } from "@/components/common/NavLink";
 import { HamburgerIcon, NotificationIcon, SearchIcon, XIcon } from "@/components/icons";
 import { Avatar, Button, Form } from "@/components/ui";
@@ -77,14 +77,14 @@ function DesktopHeader(props: DesktopHeaderProps) {
 	return (
 		<header
 			className={cnMerge(
-				"sticky top-0 z-50 flex items-center justify-between bg-white px-10 py-6 shadow-md",
+				"sticky top-0 z-50 flex items-center justify-between bg-white px-10 py-4 shadow-md",
 				className
 			)}
 		>
 			<p className="text-[32px] font-semibold">{activeTitle}</p>
 
 			<Form.InputGroup
-				className="w-[400px] rounded-[8px] border border-medinfo-primary-main px-6 py-2
+				className="h-full w-[400px] rounded-[8px] border border-medinfo-primary-main px-6 py-2
 					text-medinfo-body-color"
 			>
 				<Form.InputLeftItem>
@@ -98,29 +98,23 @@ function DesktopHeader(props: DesktopHeaderProps) {
 				<NotificationIcon />
 				<AvatarGroupAnimated.Root sideOffset={10} translate="5%">
 					<Avatar.Root className="size-14 rounded-full border border-medinfo-light-2">
-						<Show.Root control="content">
-							<Show.Content when={sessionQueryData?.data.user.avatar}>
-								{(definedLogo) => (
-									<Image
-										src={definedLogo}
-										alt={sessionQueryData?.data.user.fullName as string}
-										width={56}
-										height={56}
-										className="size-full rounded-full object-cover"
-									/>
-								)}
-							</Show.Content>
+						<Avatar.Image asChild={true}>
+							<Image
+								src={sessionQueryData?.data.user.avatar as string}
+								alt={sessionQueryData?.data.user.fullName as string}
+								width={56}
+								height={56}
+								className="size-full rounded-full object-cover"
+							/>
+						</Avatar.Image>
 
-							<Show.Fallback>
-								<span
-									className="bg-medinfo-secondary-main text-lg font-bold
-										text-medinfo-primary-darker"
-								>
-									{sessionQueryData?.data.user.firstName[0]}
-									{sessionQueryData?.data.user.lastName[0]}
-								</span>
-							</Show.Fallback>
-						</Show.Root>
+						<Avatar.Fallback
+							className="bg-medinfo-secondary-main text-[18px] font-bold
+								text-medinfo-primary-darker"
+						>
+							{sessionQueryData?.data.user.firstName[0]}
+							{sessionQueryData?.data.user.lastName[0]}
+						</Avatar.Fallback>
 
 						{sessionQueryData?.data.user.fullName && (
 							<AvatarGroupAnimated.Tooltip

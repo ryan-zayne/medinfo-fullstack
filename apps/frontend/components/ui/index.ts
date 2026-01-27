@@ -1,4 +1,5 @@
 export * as Accordion from "./accordion";
+export * as Drawer from "./drawer";
 export { Button } from "./button";
 export { Card } from "./card";
 export * as Carousel from "./carousel";

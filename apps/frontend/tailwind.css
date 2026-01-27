@@ -195,7 +195,7 @@
 /*-------------------*/
 @utility custom-scrollbar {
 	&::-webkit-scrollbar {
-		width: 10px;
+		width: 6px;
 	}
 
 	&::-webkit-scrollbar-track {
@@ -204,7 +204,7 @@
 	}
 
 	&::-webkit-scrollbar-thumb {
-		background-color: hsl(0, 0%, 39%);
+		background-color: var(--color-medinfo-primary-main);
 		border: 1px solid hsl(0, 0%, 76%);
 		border-radius: 10px;
 	}

@@ -169,7 +169,7 @@ function HomePage() {
 						>
 							<span
 								className="absolute -top-6 block size-12 rounded-full bg-white p-3 text-[24px]
-									[box-shadow:0_4px_4px_hsl(0,0%,0%,0.12)] md:size-16 md:text-[40px]"
+									shadow-[0_4px_4px_hsl(0,0%,0%,0.12)] md:size-16 md:text-[40px]"
 							>
 								<IconBox icon={feature.icon} />
 							</span>

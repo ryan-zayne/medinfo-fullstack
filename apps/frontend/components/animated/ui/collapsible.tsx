@@ -4,6 +4,7 @@ import { isFunction } from "@zayne-labs/toolkit-type-helpers";
 import { AnimatePresence, motion, type HTMLMotionProps, type Transition } from "motion/react";
 import { Collapsible as CollapsiblePrimitive } from "radix-ui";
 import { useCallback, useMemo } from "react";
+import { cnMerge } from "@/lib/utils/cn";
 
 type ContextValue = {
 	isOpen: boolean;
@@ -62,7 +63,15 @@ function CollapsibleRoot(props: InferProps<typeof CollapsiblePrimitive.Root>) {
 type CollapsibleTriggerProps = InferProps<typeof CollapsiblePrimitive.Trigger>;
 
 function CollapsibleTrigger(props: CollapsibleTriggerProps) {
-	return <CollapsiblePrimitive.Trigger data-slot="collapsible-trigger" {...props} />;
+	const { className, ...restOfProps } = props;
+
+	return (
+		<CollapsiblePrimitive.Trigger
+			data-slot="collapsible-trigger"
+			className={cnMerge("flex w-full items-center justify-between", className)}
+			{...restOfProps}
+		/>
+	);
 }
 
 type CollapsibleContentProps = HTMLMotionProps<"li">

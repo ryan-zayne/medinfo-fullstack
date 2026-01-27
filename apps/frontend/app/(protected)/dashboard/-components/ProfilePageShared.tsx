@@ -24,8 +24,8 @@ function ProfilePageShared() {
 	return (
 		<div className="flex flex-col gap-8 px-6 py-14">
 			<section
-				className="flex flex-col gap-5 rounded-[16px] p-4 shadow-[0_4px_6px_hsl(150,20%,25%,0.25)]
-					lg:bg-white lg:p-8"
+				className="flex flex-col gap-5 rounded-[16px] p-4
+					shadow-[0_4px_6px_theme(--color-medinfo-primary-main/0.25)] lg:bg-white lg:p-8"
 			>
 				<div
 					className="relative -z-10 size-[108px] rounded-full border-[1.4px]
@@ -46,13 +46,15 @@ function ProfilePageShared() {
 			</section>
 
 			<section
-				className="flex flex-col gap-5 rounded-[16px] p-4 shadow-[0_4px_6px_hsl(150,20%,25%,0.25)]
-					lg:flex-row lg:justify-between lg:bg-white lg:p-8"
+				className="flex flex-col gap-5 rounded-[16px] p-4
+					shadow-[0_4px_6px_theme(--color-medinfo-primary-main/0.25)] lg:flex-row lg:justify-between
+					lg:bg-white lg:p-8"
 			>
 				<h3 className="text-[18px] font-medium lg:min-w-[156px]">User Identity</h3>
 
 				<Form.Root className="w-full max-w-[372px] gap-3 self-center" form={userIdentityForm}>
-					<Form.Field<typeof userIdentityForm.control>
+					<Form.Field
+						control={userIdentityForm.control}
 						name="firstName"
 						className="gap-1 font-roboto font-medium"
 					>
@@ -63,7 +65,9 @@ function ProfilePageShared() {
 								placeholder:text-medinfo-dark-4 md:h-[64px] md:py-5 md:text-base"
 						/>
 					</Form.Field>
-					<Form.Field<typeof userIdentityForm.control>
+
+					<Form.Field
+						control={userIdentityForm.control}
 						name="lastName"
 						className="gap-1 font-roboto font-medium"
 					>
@@ -74,7 +78,12 @@ function ProfilePageShared() {
 								placeholder:text-medinfo-dark-4 md:h-[64px] md:py-5 md:text-base"
 						/>
 					</Form.Field>
-					<Form.Field name="gender" className="gap-1 font-roboto font-medium">
+
+					<Form.Field
+						control={userIdentityForm.control}
+						name="gender"
+						className="gap-1 font-roboto font-medium"
+					>
 						<Form.Label className="md:text-[20px]">Gender</Form.Label>
 
 						<Form.FieldBoundController
@@ -121,7 +130,8 @@ function ProfilePageShared() {
 						/>
 					</Form.Field>
 
-					<Form.Field<typeof userIdentityForm.control>
+					<Form.Field
+						control={userIdentityForm.control}
 						name="bio"
 						className="gap-1 font-roboto font-medium"
 					>
@@ -142,13 +152,15 @@ function ProfilePageShared() {
 			</section>
 
 			<section
-				className="flex flex-col gap-5 rounded-[16px] p-4 shadow-[0_4px_6px_hsl(150,20%,25%,0.25)]
-					lg:flex-row lg:justify-between lg:bg-white lg:p-8"
+				className="flex flex-col gap-5 rounded-[16px] p-4
+					shadow-[0_4px_6px_theme(--color-medinfo-primary-main/0.25)] lg:flex-row lg:justify-between
+					lg:bg-white lg:p-8"
 			>
 				<h3 className="text-[18px] font-medium lg:min-w-[156px]">Contact Info</h3>
 
 				<Form.Root className="w-full max-w-[372px] gap-3 self-center" form={contactInfoForm}>
-					<Form.Field<typeof contactInfoForm.control>
+					<Form.Field
+						control={contactInfoForm.control}
 						name="email"
 						className="gap-1 font-roboto font-medium"
 					>
@@ -159,7 +171,9 @@ function ProfilePageShared() {
 								placeholder:text-medinfo-dark-4 md:h-[64px] md:py-5 md:text-base"
 						/>
 					</Form.Field>
-					<Form.Field<typeof contactInfoForm.control>
+
+					<Form.Field
+						control={contactInfoForm.control}
 						name="phoneNumber"
 						className="gap-1 font-roboto font-medium"
 					>
@@ -179,13 +193,15 @@ function ProfilePageShared() {
 			</section>
 
 			<section
-				className="flex flex-col gap-5 rounded-[16px] p-4 shadow-[0_4px_6px_hsl(150,20%,25%,0.25)]
-					lg:flex-row lg:justify-between lg:bg-white lg:p-8"
+				className="flex flex-col gap-5 rounded-[16px] p-4
+					shadow-[0_4px_6px_theme(--color-medinfo-primary-main/0.25)] lg:flex-row lg:justify-between
+					lg:bg-white lg:p-8"
 			>
 				<h3 className="text-[18px] font-medium lg:min-w-[156px]">Location</h3>
 
 				<Form.Root className="w-full max-w-[372px] gap-3 self-center" form={locationForm}>
-					<Form.Field<typeof locationForm.control>
+					<Form.Field
+						control={locationForm.control}
 						name="country"
 						className="gap-1 font-roboto font-medium"
 					>
@@ -196,7 +212,8 @@ function ProfilePageShared() {
 								placeholder:text-medinfo-dark-4 md:h-[64px] md:py-5 md:text-base"
 						/>
 					</Form.Field>
-					<Form.Field<typeof locationForm.control>
+					<Form.Field
+						control={locationForm.control}
 						name="city"
 						className="gap-1 font-roboto font-medium"
 					>
@@ -216,13 +233,15 @@ function ProfilePageShared() {
 			</section>
 
 			<section
-				className="flex flex-col gap-5 rounded-[16px] p-4 shadow-[0_4px_6px_hsl(150,20%,25%,0.25)]
-					lg:flex-row lg:justify-between lg:bg-white lg:p-8"
+				className="flex flex-col gap-5 rounded-[16px] p-4
+					shadow-[0_4px_6px_theme(--color-medinfo-primary-main/0.25)] lg:flex-row lg:justify-between
+					lg:bg-white lg:p-8"
 			>
 				<h3 className="text-[18px] font-medium lg:min-w-[156px]">Change Password</h3>
 
 				<Form.Root className="w-full max-w-[372px] gap-3 self-center" form={changePasswordForm}>
-					<Form.Field<typeof changePasswordForm.control>
+					<Form.Field
+						control={changePasswordForm.control}
 						name="oldPassword"
 						className="gap-1 font-roboto font-medium"
 					>
@@ -236,7 +255,9 @@ function ProfilePageShared() {
 							}}
 						/>
 					</Form.Field>
-					<Form.Field<typeof changePasswordForm.control>
+
+					<Form.Field
+						control={changePasswordForm.control}
 						name="newPassword"
 						className="gap-1 font-roboto font-medium"
 					>
@@ -250,7 +271,9 @@ function ProfilePageShared() {
 							}}
 						/>
 					</Form.Field>
-					<Form.Field<typeof changePasswordForm.control>
+
+					<Form.Field
+						control={changePasswordForm.control}
 						name="confirmPassword"
 						className="gap-1 font-roboto font-medium"
 					>

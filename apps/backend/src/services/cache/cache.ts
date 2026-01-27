@@ -22,3 +22,5 @@ export const initializeRedisCacheClient = async () => {
 		consola.error("Failed to connect to Redis Cache Client", error);
 	}
 };
+
+void initializeRedisCacheClient();
