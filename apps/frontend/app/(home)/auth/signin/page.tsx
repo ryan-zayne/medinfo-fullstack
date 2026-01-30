@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import type { z } from "zod";
 import { IconBox, Logo, NavLink, Show } from "@/components/common";
 import { Button, Form } from "@/components/ui";
-import { callBackendApi } from "@/lib/api/callBackendApi";
+import { callBackendApiForQuery } from "@/lib/api/callBackendApi";
 import { backendApiSchemaRoutes, type SignUpSchema } from "@/lib/api/callBackendApi/apiSchema";
 import { Main } from "../../-components";
 import { OAuthSection } from "../OAuthSection";
@@ -34,7 +34,7 @@ function SignInPage(props: PageProps<"/auth/signin">) {
 	const router = useRouter();
 
 	const onSubmit = form.handleSubmit(async (data) => {
-		await callBackendApi("@post/auth/signin", {
+		await callBackendApiForQuery("@post/auth/signin", {
 			body: data,
 			meta: { toast: { success: true } },
 

@@ -25,7 +25,7 @@ function ForgotPasswordPage() {
 						event.preventDefault();
 					}}
 					onChange={(event) => {
-						const radio = event.target as HTMLInputElement;
+						const radio = event.target;
 
 						setResetMode(radio.value as typeof resetMode);
 					}}
@@ -41,7 +41,7 @@ function ForgotPasswordPage() {
 									resetMode === "email" ? "bg-medinfo-primary-subtle" : "bg-medinfo-light-4"
 								)}
 							>
-								<IconBox icon="mynaui:envelope" className="size-[18px] md:size-6" />
+								<IconBox icon="mynaui:envelope" className="size-4.5 md:size-6" />
 							</Form.InputLeftItem>
 
 							<Form.InputPrimitive
@@ -79,7 +79,7 @@ function ForgotPasswordPage() {
 									resetMode === "sms" ? "bg-medinfo-primary-subtle" : "bg-medinfo-light-4"
 								)}
 							>
-								<IconBox icon="bi:telephone" className="size-[18px]" />
+								<IconBox icon="bi:telephone" className="size-4.5" />
 							</Form.InputLeftItem>
 
 							<Form.InputPrimitive

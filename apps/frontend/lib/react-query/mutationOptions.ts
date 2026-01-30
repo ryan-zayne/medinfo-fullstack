@@ -16,6 +16,15 @@ export const googleOAuthMutation = () => {
 	});
 };
 
+export const signoutMutation = () => {
+	return mutationOptions({
+		mutationFn: () => {
+			return callBackendApiForQuery("@get/auth/signout");
+		},
+		mutationKey: ["auth", "signout"],
+	});
+};
+
 export const matchDoctorMutation = () => {
 	return mutationOptions({
 		mutationFn: (

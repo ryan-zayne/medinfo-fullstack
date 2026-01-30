@@ -1,0 +1,13 @@
+{
+	"extends": "@zayne-labs/tsconfig/bundler/dom/app",
+
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["./*"]
+		}
+	},
+
+	"include": ["**/*.ts", "**/*.tsx"],
+	"exclude": ["node_modules"]
+}

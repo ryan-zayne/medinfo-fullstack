@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import { isString } from "@zayne-labs/toolkit-type-helpers";
 import { usePathname } from "next/navigation";
 import { Fragment } from "react";
@@ -8,6 +9,8 @@ import { For, ForWithWrapper, IconBox, Logo, NavLink } from "@/components/common
 import EmojiHandIcon from "@/components/icons/EmojiHandIcon";
 import LogoutIcon from "@/components/icons/LogoutIcon";
 import { Button, Drawer } from "@/components/ui";
+import { redirectTo } from "@/lib/api/callBackendApi/plugins/utils/common";
+import { signoutMutation } from "@/lib/react-query/mutationOptions";
 import type { SessionQueryResultType } from "@/lib/react-query/queryOptions";
 import { cnJoin } from "@/lib/utils/cn";
 import type { MenuItem } from "./HeaderShared";
@@ -21,6 +24,16 @@ export function SidebarShared(props: SidebarProps) {
 	const { menuItems, sessionQueryData } = props;
 
 	const pathname = usePathname();
+
+	const signoutMutationResult = useMutation(signoutMutation());
+
+	const onSignout = () => {
+		signoutMutationResult.mutate(undefined, {
+			onSuccess: () => {
+				redirectTo("/");
+			},
+		});
+	};
 
 	return (
 		// NOTE - Using the trapFocus prop as a hack to prevent radix within vaul from trapping focus like a massive idiot🙂
@@ -150,7 +163,14 @@ export function SidebarShared(props: SidebarProps) {
 						<p className="text-[18px]">Go Premium</p>
 					</div>
 
-					<Button unstyled={true} className="mt-8 flex items-center gap-3 p-4">
+					<Button
+						unstyled={true}
+						loadingStyle="side-by-side"
+						isLoading={signoutMutationResult.isPending}
+						disabled={signoutMutationResult.isPending}
+						className="mt-8 flex items-center gap-3 p-4"
+						onClick={onSignout}
+					>
 						<LogoutIcon />
 						Logout
 					</Button>

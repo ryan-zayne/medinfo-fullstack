@@ -36,7 +36,7 @@ services:
    #     container_name: medinfo-redis-queue
    #     restart: unless-stopped
    #     ports:
-   #        - 6380:6380
+   #        - 6381:6381
    #     networks:
    #        - medinfo-network
    #     healthcheck:
@@ -56,8 +56,8 @@ services:
             condition: service_healthy
          medinfo-redis-cache:
             condition: service_healthy
-         #  medinfo-redis-queue:
-         #     condition: service_healthy
+         medinfo-redis-queue:
+            condition: service_healthy
       networks:
          - medinfo-network
       ports:
@@ -67,7 +67,7 @@ services:
       environment:
          - DATABASE_URL_DEV=postgresql://postgres:postgres@medinfo-postgres-db:5432/medinfo
          - REDIS_CACHE_URL_DEV=redis://medinfo-redis-cache:6379
-         - REDIS_QUEUE_URL_DEV=redis://medinfo-redis-queue:6380
+         - REDIS_QUEUE_URL_DEV=redis://medinfo-redis-queue:6379
 
       healthcheck:
          test: [CMD, wget, --no-verbose, --tries=1, --spider, http://localhost:8000]

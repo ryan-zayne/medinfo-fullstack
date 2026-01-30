@@ -14,7 +14,7 @@
 	"dependencies": {
 		"@dotenvx/dotenvx": "catalog:",
 		"@medinfo/db": "workspace:*",
-		"@zayne-labs/callapi": "1.11.44",
+		"@zayne-labs/callapi": "1.11.46",
 		"consola": "3.4.2",
 		"zod": "catalog:"
 	},

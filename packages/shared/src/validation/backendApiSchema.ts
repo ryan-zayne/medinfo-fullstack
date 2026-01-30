@@ -1,7 +1,8 @@
 import { InsertAppointmentSchema, SelectAppointmentSchema } from "@medinfo/db/schema/appointments";
 import { InsertUserSchema, SelectUserSchema } from "@medinfo/db/schema/auth";
 import { InsertDiseaseSchema } from "@medinfo/db/schema/diseases";
-import { fallBackRouteSchemaKey, type FallBackRouteSchemaKey } from "@zayne-labs/callapi/constants";
+import type { InferAllMainRouteKeys, InferAllMainRoutes } from "@zayne-labs/callapi";
+import { fallBackRouteSchemaKey } from "@zayne-labs/callapi/constants";
 import { defineSchema, defineSchemaRoutes } from "@zayne-labs/callapi/utils";
 import { z } from "zod";
 
@@ -392,6 +393,7 @@ const appointmentsRoutes = () => {
 		},
 	});
 };
+
 export const backendApiSchema = defineSchema(
 	{
 		...defaultSchemaRoute,
@@ -405,9 +407,12 @@ export const backendApiSchema = defineSchema(
 
 export const backendApiSchemaRoutes = backendApiSchema.routes;
 
-export type RouteSchemaKeys = Exclude<keyof typeof backendApiSchemaRoutes, FallBackRouteSchemaKey>;
+export type BackendApiRoutes = InferAllMainRoutes<typeof backendApiSchema.routes>;
 
-export type BackendApiSchemaRoutes = Omit<typeof backendApiSchemaRoutes, FallBackRouteSchemaKey>;
+export type BackendApiRouteKeys = InferAllMainRouteKeys<
+	typeof backendApiSchema.routes,
+	typeof backendApiSchema.config
+>;
 
 export type DiseaseSchemaType = z.infer<typeof InsertDiseaseSchema>;
 

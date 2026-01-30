@@ -1,0 +1,60 @@
+import { Button, Heading, Section, Text } from "@react-email/components";
+import { BaseLayout } from "../layouts/BaseLayout";
+
+type VerifyEmailProps = {
+	validationCode: string;
+	validationUrl: string;
+};
+
+export function VerifyEmail(props: VerifyEmailProps) {
+	const { validationCode, validationUrl } = props;
+
+	return (
+		<BaseLayout preview="Verify your email address for MedInfo">
+			<Heading
+				className="mb-6 text-center text-2xl font-semibold tracking-tight text-medinfo-primary-main"
+			>
+				Verify Your Email
+			</Heading>
+
+			<Text className="mb-4 text-center text-base leading-relaxed text-medinfo-body-color">
+				We received a request to create a MedInfo account. Use the code below to complete your
+				registration.
+			</Text>
+
+			<Section
+				className="mx-auto my-8 w-full rounded-xl border border-medinfo-light-2
+					bg-medinfo-secondary-subtle py-6 text-center"
+			>
+				<Text className="m-0 font-mono text-4xl font-bold tracking-[0.25em] text-medinfo-primary-main">
+					{validationCode}
+				</Text>
+			</Section>
+
+			<Section className="mb-6 text-center">
+				<Text className="mb-4 text-center text-sm text-medinfo-body-color">
+					Or you can also click the link below to verify:
+				</Text>
+
+				<Button
+					className="inline-block rounded-full bg-medinfo-primary-main px-10 py-4 text-sm
+						font-semibold text-white no-underline shadow-md"
+					href={validationUrl}
+				>
+					Verify Account
+				</Button>
+			</Section>
+
+			<Text className="mb-0 text-center text-sm leading-relaxed text-medinfo-dark-4">
+				If you didn't request this code, you can safely ignore this email.
+			</Text>
+		</BaseLayout>
+	);
+}
+
+VerifyEmail.PreviewProps = {
+	validationCode: "123456",
+	validationUrl: "http://localhost:3000/auth/verify-email?code=123456",
+} satisfies VerifyEmailProps;
+
+export default VerifyEmail;

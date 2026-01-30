@@ -1,3 +1,5 @@
+"use client";
+
 import { sessionQuery } from "@/lib/react-query/queryOptions";
 import { HydrationBoundary } from "../HydrationBoundary.client";
 import { Footer, NavBar } from "./-components";

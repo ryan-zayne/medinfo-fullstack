@@ -17,7 +17,7 @@ import {
 } from "@/components/common";
 import { Button, DateTimePicker, Form, Select } from "@/components/ui";
 import { DropZone } from "@/components/ui/drop-zone";
-import { callBackendApi } from "@/lib/api/callBackendApi";
+import { callBackendApiForQuery } from "@/lib/api/callBackendApi";
 import { Main } from "../../-components";
 import { OAuthSection } from "../OAuthSection";
 
@@ -48,7 +48,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 	const router = useRouter();
 
 	const onSubmit = form.handleSubmit(async (data) => {
-		await callBackendApi("@post/auth/signup", {
+		await callBackendApiForQuery("@post/auth/signup", {
 			body: toFormData(data),
 			meta: { toast: { success: true } },
 

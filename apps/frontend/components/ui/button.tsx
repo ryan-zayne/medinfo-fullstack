@@ -59,7 +59,7 @@ export const buttonVariants = tv({
 
 	variants: {
 		disabled: {
-			true: "cursor-not-allowed",
+			true: "cursor-not-allowed opacity-60",
 		},
 
 		isDisabled: {
