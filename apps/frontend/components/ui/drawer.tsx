@@ -1,3 +1,5 @@
+"use client";
+
 import type { InferProps } from "@zayne-labs/toolkit-react/utils";
 import { Fragment as ReactFragment, useLayoutEffect } from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
