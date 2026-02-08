@@ -35,10 +35,8 @@ export const addEmailToQueue = async (options: EmailJobOptions) => {
 let emailWorker: Worker<EmailJobOptions> | null = null;
 let emailQueueEvent: QueueEvents | null = null;
 
-const getWorker = () => {
-	if (emailWorker) return emailWorker;
-
-	emailWorker = new Worker<EmailJobOptions>(
+const getEmailWorker = () => {
+	emailWorker ??= new Worker<EmailJobOptions>(
 		emailQueueKey,
 		async (job) => {
 			await sendEmail(job.data);
@@ -71,10 +69,8 @@ const getWorker = () => {
 	return emailWorker;
 };
 
-const getQueueEvents = () => {
-	if (emailQueueEvent) return emailQueueEvent;
-
-	emailQueueEvent = new QueueEvents(emailQueueKey, { connection: redisQueueClient });
+const getEmailQueueEvents = () => {
+	emailQueueEvent ??= new QueueEvents(emailQueueKey, { connection: redisQueueClient });
 
 	emailQueueEvent.on("failed", ({ failedReason, jobId }) => {
 		consola.error(`Job ${jobId} failed with error ${failedReason}`, failedReason);
@@ -106,8 +102,8 @@ export const startEmailQueueAndWorker = async () => {
 	}
 
 	// == Now create Worker and QueueEvents (Redis is ready)
-	const worker = getWorker();
-	const queueEvents = getQueueEvents();
+	const worker = getEmailWorker();
+	const queueEvents = getEmailQueueEvents();
 
 	await Promise.all([emailQueue.waitUntilReady(), queueEvents.waitUntilReady(), worker.waitUntilReady()]);
 
