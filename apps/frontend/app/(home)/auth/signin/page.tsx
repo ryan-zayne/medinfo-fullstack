@@ -60,7 +60,7 @@ function SignInPage(props: PageProps<"/auth/signin">) {
 						<h1
 							className="max-w-[186px] text-center text-[24px]/8 font-semibold
 								text-medinfo-primary-darker md:mx-[42px] md:max-w-[375px] md:text-[48px]/14
-								 md:font-bold"
+								md:font-bold"
 						>
 							Sign in to MedInfo Nigeria
 						</h1>
