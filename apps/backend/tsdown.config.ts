@@ -6,9 +6,8 @@ export default defineConfig({
 	entry: "./src/server.ts",
 	fixedExtension: false,
 	format: ["esm"],
-	noExternal: [/@medinfo\//],
+	noExternal: ["@medinfo/**"],
 	platform: "node",
-	skipNodeModulesBundle: true,
 	target: "esnext",
 	treeshake: true,
 });

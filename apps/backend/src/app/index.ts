@@ -1,3 +1,4 @@
+import { createBullBoardSetup } from "@/services/queues/utils/bullBoard";
 import { createHonoApp } from "../lib/factory";
 import { appointmentsRoutes } from "./appointments/routes";
 import { authRoutes } from "./auth/routes";
@@ -26,5 +27,9 @@ app.basePath("/api/v1")
 	.route("", diseasesRoutes)
 	.route("", authRoutes)
 	.route("", appointmentsRoutes);
+
+const bullBoardSetup = createBullBoardSetup();
+
+app.route(bullBoardSetup.baseQueuesPath, bullBoardSetup.queuesServerAdapter.registerPlugin());
 
 export { app };

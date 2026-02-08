@@ -12,6 +12,7 @@ export default zayne(
 			},
 		},
 		tailwindcssBetter: {
+			enforceCanonicalClasses: true,
 			settings: { entryPoint: "apps/frontend/tailwind.css" },
 		},
 		tanstack: true,

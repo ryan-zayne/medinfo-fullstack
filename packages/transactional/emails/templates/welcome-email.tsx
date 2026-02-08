@@ -1,8 +1,8 @@
-import { Button, Heading, Section, Text } from "@react-email/components";
-import { FRONTEND_URL } from "@/config/constants";
+import { Button, Heading, render, Section, Text } from "@react-email/components";
+import { FRONTEND_URL } from "../constants";
 import { BaseLayout } from "../layouts/BaseLayout";
 
-type WelcomeEmailProps = {
+export type WelcomeEmailProps = {
 	loginUrl: string;
 	name: string;
 	role: "doctor" | "patient";
@@ -19,11 +19,11 @@ export function WelcomeEmail(props: WelcomeEmailProps) {
 				Welcome to MedInfo
 			</Heading>
 
-			<Text className="mb-4 text-base leading-relaxed text-medinfo-body-color">
+			<Text className="mb-4 text-base/relaxed text-medinfo-body-color">
 				Hello <span className="font-semibold text-medinfo-primary-darker">{name}</span>,
 			</Text>
 
-			<Text className="mb-6 text-base leading-relaxed text-medinfo-body-color">
+			<Text className="mb-6 text-base/relaxed text-medinfo-body-color">
 				{role === "doctor" ?
 					"We're thrilled to have you join our network of healthcare professionals! MedInfo Nigeria helps you connect with patients seeking expert medical advice and streamlines your practice management."
 				:	"We're excited to have you on board! MedInfo Nigeria connects you with certified doctors and provides reliable medical information right at your fingertips."
@@ -40,7 +40,7 @@ export function WelcomeEmail(props: WelcomeEmailProps) {
 				</Button>
 			</Section>
 
-			<Text className="mb-0 text-sm leading-relaxed text-medinfo-dark-4">
+			<Text className="mb-0 text-sm/relaxed text-medinfo-dark-4">
 				If you have any questions, feel free to reply to this email or visit our{" "}
 				<Button className="text-medinfo-primary-main underline" href={`${FRONTEND_URL}/help`}>
 					Help Center
@@ -56,5 +56,7 @@ WelcomeEmail.PreviewProps = {
 	name: "Dr. Doe",
 	role: "doctor",
 } satisfies WelcomeEmailProps;
+
+export const TemplateFn = (props: WelcomeEmailProps) => render(<WelcomeEmail {...props} />);
 
 export default WelcomeEmail;

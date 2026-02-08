@@ -22,7 +22,7 @@ services:
       container_name: medinfo-redis-cache
       restart: unless-stopped
       ports:
-         - 6379:6379
+         - 6381:6379
       networks:
          - medinfo-network
       healthcheck:
@@ -31,19 +31,19 @@ services:
          timeout: 5s
          retries: 3
 
-   #  medinfo-redis-queue:
-   #     image: redis:8
-   #     container_name: medinfo-redis-queue
-   #     restart: unless-stopped
-   #     ports:
-   #        - 6381:6381
-   #     networks:
-   #        - medinfo-network
-   #     healthcheck:
-   #        test: [CMD, redis-cli, ping]
-   #        interval: 10s
-   #        timeout: 5s
-   #        retries: 3
+   medinfo-redis-queue:
+      image: redis:8
+      container_name: medinfo-redis-queue
+      restart: unless-stopped
+      ports:
+         - 6382:6379
+      networks:
+         - medinfo-network
+      healthcheck:
+         test: [CMD, redis-cli, ping]
+         interval: 10s
+         timeout: 5s
+         retries: 3
 
    medinfo-backend:
       build:

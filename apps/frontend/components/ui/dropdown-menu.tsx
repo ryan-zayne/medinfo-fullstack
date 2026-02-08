@@ -26,7 +26,7 @@ function DropdownMenuContent(props: InferProps<typeof DropdownMenuPrimitive.Cont
 				data-slot="dropdown-menu-content"
 				sideOffset={sideOffset}
 				className={cnMerge(
-					`z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem]
+					`z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-32
 					origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto
 					rounded-md border bg-shadcn-popover p-1 text-shadcn-popover-foreground shadow-md
 					data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2
@@ -61,7 +61,7 @@ function DropdownMenuItem(
 			className={cnMerge(
 				`relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden
 				select-none focus:bg-shadcn-accent focus:text-shadcn-accent-foreground
-				data-[disabled]:pointer-events-none data-[disabled]:opacity-50
+				data-disabled:pointer-events-none data-disabled:opacity-50
 				data-[variant=destructive]:text-shadcn-destructive
 				data-[variant=destructive]:focus:bg-shadcn-destructive/10
 				data-[variant=destructive]:focus:text-shadcn-destructive
@@ -88,7 +88,7 @@ function DropdownMenuCheckboxItem(
 			className={cnMerge(
 				`relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm
 				outline-hidden select-none focus:bg-shadcn-accent focus:text-shadcn-accent-foreground
-				data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none
+				data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none
 				[&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4`,
 				className
 			)}
@@ -121,7 +121,7 @@ function DropdownMenuRadioItem(
 			className={cnMerge(
 				`relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm
 				outline-hidden select-none focus:bg-shadcn-accent focus:text-shadcn-accent-foreground
-				data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none
+				data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none
 				[&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4`,
 				className
 			)}
@@ -208,7 +208,7 @@ function DropdownMenuSubContent(props: InferProps<typeof DropdownMenuPrimitive.S
 		<DropdownMenuPrimitive.SubContent
 			data-slot="dropdown-menu-sub-content"
 			className={cnMerge(
-				`z-50 min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden
+				`z-50 min-w-32 origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden
 				rounded-md border bg-shadcn-popover p-1 text-shadcn-popover-foreground shadow-lg
 				data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2
 				data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2

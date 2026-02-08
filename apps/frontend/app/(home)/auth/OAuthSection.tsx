@@ -33,7 +33,7 @@ function OAuthSection(props: { userRole: z.infer<typeof SignUpSchema>["role"] })
 			<div className="flex gap-8">
 				<Button
 					size="icon"
-					theme="secondary"
+					theme="primary-inverse"
 					className="rounded-[8px]"
 					disabled={googleAuthMutationResult.isPending}
 					isLoading={googleAuthMutationResult.isPending}
@@ -42,7 +42,7 @@ function OAuthSection(props: { userRole: z.infer<typeof SignUpSchema>["role"] })
 					<IconBox icon="icon-park-outline:google" className="size-4.5 lg:size-6" />
 				</Button>
 
-				<Button size="icon" theme="secondary" className="rounded-[8px]">
+				<Button size="icon" theme="primary-inverse" className="rounded-[8px]">
 					<IconBox icon="basil:facebook-outline" className="size-4.5 lg:size-6" />
 				</Button>
 			</div>

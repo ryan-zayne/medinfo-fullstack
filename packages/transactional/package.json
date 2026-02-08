@@ -3,25 +3,30 @@
 	"type": "module",
 	"version": "0.0.1",
 	"private": true,
+	"exports": {
+		"./emails/*": "./emails/*/index.ts"
+	},
 	"scripts": {
 		"build": "tsdown",
-		"dev": "email dev",
+		"dev": "email dev --port 3001",
 		"lint:eslint": "eslint . --max-warnings 0",
 		"lint:format": "prettier --write .",
 		"lint:type-check": "tsc --pretty -p tsconfig.json"
 	},
 	"dependencies": {
-		"@medinfo/env": "workspace:*",
-		"@react-email/components": "1.0.6",
+		"@react-email/components": "1.0.7",
+		"@zayne-labs/toolkit-react": "0.12.34",
+		"@zayne-labs/toolkit-type-helpers": "0.12.34",
 		"react": "19.2.4",
 		"react-dom": "19.2.4"
 	},
 	"devDependencies": {
-		"@react-email/preview-server": "5.2.5",
-		"@types/react": "19.2.10",
+		"@react-email/preview-server": "5.2.8",
+		"@total-typescript/ts-reset": "0.6.1",
+		"@types/react": "19.2.13",
 		"@types/react-dom": "19.2.3",
-		"@zayne-labs/tsconfig": "0.11.21",
-		"react-email": "5.2.5",
+		"@zayne-labs/tsconfig": "0.11.27",
+		"react-email": "5.2.8",
 		"tailwindcss": "4.1.18",
 		"tsdown": "catalog:",
 		"typescript": "catalog:"

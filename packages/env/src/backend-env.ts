@@ -29,16 +29,15 @@ export const envSchema = z.object({
 	NODE_ENV: z.literal(["development", "production"]).default("development"),
 	PORT: z.coerce.number().default(8000),
 	REDIS_CACHE_URL_DEV: z
-		.literal(["redis://localhost:6379", "redis://medinfo-redis-cache:6379"])
-		.default("redis://localhost:6379"),
+		.literal(["redis://localhost:6381", "redis://medinfo-redis-cache:6379"])
+		.default("redis://localhost:6381"),
 	REDIS_CACHE_URL_PROD: z.url(),
 	REDIS_QUEUE_URL_DEV: z
-		.literal(["redis://localhost:6380", "redis://medinfo-redis-queue:6380"])
-		.default("redis://localhost:6380"),
+		.literal(["redis://localhost:6382", "redis://medinfo-redis-queue:6379"])
+		.default("redis://localhost:6382"),
 	REDIS_QUEUE_URL_PROD: z.url(),
 	REFRESH_JWT_EXPIRES_IN: z.string().transform((value) => evaluateString<number>(value)),
 	REFRESH_SECRET: z.string(),
-	RESEND_API_KEY: z.string(),
 	SEED_PASSWORD: z.string(),
 	ZOOM_ACCOUNT_ID: z.string(),
 	ZOOM_CLIENT_ID: z.string(),

@@ -7,10 +7,10 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { AppError, AppJsonResponse, getValidatedValue } from "@/lib/utils";
 import { validateWithZodMiddleware } from "@/middleware";
-import { removeFromCache, setCache } from "@/services/cache";
+import { getFromCache, removeFromCache, setCache } from "@/services/cache";
 import { uploadStreamToCloudinary } from "@/services/cloudinary";
 import { authMiddleware } from "./middleware/authMiddleware";
-import { getNecessaryUserDetails } from "./services/common";
+import { getNecessaryUserDetails, sendVerificationEmail } from "./services/common";
 import { deleteCookie, getCookie, setCookie } from "./services/cookie";
 import { hashValue, verifyHashedValue } from "./services/hash";
 import {
@@ -55,36 +55,50 @@ const authRoutes = new Hono()
 
 		const avatar = `https://avatar.iran.liara.run/public/${gender === "male" ? "boy" : "girl"}`;
 
-		const [newUser] = await db
-			.insert(users)
-			.values({
-				avatar,
-				country,
-				dob,
-				email,
-				firstName,
-				fullName: `${firstName} ${lastName}`,
-				gender,
-				lastName,
-				medicalLicense: medicalLicenseUrl,
-				passwordHash,
-				role,
-				specialty,
-			})
-			.returning();
+		const result = await db.transaction(async (tx) => {
+			const [insertedUser] = await tx
+				.insert(users)
+				.values({
+					avatar,
+					country,
+					dob,
+					email,
+					firstName,
+					fullName: `${firstName} ${lastName}`,
+					gender,
+					lastName,
+					medicalLicense: medicalLicenseUrl,
+					passwordHash,
+					role,
+					specialty,
+				})
+				.returning();
 
-		if (!newUser) {
-			throw new AppError({ code: 500, message: "Failed to create user" });
-		}
+			if (!insertedUser) {
+				throw new AppError({ code: 500, message: "Failed to create user" });
+			}
 
-		const newZayneRefreshTokenResult = generateRefreshToken(newUser);
+			const newZayneRefreshTokenResult = generateRefreshToken(insertedUser);
 
-		await db
-			.update(users)
-			.set({ refreshTokenArray: [newZayneRefreshTokenResult] })
-			.where(eq(users.id, newUser.id));
+			const [updatedUser] = await tx
+				.update(users)
+				.set({ refreshTokenArray: [newZayneRefreshTokenResult] })
+				.where(eq(users.id, insertedUser.id))
+				.returning();
 
-		const newZayneAccessTokenResult = generateAccessToken(newUser);
+			if (!updatedUser) {
+				throw new AppError({ code: 500, message: "Failed to update user tokens" });
+			}
+
+			return { newUser: updatedUser, newZayneRefreshTokenResult };
+		});
+
+		await Promise.all([
+			sendVerificationEmail(result.newUser),
+			setCache(`user:${result.newUser.id}`, result.newUser),
+		]);
+
+		const newZayneAccessTokenResult = generateAccessToken(result.newUser);
 
 		setCookie(ctx, {
 			expires: newZayneAccessTokenResult.expiresAt,
@@ -93,19 +107,15 @@ const authRoutes = new Hono()
 		});
 
 		setCookie(ctx, {
-			expires: newZayneRefreshTokenResult.expiresAt,
+			expires: result.newZayneRefreshTokenResult.expiresAt,
 			name: "zayneRefreshToken",
-			value: newZayneRefreshTokenResult.token,
+			value: result.newZayneRefreshTokenResult.token,
 		});
-
-		// TODO: Send Verification email
-
-		await setCache(`user:${newUser.id}`, newUser);
 
 		return AppJsonResponse(ctx, {
 			data: {
-				tokens: { access: newZayneAccessTokenResult, refresh: newZayneRefreshTokenResult },
-				user: getNecessaryUserDetails(newUser),
+				tokens: { access: newZayneAccessTokenResult, refresh: result.newZayneRefreshTokenResult },
+				user: getNecessaryUserDetails(result.newUser),
 			},
 			message: "Account created successfully",
 			schema: backendApiSchemaRoutes["@post/auth/signup"].data,
@@ -144,7 +154,10 @@ const authRoutes = new Hono()
 
 			if (!isValidPassword) {
 				// == For every time the password is gotten wrong, increment the login retry count by 1
-				await db.update(users).set({ loginRetryCount: sql`${users.loginRetryCount} + 1` });
+				await db
+					.update(users)
+					.set({ loginRetryCount: sql`${users.loginRetryCount} + 1` })
+					.where(eq(users.id, currentUser.id));
 
 				throw new AppError({
 					cause: "Invalid password",
@@ -154,7 +167,7 @@ const authRoutes = new Hono()
 			}
 
 			if (!currentUser.emailVerifiedAt) {
-				// TODO send verification email
+				await sendVerificationEmail(currentUser);
 			}
 
 			if (currentUser.suspendedAt) {
@@ -164,32 +177,31 @@ const authRoutes = new Hono()
 				});
 			}
 
-			const NOW = new Date();
-
-			const hoursSinceLastLogin = differenceInHours(NOW, currentUser.lastLoginAt);
+			const hoursSinceLastLogin = differenceInHours(new Date(), currentUser.lastLoginAt);
 
 			// == Check if user has exceeded login retries (3 times in 12 hours)
 			if (currentUser.loginRetryCount >= 3 && hoursSinceLastLogin < 12) {
+				// TODO: send reset password email to user
+
 				throw new AppError({
 					code: 401,
 					message: "Login retries exceeded",
 				});
-
-				// TODO: send reset password email to user
 			}
 
 			const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
 
 			const newZayneRefreshTokenResult = generateRefreshToken(currentUser);
 
-			const updatedTokenArray = getUpdatedTokenResultArray({ currentUser, zayneRefreshToken });
-
 			const [updatedUser] = await db
 				.update(users)
 				.set({
 					lastLoginAt: new Date(),
 					loginRetryCount: 0,
-					refreshTokenArray: [...updatedTokenArray, newZayneRefreshTokenResult],
+					refreshTokenArray: [
+						...getUpdatedTokenResultArray({ currentUser, zayneRefreshToken }),
+						newZayneRefreshTokenResult,
+					],
 				})
 				.where(eq(users.id, currentUser.id))
 				.returning();
@@ -200,6 +212,8 @@ const authRoutes = new Hono()
 					message: "Signin failed successfully",
 				});
 			}
+
+			await setCache(`user:${updatedUser.id}`, updatedUser);
 
 			const newZayneAccessTokenResult = generateAccessToken(currentUser);
 
@@ -214,8 +228,6 @@ const authRoutes = new Hono()
 				name: "zayneRefreshToken",
 				value: newZayneRefreshTokenResult.token,
 			});
-
-			await setCache(`user:${updatedUser.id}`, updatedUser);
 
 			return AppJsonResponse(ctx, {
 				data: {
@@ -291,36 +303,44 @@ const authRoutes = new Hono()
 
 			deleteCookie(ctx, "google_code_verifier");
 
-			const { redirectURL, user, variant } = await findOrCreateUserFromGoogle(userDetails);
+			const result = await db.transaction(async (tx) => {
+				const { redirectURL, user, variant } = await findOrCreateUserFromGoogle(
+					userDetails,
+					tx as unknown as typeof db
+				);
 
-			const newZayneRefreshTokenResult = generateRefreshToken(user);
+				const newZayneRefreshTokenResult = generateRefreshToken(user);
 
-			const newZayneAccessTokenResult = generateAccessToken(user);
-
-			if (variant === "existing-user") {
-				const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
-
-				const updatedTokenResultArray = getUpdatedTokenResultArray({
-					currentUser: user,
-					zayneRefreshToken,
-				});
-
-				await db
+				const [updatedUser] = await tx
 					.update(users)
-					.set({
-						lastLoginAt: new Date(),
-						loginRetryCount: 0,
-						refreshTokenArray: [...updatedTokenResultArray, newZayneRefreshTokenResult],
-					})
-					.where(eq(users.id, user.id));
-			}
+					.set(
+						variant === "new-user" ?
+							{ refreshTokenArray: [newZayneRefreshTokenResult] }
+						:	{
+								refreshTokenArray: [
+									...getUpdatedTokenResultArray({
+										currentUser: user,
+										zayneRefreshToken: getCookie(ctx, "zayneRefreshToken"),
+									}),
+									newZayneRefreshTokenResult,
+								],
+							}
+					)
+					.where(eq(users.id, user.id))
+					.returning();
 
-			if (variant === "new-user") {
-				await db
-					.update(users)
-					.set({ refreshTokenArray: [newZayneRefreshTokenResult] })
-					.where(eq(users.id, user.id));
-			}
+				if (!updatedUser) {
+					throw new AppError({ code: 500, message: "Failed to update user tokens" });
+				}
+
+				return {
+					newZayneRefreshTokenResult,
+					redirectURL,
+					updatedUser,
+				};
+			});
+
+			const newZayneAccessTokenResult = generateAccessToken(result.updatedUser);
 
 			setCookie(ctx, {
 				expires: newZayneAccessTokenResult.expiresAt,
@@ -329,14 +349,49 @@ const authRoutes = new Hono()
 			});
 
 			setCookie(ctx, {
-				expires: newZayneRefreshTokenResult.expiresAt,
+				expires: result.newZayneRefreshTokenResult.expiresAt,
 				name: "zayneRefreshToken",
-				value: newZayneRefreshTokenResult.token,
+				value: result.newZayneRefreshTokenResult.token,
 			});
 
-			await setCache(`user:${user.id}`, user);
+			await setCache(`user:${result.updatedUser.id}`, result.updatedUser);
 
-			return ctx.redirect(redirectURL);
+			return ctx.redirect(result.redirectURL);
+		}
+	)
+	.post(
+		"/verify-email",
+		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/auth/verify-email"].body),
+		async (ctx) => {
+			const { code, userId } = ctx.req.valid("json");
+
+			const cachedHashedCode = await getFromCache<string>(`verify-email-code:${userId}`);
+
+			if (!cachedHashedCode) {
+				throw new AppError({
+					code: 400,
+					message: "Invalid or expired verification code",
+				});
+			}
+
+			const isCodeValid = await verifyHashedValue(cachedHashedCode, code);
+
+			if (!isCodeValid) {
+				throw new AppError({
+					code: 400,
+					message: "Invalid verification code",
+				});
+			}
+
+			await db.update(users).set({ emailVerifiedAt: new Date() }).where(eq(users.id, userId));
+
+			await removeFromCache(`verify-email-code:${userId}`);
+
+			return AppJsonResponse(ctx, {
+				data: null,
+				message: "Account successfully verified!",
+				schema: backendApiSchemaRoutes["@post/auth/verify-email"].data,
+			});
 		}
 	)
 	.get("/signout", authMiddleware, async (ctx) => {
@@ -344,14 +399,13 @@ const authRoutes = new Hono()
 
 		const currentUser = ctx.get("currentUser");
 
-		await removeFromCache(`user:${currentUser.id}`);
-
-		const updatedTokenArray = getUpdatedTokenResultArray({ currentUser, zayneRefreshToken });
-
-		await db
-			.update(users)
-			.set({ refreshTokenArray: updatedTokenArray })
-			.where(eq(users.id, currentUser.id));
+		await Promise.all([
+			db
+				.update(users)
+				.set({ refreshTokenArray: getUpdatedTokenResultArray({ currentUser, zayneRefreshToken }) })
+				.where(eq(users.id, currentUser.id)),
+			removeFromCache(`user:${currentUser.id}`),
+		]);
 
 		deleteCookie(ctx, "zayneAccessToken");
 

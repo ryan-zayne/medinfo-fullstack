@@ -9,8 +9,6 @@ import { cnMerge } from "@/lib/utils/cn";
 import { CallToActionLink } from "./CallToActionLink";
 
 function NavBar() {
-	const [isNavShow, toggleNavShow] = useToggle(false);
-
 	return (
 		<header
 			className="sticky inset-[0_0_auto_0] z-500 flex w-full items-center justify-between bg-white px-6
@@ -21,13 +19,7 @@ function NavBar() {
 
 			<DesktopNavigation className="max-md:hidden" />
 
-			<MobileNavigation className="md:hidden" isNavShow={isNavShow} toggleNavShow={toggleNavShow} />
-
-			<Button unstyled={true} className="z-10 md:hidden" onClick={toggleNavShow}>
-				{isNavShow ?
-					<XIcon />
-				:	<HamburgerIcon />}
-			</Button>
+			<MobileNavigation className="md:hidden" />
 		</header>
 	);
 }
@@ -58,7 +50,7 @@ function DesktopNavigation(props: { className?: string }) {
 			/>
 
 			<div className="flex min-w-fit items-center gap-8">
-				<Button size="icon" theme="secondary">
+				<Button size="icon" theme="primary-inverse">
 					<SearchIcon variant="green" />
 				</Button>
 
@@ -68,49 +60,53 @@ function DesktopNavigation(props: { className?: string }) {
 	);
 }
 
-type MobileNavProps = {
-	className?: string;
-	isNavShow: boolean;
-	toggleNavShow: () => void;
-};
+function MobileNavigation(props: { className?: string }) {
+	const { className } = props;
 
-function MobileNavigation(props: MobileNavProps) {
-	const { className, isNavShow, toggleNavShow } = props;
+	const [isNavShow, toggleNavShow] = useToggle(false);
 
 	return (
-		<section
-			className={cnMerge(
-				`fixed inset-[0_0_0_auto] flex flex-col items-center gap-7 overflow-x-hidden
-				bg-medinfo-primary-main pt-10 text-white`,
-				isNavShow ? "w-full [transition:width_350ms_ease]" : "w-0 [transition:width_500ms_ease]",
-				className
-			)}
-			onClick={(event) => {
-				const element = event.target as HTMLElement;
-
-				element.tagName === "A" && toggleNavShow();
-			}}
-		>
-			<Logo variant="footer" className="h-[46px] w-[60px]" />
-
-			<ForWithWrapper
-				as="nav"
-				className="flex flex-col items-center gap-5 font-medium text-nowrap"
-				each={linkItems}
-				renderItem={(linkItem) => (
-					<NavLink key={linkItem.title} transitionType="navbar" href={linkItem.href}>
-						{linkItem.title}
-					</NavLink>
+		<>
+			<section
+				className={cnMerge(
+					`fixed inset-[0_0_0_auto] flex flex-col items-center gap-7 overflow-x-hidden
+					bg-medinfo-primary-main pt-10 text-white`,
+					isNavShow ? "w-full [transition:width_350ms_ease]" : "w-0 [transition:width_500ms_ease]",
+					className
 				)}
-			/>
+				onClick={(event) => {
+					const element = event.target as HTMLElement;
 
-			<div className="flex flex-col items-center gap-4">
-				<Button unstyled={true}>
-					<SearchIcon variant="white" />
-				</Button>
+					element.tagName === "A" && toggleNavShow();
+				}}
+			>
+				<Logo variant="footer" className="h-[46px] w-[60px]" />
 
-				<CallToActionLink buttonProps={{ theme: "secondary-inverted" }} />
-			</div>
-		</section>
+				<ForWithWrapper
+					as="nav"
+					className="flex flex-col items-center gap-5 font-medium text-nowrap"
+					each={linkItems}
+					renderItem={(linkItem) => (
+						<NavLink key={linkItem.title} transitionType="navbar" href={linkItem.href}>
+							{linkItem.title}
+						</NavLink>
+					)}
+				/>
+
+				<div className="flex flex-col items-center gap-4">
+					<Button unstyled={true}>
+						<SearchIcon variant="white" />
+					</Button>
+
+					<CallToActionLink buttonProps={{ theme: "secondary-inverse" }} />
+				</div>
+			</section>
+
+			<Button unstyled={true} className="z-10 md:hidden" onClick={toggleNavShow}>
+				{isNavShow ?
+					<XIcon />
+				:	<HamburgerIcon />}
+			</Button>
+		</>
 	);
 }

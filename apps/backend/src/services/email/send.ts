@@ -1,13 +1,9 @@
-// import { consola } from "consola";
+import { TEMPLATE_LOOKUP, type EmailJobOptions } from "@medinfo/transactional/emails/templates";
+import type { CallbackFn } from "@zayne-labs/toolkit-type-helpers";
+import { consola } from "consola";
 import * as nodemailer from "nodemailer";
 import { ENVIRONMENT } from "@/config/env";
-
-// import { ENVIRONMENT } from "@/config/env";
-
-// type EmailOptions = {
-// 	data: WelcomeEmailData;
-// 	type: "welcomeEmail";
-// };
+import { pinoLogger } from "@/middleware/pinoLogger";
 
 const transporter = nodemailer.createTransport({
 	auth: {
@@ -19,20 +15,31 @@ const transporter = nodemailer.createTransport({
 	service: "Gmail",
 });
 
-// export const sendEmail = async (options: EmailOptions) => {
-// 	const { data, type } = options;
+export const sendEmail = async (options: EmailJobOptions) => {
+	const { data, type } = options;
 
-// 	// eslint-disable-next-line security/detect-object-injection
-// 	const templateOptions = TEMPLATES_LOOKUP[type];
+	const templateOptions = TEMPLATE_LOOKUP[type];
 
-// 	try {
-// 		await transporter.sendMail({
-// 			from: templateOptions.from,
-// 			html: templateOptions.template(data),
-// 			subject: templateOptions.subject,
-// 			to: data.to,
-// 		});
-// 	} catch (error) {
-// 		consola.error(error);
-// 	}
-// };
+	const templateFn = templateOptions.template as CallbackFn<
+		Parameters<typeof templateOptions.template>[0],
+		ReturnType<typeof templateOptions.template>
+	>;
+
+	try {
+		await transporter.sendMail({
+			from: templateOptions.from,
+			html: await templateFn(data),
+			subject: templateOptions.subject,
+			to: data.to,
+		});
+	} catch (error) {
+		const message = `Failed to deliver '${type}' email to '${data.to}'`;
+
+		consola.error(message, error);
+
+		pinoLogger.error({
+			cause: error,
+			message,
+		});
+	}
+};

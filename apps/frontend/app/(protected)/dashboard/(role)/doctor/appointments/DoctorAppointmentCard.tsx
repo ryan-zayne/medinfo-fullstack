@@ -85,7 +85,7 @@ export function DoctorAppointmentCard(props: DoctorAppointmentCardProps) {
 
 					<DialogAnimated.Footer className="flex justify-end gap-3">
 						<Button
-							theme="secondary"
+							theme="primary-inverse"
 							onClick={() => handleStatusUpdate("completed")}
 							isLoading={updateStatusMutation.isPending}
 							disabled={updateStatusMutation.isPending}

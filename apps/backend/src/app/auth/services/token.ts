@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { ENVIRONMENT } from "@/config/env";
 import { getValidatedValue } from "@/lib/utils";
+import { pinoLogger } from "@/middleware/pinoLogger";
 
 type JwtOptions<TExtraOptions> = TExtraOptions & {
 	secretKey: string;
@@ -99,14 +100,20 @@ export const warnAboutTokenReuse = (options: {
 		"loginRetryCount",
 	]);
 
-	consola.warn(message);
-	consola.warn({
+	consola.warn(message, {
 		compromisedToken,
 		timestamp: new Date().toISOString(),
 		user,
 		userAgent: navigator.userAgent,
 	});
-	console.trace();
+	pinoLogger.warn({
+		compromisedToken,
+		message,
+		timestamp: new Date().toISOString(),
+		user,
+		userAgent: navigator.userAgent,
+	});
+	consola.trace(message);
 };
 
 export const getUpdatedTokenResultArray = (options: {

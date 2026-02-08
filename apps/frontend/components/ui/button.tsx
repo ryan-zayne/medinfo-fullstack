@@ -37,7 +37,7 @@ export const buttonVariants = tv({
 			className: `hover:border-medinfo-primary-darker active:border-medinfo-primary-lighter
 			active:text-medinfo-primary-lighter`,
 			isDisabled: false,
-			theme: "secondary",
+			theme: "primary-inverse",
 			withInteractions: true,
 		},
 		{
@@ -84,11 +84,10 @@ export const buttonVariants = tv({
 		theme: {
 			primary: "bg-medinfo-primary-main text-white",
 
-			"primary-inverted": "bg-white text-medinfo-primary-main",
+			"primary-inverse": "border-2 border-medinfo-primary-main bg-white text-medinfo-primary-main",
 
-			secondary: "border-2 border-medinfo-primary-main bg-transparent text-medinfo-primary-main",
-
-			"secondary-inverted": "border-2 border-white bg-transparent text-white",
+			"secondary-inverse":
+				"border-2 border-medinfo-secondary-lighter bg-transparent text-medinfo-secondary-lighter",
 		},
 
 		withInteractions: {

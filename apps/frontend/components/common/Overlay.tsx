@@ -17,7 +17,7 @@ function Overlay(props: OverlayProps) {
 			id={`Overlay-(${id})`}
 			onClick={onClose}
 			className={cnMerge(
-				"fixed [inset:0_0_0_auto] bg-[hsl(0,0%,0%,0.6)] [backdrop-filter:blur(0.4rem)] lg:hidden",
+				"fixed inset-[0_0_0_auto] bg-[hsl(0,0%,0%,0.6)] [backdrop-filter:blur(0.4rem)] lg:hidden",
 				isOpen ? "w-screen" : "w-0",
 				className
 			)}

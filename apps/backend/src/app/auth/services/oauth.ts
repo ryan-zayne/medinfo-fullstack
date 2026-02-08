@@ -1,4 +1,4 @@
-import { db } from "@medinfo/db";
+import type { db } from "@medinfo/db";
 import { users, type SelectUserType } from "@medinfo/db/schema/auth";
 import { callApi } from "@zayne-labs/callapi";
 import * as arctic from "arctic";
@@ -129,11 +129,12 @@ export const getUserDetailsFromGoogleAuthClaims = async (code: string, codeVerif
 
 const linkUserToGoogleAccount = async (
 	currentUser: SelectUserType,
-	userDetails: z.infer<typeof OAuthUserDetailsSchema>
+	userDetails: z.infer<typeof OAuthUserDetailsSchema>,
+	dbClient: typeof db
 ) => {
 	if (currentUser.googleId) return;
 
-	const [updatedUser] = await db
+	const [updatedUser] = await dbClient
 		.update(users)
 		.set({
 			...(userDetails.emailVerified && { emailVerifiedAt: currentUser.emailVerifiedAt ?? new Date() }),
@@ -167,7 +168,8 @@ const getRedirectURL = (role: SelectUserType["role"]) => {
 };
 
 export const findOrCreateUserFromGoogle = async (
-	userDetails: z.infer<typeof OAuthUserDetailsSchema>
+	userDetails: z.infer<typeof OAuthUserDetailsSchema>,
+	dbClient: typeof db
 ): Promise<UserResult> => {
 	if (userDetails.provider !== "google") {
 		throw new AppError({
@@ -176,7 +178,7 @@ export const findOrCreateUserFromGoogle = async (
 		});
 	}
 
-	const [existingUserWithGoogleId] = await db
+	const [existingUserWithGoogleId] = await dbClient
 		.select()
 		.from(users)
 		.where(eq(users.googleId, userDetails.providerId))
@@ -190,14 +192,14 @@ export const findOrCreateUserFromGoogle = async (
 		};
 	}
 
-	const [existingUserWithEmail] = await db
+	const [existingUserWithEmail] = await dbClient
 		.select()
 		.from(users)
 		.where(eq(users.email, userDetails.email))
 		.limit(1);
 
 	if (existingUserWithEmail) {
-		const updatedUser = await linkUserToGoogleAccount(existingUserWithEmail, userDetails);
+		const updatedUser = await linkUserToGoogleAccount(existingUserWithEmail, userDetails, dbClient);
 
 		return {
 			redirectURL: getRedirectURL(existingUserWithEmail.role),
@@ -225,7 +227,7 @@ export const findOrCreateUserFromGoogle = async (
 		userDetails.picture
 		?? `https://avatar.iran.liara.run/public/${userDetails.gender === "male" ? "boy" : "girl"}`;
 
-	const [newUser] = await db
+	const [newUser] = await dbClient
 		.insert(users)
 		.values({
 			avatar,

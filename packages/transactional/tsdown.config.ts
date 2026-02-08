@@ -3,7 +3,7 @@ import { defineConfig } from "tsdown";
 export default defineConfig({
 	clean: true,
 	dts: true,
-	entry: ["emails/templates/index.ts"],
+	entry: ["emails/*/index.ts"],
 	format: ["esm"],
 	ignoreWatch: [".turbo"],
 	platform: "neutral",

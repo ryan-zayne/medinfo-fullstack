@@ -9,7 +9,9 @@ export const redisCacheClient = createClient({
 		:	ENVIRONMENT.REDIS_CACHE_URL_PROD,
 });
 
-redisCacheClient.on("error", (error) => consola.error("Redis Client Error", error));
+redisCacheClient.on("error", (error) => {
+	consola.error("Redis Client Error", error);
+});
 
 export const initializeRedisCacheClient = async () => {
 	if (redisCacheClient.isOpen) return;
@@ -22,5 +24,3 @@ export const initializeRedisCacheClient = async () => {
 		consola.error("Failed to connect to Redis Cache Client", error);
 	}
 };
-
-void initializeRedisCacheClient();

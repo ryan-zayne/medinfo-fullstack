@@ -60,7 +60,7 @@ export function PatientAppointmentCard(props: PatientAppointmentCardProps) {
 					)}
 
 					{(appointment.status === "pending" || appointment.status === "confirmed") && (
-						<Button theme="secondary" onClick={cancelDisclosure.onOpen}>
+						<Button theme="primary-inverse" onClick={cancelDisclosure.onOpen}>
 							Cancel
 						</Button>
 					)}
@@ -81,7 +81,7 @@ export function PatientAppointmentCard(props: PatientAppointmentCardProps) {
 
 					<DialogAnimated.Footer className="flex justify-end gap-3">
 						<Button
-							theme="secondary"
+							theme="primary-inverse"
 							onClick={handleCancel}
 							isLoading={cancelMutation.isPending}
 							disabled={cancelMutation.isPending}

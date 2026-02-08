@@ -67,7 +67,7 @@ function AppointmentPage() {
 			<header>
 				<Button
 					size="icon"
-					theme="primary-inverted"
+					theme="primary-inverse"
 					className="border-[0.6px] border-medinfo-light-1"
 					asChild={true}
 				>
@@ -389,7 +389,7 @@ function AppointmentPage() {
 
 					<section>
 						<div className="flex justify-center gap-6 md:justify-end">
-							<Button theme="secondary">Cancel</Button>
+							<Button theme="primary-inverse">Cancel</Button>
 
 							<Button type="submit" theme="primary" asChild={true}>
 								<Steps.NextTrigger>Book now</Steps.NextTrigger>

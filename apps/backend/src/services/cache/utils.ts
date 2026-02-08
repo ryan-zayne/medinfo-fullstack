@@ -1,20 +1,22 @@
 import { parseJSON } from "@zayne-labs/toolkit-core";
 import { isObject, type Awaitable, type UnmaskType } from "@zayne-labs/toolkit-type-helpers";
 import { consola } from "consola";
-import { redisCacheClient } from "./cache";
+import { differenceInSeconds } from "date-fns";
+import { redisCacheClient } from "./cacheClient";
 
-type CacheKeyType = UnmaskType<`health-tip:${string}` | `user:${string}`>;
+type CacheKeyType = UnmaskType<
+	| `health-tip:${string}`
+	| `refresh-token:${string}:${string}`
+	| `user:${string}`
+	| `verify-email-code:${string}`
+>;
 
 export const setCache = async (
 	key: CacheKeyType,
 	value: number | object | string | Buffer,
-	options?: { expiry?: number }
+	options?: { expiry?: number | Date }
 ) => {
 	const { expiry } = options ?? {};
-
-	// if (!key) {
-	// 	throw new Error(`Invalid key ${key} provided`);
-	// }
 
 	if (!value) {
 		throw new Error("Invalid value provided");
@@ -22,8 +24,10 @@ export const setCache = async (
 
 	const resolvedValue = isObject(value) && !(value instanceof Buffer) ? JSON.stringify(value) : value;
 
+	const ttl = expiry instanceof Date ? differenceInSeconds(expiry, new Date()) : expiry;
+
 	await redisCacheClient.set(key, resolvedValue, {
-		...(expiry && { expiration: { type: "EX", value: expiry } }),
+		...(ttl && { expiration: { type: "EX", value: ttl } }),
 	});
 
 	consola.info(`[CACHE SET] for key ${key}`);
@@ -31,20 +35,16 @@ export const setCache = async (
 
 export const getFromCache = async <TCacheResult>(
 	key: CacheKeyType,
-	options?: { onCacheMiss?: () => Awaitable<TCacheResult> }
+	options?: { onCacheMiss?: (key: CacheKeyType) => Awaitable<TCacheResult> }
 ): Promise<TCacheResult> => {
 	const { onCacheMiss } = options ?? {};
-
-	// if (!key) {
-	// 	throw new Error(`Invalid key ${key} provided`);
-	// }
 
 	const rawCachedData = await redisCacheClient.get(key);
 
 	if (!rawCachedData) {
 		consola.info(`[CACHE MISS] for key ${key}`);
 
-		const freshData = await onCacheMiss?.();
+		const freshData = await onCacheMiss?.(key);
 
 		if (freshData) {
 			await setCache(key, freshData);
@@ -63,15 +63,12 @@ export const getFromCache = async <TCacheResult>(
 };
 
 export const removeFromCache = async (key: CacheKeyType) => {
-	// if (!key) {
-	// 	throw new Error("Invalid key provided");
-	// }
-
 	const isDeleted = Boolean(await redisCacheClient.del(key));
 
-	if (isDeleted) {
-		consola.info(`[CACHE REMOVED] for key ${key}`);
-	} else {
+	if (!isDeleted) {
 		consola.info(`[CACHE FAILED TO REMOVE] for key ${key}`);
+		return;
 	}
+
+	consola.info(`[CACHE REMOVED] for key ${key}`);
 };

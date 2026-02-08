@@ -1,2 +1,2 @@
-export { WelcomeEmail } from "./welcome-email";
-export { VerifyEmail } from "./verify-email";
+export * from "./lookup";
+export * from "./types";

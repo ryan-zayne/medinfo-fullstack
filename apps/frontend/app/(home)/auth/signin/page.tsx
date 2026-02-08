@@ -58,9 +58,9 @@ function SignInPage(props: PageProps<"/auth/signin">) {
 
 					<div className="mt-3 flex flex-col items-center gap-8 md:w-max">
 						<h1
-							className="max-w-[186px] text-center text-[24px] leading-8 font-semibold
-								text-medinfo-primary-darker md:mx-[42px] md:max-w-[375px] md:text-[48px]
-								md:leading-14 md:font-bold"
+							className="max-w-[186px] text-center text-[24px]/8 font-semibold
+								text-medinfo-primary-darker md:mx-[42px] md:max-w-[375px] md:text-[48px]/14
+								 md:font-bold"
 						>
 							Sign in to MedInfo Nigeria
 						</h1>
@@ -178,7 +178,7 @@ function SignInPage(props: PageProps<"/auth/signin">) {
 
 					<p className="mt-6 text-[18px]">Enter in your details and lets get you started</p>
 
-					<Button theme="secondary-inverted" className="mt-[38px]" asChild={true}>
+					<Button theme="secondary-inverse" className="mt-[38px]" asChild={true}>
 						<NavLink
 							href={{
 								pathname: "/auth/signup",

@@ -48,13 +48,32 @@ export const SelectUserSchema = createSelectSchema(users);
 export type InsertUserType = typeof users.$inferInsert;
 export type SelectUserType = typeof users.$inferSelect;
 
-// export const refreshTokens = pg.pgTable("refresh_tokens", {
-// 	createdAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
-// 	id: pg.uuid().primaryKey().defaultRandom(),
-// 	expiresAt: pg.timestamp({ withTimezone: true }).notNull();
-// 	refreshToken: pg.text().notNull(),
-// 	userId: pg
-// 		.uuid()
-// 		.references(() => users.id, { onDelete: "cascade" })
-// 		.notNull(),
-// });
+// export const refreshTokens = pg.pgTable(
+// 	"refresh_tokens",
+// 	{
+// 		createdAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
+// 		expiresAt: pg.timestamp({ withTimezone: true }).notNull(),
+// 		id: pg.uuid().primaryKey().defaultRandom(),
+// 		token: pg.text().notNull().unique(),
+// 		userId: pg
+// 			.uuid()
+// 			.notNull()
+// 			.references(() => users.id, { onDelete: "cascade" }),
+// 	},
+// 	(table) => [
+// 		pg.uniqueIndex("rt_token_index").on(table.token),
+// 		pg.index("rt_user_id_index").on(table.userId),
+// 	]
+// );
+
+export const emailVerificationTokens = pg.pgTable("email_verification_tokens", {
+	createdAt: pg.timestamp({ withTimezone: true }).defaultNow().notNull(),
+	email: pg.text().notNull(),
+	expiresAt: pg.timestamp({ withTimezone: true }).notNull(),
+	id: pg.uuid().defaultRandom().primaryKey(),
+	token: pg.text().notNull().unique(),
+	userId: pg
+		.uuid()
+		.notNull()
+		.references(() => users.id, { onDelete: "cascade" }),
+});

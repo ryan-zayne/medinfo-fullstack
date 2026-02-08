@@ -64,7 +64,7 @@ const getAndVerifyUserFromToken = async (options: VerifyOptions) => {
 
 	// == At this point, the refresh token is still valid but is not in the refreshTokenArray (whitelist)
 	// == So it can be seen as a token reuse situation
-	// == So clear the refreshTokenArray to log out the user from all devices including current device, greatly diminishing the risk of another token reuse attack
+	// == So clear the refreshTokenArray to log the user out from all devices including current device, greatly diminishing the risk of another token reuse attack
 
 	if (!isTokenInWhitelist(currentUser.refreshTokenArray, zayneRefreshToken)) {
 		warnAboutTokenReuse({ compromisedToken: zayneRefreshToken, currentUser });
@@ -84,12 +84,12 @@ const getAndVerifyUserFromToken = async (options: VerifyOptions) => {
 		});
 	}
 
-	// if (!currentUser.emailVerifiedAt) {
-	// 	throw new AppError({
-	// 		code: 422,
-	// 		message: AUTH_ERROR_MESSAGES.EMAIL_UNVERIFIED,
-	// 	});
-	// }
+	if (!currentUser.emailVerifiedAt) {
+		throw new AppError({
+			code: 422,
+			message: AUTH_ERROR_MESSAGES.EMAIL_UNVERIFIED,
+		});
+	}
 
 	// TODO csrf protection
 	// TODO browser client fingerprinting

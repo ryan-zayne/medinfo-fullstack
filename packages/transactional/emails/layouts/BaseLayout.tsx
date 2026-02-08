@@ -11,7 +11,7 @@ import {
 	Tailwind,
 	Text,
 } from "@react-email/components";
-import { FRONTEND_URL } from "@/config/constants";
+import { FRONTEND_URL } from "../constants";
 
 type EmailLayoutProps = {
 	children: React.ReactNode;

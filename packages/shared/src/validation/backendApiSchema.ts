@@ -274,6 +274,14 @@ const authRoutes = () => {
 				})
 			),
 		},
+
+		"@post/auth/verify-email": {
+			body: z.object({
+				code: z.string().length(6, "Code must be 6 digits long"),
+				userId: z.string(),
+			}),
+			data: withBaseSuccessResponse(z.null()),
+		},
 	});
 };
 
