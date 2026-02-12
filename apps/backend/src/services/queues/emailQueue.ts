@@ -111,20 +111,7 @@ export const startEmailQueueAndWorker = async () => {
 };
 
 export const stopEmailQueueAndWorker = async () => {
-	const worker = emailWorker;
-	const queueEvents = emailQueueEvent;
-
-	if (worker) {
-		await worker.close();
-		emailWorker = null;
-	}
-
-	if (queueEvents) {
-		await queueEvents.close();
-		emailQueueEvent = null;
-	}
-
-	await emailQueue.close();
+	await Promise.all([emailWorker?.close(), emailQueueEvent?.close(), emailQueue.close()]);
 
 	consola.info("Email queue and worker closed!");
 };

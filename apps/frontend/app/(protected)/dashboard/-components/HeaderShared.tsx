@@ -143,7 +143,7 @@ function MobileHeader(props: MobileHeaderProps) {
 	return (
 		<header
 			className={cnMerge(
-				"sticky top-0 z-10 flex items-center justify-between bg-white px-6 py-[17px] shadow-md",
+				"sticky top-0 z-10 flex items-center justify-between bg-white px-6 py-[18px] shadow-md",
 				className
 			)}
 		>
@@ -165,8 +165,8 @@ function MobileHeader(props: MobileHeaderProps) {
 				<article
 					className={cnMerge(
 						`fixed inset-[0_0_0_auto] flex flex-col items-center gap-7 overflow-x-hidden
-						overflow-y-auto bg-medinfo-primary-main pt-10 text-white`,
-						isNavShow ? "w-full [transition:width_350ms_ease]" : "w-0 [transition:width_500ms_ease]"
+						bg-medinfo-primary-main pt-10 text-white transition-[width] ease-[ease]`,
+						isNavShow ? "w-full duration-350" : "w-0 duration-500"
 					)}
 					onClick={(event) => {
 						const element = event.target as HTMLElement;

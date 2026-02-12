@@ -40,7 +40,7 @@ function ProfilePageShared() {
 				</div>
 
 				<div className="flex gap-4">
-					<Button theme="primary-inverse">Remove</Button>
+					<Button theme="primary-ghost">Remove</Button>
 					<Button theme="primary">Change</Button>
 				</div>
 			</section>
@@ -146,7 +146,7 @@ function ProfilePageShared() {
 				</Form.Root>
 
 				<div className="flex gap-6 self-center lg:self-end">
-					<Button theme="primary-inverse">Cancel</Button>
+					<Button theme="primary-ghost">Cancel</Button>
 					<Button theme="primary">Save</Button>
 				</div>
 			</section>
@@ -187,7 +187,7 @@ function ProfilePageShared() {
 				</Form.Root>
 
 				<div className="flex gap-6 self-center lg:self-end">
-					<Button theme="primary-inverse">Cancel</Button>
+					<Button theme="primary-ghost">Cancel</Button>
 					<Button theme="primary">Save</Button>
 				</div>
 			</section>
@@ -227,7 +227,7 @@ function ProfilePageShared() {
 				</Form.Root>
 
 				<div className="flex gap-6 self-center lg:self-end">
-					<Button theme="primary-inverse">Cancel</Button>
+					<Button theme="primary-ghost">Cancel</Button>
 					<Button theme="primary">Save</Button>
 				</div>
 			</section>
@@ -290,7 +290,7 @@ function ProfilePageShared() {
 				</Form.Root>
 
 				<div className="flex gap-6 self-center lg:self-end">
-					<Button theme="primary-inverse">Cancel</Button>
+					<Button theme="primary-ghost">Cancel</Button>
 					<Button theme="primary">Save</Button>
 				</div>
 			</section>

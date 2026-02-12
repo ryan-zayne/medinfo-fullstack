@@ -11,9 +11,9 @@ import { CallToActionLink } from "./CallToActionLink";
 function NavBar() {
 	return (
 		<header
-			className="sticky inset-[0_0_auto_0] z-500 flex w-full items-center justify-between bg-white px-6
-				py-[17px] shadow-[0_4px_8px_theme(--color-medinfo-primary-main/0.25)]
-				[transition:box-shadow_0.3s_ease] md:px-10 md:py-5 lg:px-[100px]"
+			className="z-500 flex w-full items-center justify-between bg-white px-6 py-[17px]
+				shadow-[0_4px_8px_theme(--color-medinfo-primary-main/0.25)] [transition:box-shadow_0.3s_ease]
+				md:px-10 md:py-5 lg:px-[100px]"
 		>
 			<Logo className="min-w-fit max-lg:h-[46px] max-lg:w-[60px]" />
 
@@ -50,7 +50,7 @@ function DesktopNavigation(props: { className?: string }) {
 			/>
 
 			<div className="flex min-w-fit items-center gap-8">
-				<Button size="icon" theme="primary-inverse">
+				<Button size="icon" theme="primary-ghost">
 					<SearchIcon variant="green" />
 				</Button>
 
@@ -70,8 +70,8 @@ function MobileNavigation(props: { className?: string }) {
 			<section
 				className={cnMerge(
 					`fixed inset-[0_0_0_auto] flex flex-col items-center gap-7 overflow-x-hidden
-					bg-medinfo-primary-main pt-10 text-white`,
-					isNavShow ? "w-full [transition:width_350ms_ease]" : "w-0 [transition:width_500ms_ease]",
+					bg-medinfo-primary-main pt-10 text-white transition-[width] ease-[ease]`,
+					isNavShow ? "w-full duration-350" : "w-0 duration-500",
 					className
 				)}
 				onClick={(event) => {
@@ -98,11 +98,11 @@ function MobileNavigation(props: { className?: string }) {
 						<SearchIcon variant="white" />
 					</Button>
 
-					<CallToActionLink buttonProps={{ theme: "secondary-inverse" }} />
+					<CallToActionLink buttonProps={{ theme: "secondary-ghost" }} />
 				</div>
 			</section>
 
-			<Button unstyled={true} className="z-10 md:hidden" onClick={toggleNavShow}>
+			<Button unstyled={true} className={cnMerge("z-10", className)} onClick={toggleNavShow}>
 				{isNavShow ?
 					<XIcon />
 				:	<HamburgerIcon />}

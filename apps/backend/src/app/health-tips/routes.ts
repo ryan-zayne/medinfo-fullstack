@@ -24,6 +24,7 @@ const healthTipsRoutes = new Hono()
 
 							return tip.data;
 						},
+						onCacheMissExpiry: 30 * 60,
 					})
 				)
 			);
@@ -47,6 +48,7 @@ const healthTipsRoutes = new Hono()
 
 					return tip.data;
 				},
+				onCacheMissExpiry: 30 * 60,
 			});
 
 			return AppJsonResponse(ctx, {

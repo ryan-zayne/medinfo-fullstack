@@ -14,7 +14,12 @@ type CacheKeyType = UnmaskType<
 export const setCache = async (
 	key: CacheKeyType,
 	value: number | object | string | Buffer,
-	options?: { expiry?: number | Date }
+	options?: {
+		/**
+		 * Expiry in seconds or date
+		 */
+		expiry?: number | Date;
+	}
 ) => {
 	const { expiry } = options ?? {};
 
@@ -35,9 +40,15 @@ export const setCache = async (
 
 export const getFromCache = async <TCacheResult>(
 	key: CacheKeyType,
-	options?: { onCacheMiss?: (key: CacheKeyType) => Awaitable<TCacheResult> }
+	options?: {
+		onCacheMiss?: (key: CacheKeyType) => Awaitable<TCacheResult>;
+		/**
+		 * Expiry in seconds or date for cacheMiss setCache
+		 */
+		onCacheMissExpiry?: number | Date;
+	}
 ): Promise<TCacheResult> => {
-	const { onCacheMiss } = options ?? {};
+	const { onCacheMiss, onCacheMissExpiry } = options ?? {};
 
 	const rawCachedData = await redisCacheClient.get(key);
 
@@ -47,7 +58,7 @@ export const getFromCache = async <TCacheResult>(
 		const freshData = await onCacheMiss?.(key);
 
 		if (freshData) {
-			await setCache(key, freshData);
+			await setCache(key, freshData, { expiry: onCacheMissExpiry });
 
 			return freshData;
 		}

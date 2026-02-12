@@ -37,7 +37,7 @@ export const buttonVariants = tv({
 			className: `hover:border-medinfo-primary-darker active:border-medinfo-primary-lighter
 			active:text-medinfo-primary-lighter`,
 			isDisabled: false,
-			theme: "primary-inverse",
+			theme: "primary-ghost",
 			withInteractions: true,
 		},
 		{
@@ -84,14 +84,15 @@ export const buttonVariants = tv({
 		theme: {
 			primary: "bg-medinfo-primary-main text-white",
 
-			"primary-inverse": "border-2 border-medinfo-primary-main bg-white text-medinfo-primary-main",
+			"primary-ghost": "border-2 border-medinfo-primary-main bg-white text-medinfo-primary-main",
 
-			"secondary-inverse":
+			"secondary-ghost":
 				"border-2 border-medinfo-secondary-lighter bg-transparent text-medinfo-secondary-lighter",
 		},
 
 		withInteractions: {
-			true: "[transition:border-radius_350ms_ease] hover:shadow-[0_4px_4px_0_hsl(0,0%,0%,0.12)]",
+			true: `transition-[border-radius] duration-350 ease-[ease]
+			hover:shadow-[0_4px_4px_0_hsl(0,0%,0%,0.12)]`,
 		},
 	},
 });

@@ -510,7 +510,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 						Enter in your details and lets continue from where you stopped
 					</p>
 
-					<Button theme="secondary-inverse" className="mt-9.5" asChild={true}>
+					<Button theme="secondary-ghost" className="mt-9.5" asChild={true}>
 						<NavLink
 							href={{
 								pathname: "/auth/signin",
