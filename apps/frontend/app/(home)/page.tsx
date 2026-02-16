@@ -114,13 +114,14 @@ function HomePage() {
 						md:justify-between md:gap-7"
 					each={coreServices}
 					renderItem={(coreService, index) => (
-						<li key={coreService.title} className="group flex flex-col gap-4">
-							<div
-								className={cnJoin(
-									"relative h-[292px] w-full max-w-[272px] md:h-[362px] md:max-w-[340px]",
-									index === 1 && "md:mt-[80px]"
-								)}
-							>
+						<li
+							key={coreService.title}
+							className={cnJoin(
+								"group flex w-full max-w-[272px] flex-col gap-4 md:max-w-[340px]",
+								index === 1 && "md:mt-[80px]"
+							)}
+						>
+							<div className="relative h-[292px] w-full md:h-[362px]">
 								<Image
 									className="absolute inset-0 size-full"
 									src={coreService.imageSrc}
