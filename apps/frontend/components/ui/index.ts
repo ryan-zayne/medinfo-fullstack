@@ -12,4 +12,3 @@ export * as InputOTP from "./input-otp";
 export * as Popover from "./popover";
 export * as Select from "./select";
 export { Skeleton } from "./skeleton";
-
