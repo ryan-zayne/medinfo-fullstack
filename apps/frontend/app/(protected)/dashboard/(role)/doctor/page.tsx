@@ -1,185 +1,201 @@
+"use client";
+
+import { ForWithWrapper } from "@/components/common";
 import CalendarIcon from "@/components/icons/CalendarIcon";
 import DollarSignIcon from "@/components/icons/DollarSignIcon";
 import NextIcon from "@/components/icons/NextIcon";
 import PatientIcon from "@/components/icons/PatientIcon";
+import { cnJoin } from "@/lib/utils/cn";
+import { Main } from "../../-components/Main";
+
+const statsArray = [
+	{
+		bgColor: "bg-[#f0fdf6]",
+		icon: <DollarSignIcon />,
+		id: 1,
+		title: "Net income",
+		value: "$ 1200",
+	},
+	{
+		bgColor: "bg-[#eff4fb]",
+		icon: <PatientIcon />,
+		id: 2,
+		title: "Number of patients",
+		value: "890",
+	},
+	{
+		bgColor: "bg-[#F8F5DB]",
+		icon: <CalendarIcon width={44} height={44} />,
+		id: 3,
+		title: "Total appointments",
+		value: "65",
+	},
+];
+
+const appointmentsArray = [
+	{
+		id: 1,
+		patientName: "Alex.O",
+		patientType: "Men's health",
+		time: "09:00",
+	},
+	{
+		id: 2,
+		patientName: "Alex.O",
+		patientType: "Men's health",
+		time: "09:00",
+	},
+	{
+		id: 3,
+		patientName: "Alex.O",
+		patientType: "Men's health",
+		time: "09:00",
+	},
+	{
+		id: 4,
+		patientName: "Alex.O",
+		patientType: "Men's health",
+		time: "09:00",
+	},
+];
+
+const appointmentRequestsArray = [
+	{
+		id: 1,
+		patientName: "Alex.O",
+		patientType: "Men's health",
+		time: "09:00",
+	},
+	{
+		id: 2,
+		patientName: "Alex.O",
+		patientType: "Men's health",
+		time: "09:00",
+	},
+	{
+		id: 3,
+		patientName: "Alex.O",
+		patientType: "Men's health",
+		time: "09:00",
+	},
+	{
+		id: 4,
+		patientName: "Alex.O",
+		patientType: "Men's health",
+		time: "09:00",
+	},
+];
 
 function DoctorPage() {
 	return (
-		<div className="p-[24px] lg:p-[40px]">
-			<div className="flex max-h-[402px] w-full flex-col gap-[40px] lg:flex-row">
-				<div className="w-full space-y-[27px] lg:max-w-[338px]">
-					<div className="flex gap-[16px] rounded-[16px] bg-white p-[28px] shadow-md">
-						<div className="rounded-[8px] bg-[#F0FDF6] p-[8px]">
-							<DollarSignIcon />
-						</div>
-						<div className="space-y-[6px]">
-							<p className="font-normal text-medinfo-dark-3">Net income</p>
-							<h2 className="text-[22px] font-medium text-medinfo-dark-1">$ 1200</h2>
-						</div>
-					</div>
+		<Main className="gap-10 lg:flex-row">
+			<section className="w-full rounded-[16px] bg-white p-6 shadow-md lg:p-7">
+				<header className="flex items-center justify-between">
+					<h2 className="text-[22px] font-medium text-medinfo-primary-main lg:text-[24px]">
+						Overall activity
+					</h2>
+					<p className="font-normal text-medinfo-dark-2">2023</p>
+				</header>
 
-					<div className="flex gap-[16px] rounded-[16px] bg-white p-[28px] shadow-md">
-						<div className="rounded-[8px] bg-[#EFF4FB] p-[8px]">
-							<PatientIcon />
-						</div>
-						<div className="space-y-[6px]">
-							<p className="font-normal text-medinfo-dark-3">Number of patients</p>
-							<h2 className="text-[22px] font-medium text-medinfo-dark-1">890</h2>
-						</div>
-					</div>
+				<ForWithWrapper
+					className="grid grid-cols-1 gap-6 lg:grid-cols-3"
+					each={statsArray}
+					renderItem={(stat) => (
+						<li
+							key={stat.id}
+							className="flex cursor-pointer items-start gap-3 rounded-[16px] border
+								border-medinfo-secondary-main p-4 transition-shadow hover:shadow-md lg:gap-4
+								lg:p-7"
+						>
+							<span className={cnJoin("inline-block size-[64px] rounded-[8px] p-2", stat.bgColor)}>
+								{stat.icon}
+							</span>
 
-					<div className="flex gap-[16px] rounded-[16px] bg-white p-[28px] shadow-md">
-						<div className="rounded-[8px] bg-[#F8F5DB] p-[8px]">
-							<CalendarIcon width={44} height={44} />
-						</div>
-						<div className="space-y-[6px]">
-							<p className="font-normal text-medinfo-dark-3">Total appointments</p>
-							<h2 className="text-[22px] font-medium text-medinfo-dark-1">65</h2>
-						</div>
-					</div>
-				</div>
-				<div className="w-full rounded-[16px] bg-white p-[28px] shadow-md">
-					<div className="flex items-center justify-between">
-						<h2 className="text-[22px] font-medium">Overall activity</h2>
-						<div>
-							<p className="font-normal">2023</p>
-						</div>
-					</div>
-					<div>{/* <Image src={ChartImage} height={} alt="chart"/> */}</div>
-				</div>
-			</div>
-			<div className="mt-[32px] flex flex-col gap-[40px] lg:flex-row">
-				<div className="w-full rounded-[16px] bg-white p-[16px] shadow-md lg:p-[32px]">
-					<div className="flex flex-col items-start lg:flex-row lg:items-center lg:justify-between">
-						<h2 className="text-[18px] font-medium lg:text-[22px]">Today’s appointment</h2>
-						<p className="text-[14px] font-normal">18th Febraury, 2023</p>
-					</div>
-					<div className="mt-[12px] flex items-center gap-[16px]">
+							<span className="flex flex-col gap-2">
+								<h3 className="text-[18px] font-medium lg:text-[20px]">{stat.title}</h3>
+								<p className="text-[14px] font-semibold text-medinfo-dark-1">{stat.value}</p>
+							</span>
+						</li>
+					)}
+				/>
+			</section>
+
+			<section
+				className="flex w-full flex-col gap-10 rounded-[16px] bg-white p-6 shadow-md lg:flex-row
+					lg:p-8"
+			>
+				<article className="flex flex-col gap-6">
+					<header className="flex flex-col items-start lg:flex-row lg:items-center lg:justify-between">
+						<h2 className="text-[18px] font-medium lg:text-[22px]">Today's appointment</h2>
+						<p className="text-[14px] font-normal">18th February, 2023</p>
+					</header>
+
+					<span className="mt-3 flex items-center gap-4">
 						<p className="font-medium lg:text-[20px]">See all</p>
 						<NextIcon />
-					</div>
-					<div className="mt-[24px] space-y-[12px]">
-						<div
-							className="flex w-full justify-between rounded-[8px] border border-solid
-								border-medinfo-secondary-main px-[20px] py-[16px]"
-						>
-							<div className="flex gap-[12px]">
-								<div className="size-[56px] rounded-full bg-gray-500" />
-								<div className="space-y-[12px]">
-									<h2 className="text-[18px] font-semibold text-medinfo-primary-darker">
-										Alex.O
-									</h2>
-									<p className="text-[14px] font-normal">Men's health</p>
-								</div>
-							</div>
-							<div>
-								<h2>09:00</h2>
-							</div>
-						</div>
+					</span>
 
-						<div
-							className="flex w-full justify-between rounded-[8px] border border-solid
-								border-medinfo-secondary-main px-[20px] py-[16px]"
-						>
-							<div className="flex gap-[12px]">
-								<div className="size-[56px] rounded-full bg-gray-500" />
-								<div className="space-y-[12px]">
-									<h2 className="text-[18px] font-semibold text-medinfo-primary-darker">
-										Alex.O
-									</h2>
-									<p className="text-[14px] font-normal">Men's health</p>
-								</div>
-							</div>
-							<div>
-								<h2>09:00</h2>
-							</div>
-						</div>
+					<ForWithWrapper
+						className="mt-6 flex flex-col gap-3"
+						each={appointmentsArray}
+						renderItem={(appointment) => (
+							<li
+								key={appointment.id}
+								className="flex w-full justify-between rounded-[8px] border
+									border-medinfo-secondary-main px-5 py-4"
+							>
+								<div className="flex gap-3">
+									<span className="size-14 shrink-0 rounded-full bg-gray-500" />
 
-						<div
-							className="flex w-full justify-between rounded-[8px] border border-solid
-								border-medinfo-secondary-main px-[20px] py-[16px]"
-						>
-							<div className="flex gap-[12px]">
-								<div className="size-[56px] rounded-full bg-gray-500" />
-								<div className="space-y-[12px]">
-									<h2 className="text-[18px] font-semibold text-medinfo-primary-darker">
-										Alex.O
-									</h2>
-									<p className="text-[14px] font-normal">Men's health</p>
+									<div className="flex flex-col gap-3">
+										<h4 className="text-[18px] font-semibold text-medinfo-primary-darker">
+											{appointment.patientName}
+										</h4>
+										<p className="text-[14px] font-normal">{appointment.patientType}</p>
+									</div>
 								</div>
-							</div>
-							<div>
-								<h2>09:00</h2>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div className="w-full rounded-[16px] bg-white p-[16px] shadow-md lg:p-[32px]">
-					<div className="flex items-center justify-between">
+
+								<p>{appointment.time}</p>
+							</li>
+						)}
+					/>
+				</article>
+
+				<article className="flex flex-col gap-6">
+					<header className="flex items-center justify-between">
 						<h2 className="text-[18px] font-medium lg:text-[22px]">Appointment requests</h2>
-					</div>
-					<div className="mt-[12px] flex items-center gap-[16px]">
+					</header>
+
+					<span className="mt-3 flex items-center gap-4">
 						<p className="font-medium lg:text-[20px]">See all</p>
 						<NextIcon />
-					</div>
-					<div className="mt-[24px] space-y-[12px]">
-						<div
-							className="flex w-full justify-between rounded-[8px] border border-solid
-								border-medinfo-secondary-main px-[20px] py-[16px]"
-						>
-							<div className="flex gap-[12px]">
-								<div className="size-[56px] rounded-full bg-gray-500" />
-								<div className="space-y-[12px]">
-									<h2 className="text-[18px] font-semibold text-medinfo-primary-darker">
-										Alex.O
-									</h2>
-									<p className="text-[14px] font-normal">Men's health</p>
-								</div>
-							</div>
-							<div>
-								<h2>09:00</h2>
-							</div>
-						</div>
+					</span>
 
-						<div
-							className="flex w-full justify-between rounded-[8px] border border-solid
-								border-medinfo-secondary-main px-[20px] py-[16px]"
-						>
-							<div className="flex gap-[12px]">
-								<div className="size-[56px] rounded-full bg-gray-500" />
-								<div className="space-y-[12px]">
-									<h2 className="text-[18px] font-semibold text-medinfo-primary-darker">
-										Alex.O
-									</h2>
-									<p className="text-[14px] font-normal">Men's health</p>
-								</div>
-							</div>
-							<div>
-								<h2>09:00</h2>
-							</div>
-						</div>
-
-						<div
-							className="flex w-full justify-between rounded-[8px] border border-solid
-								border-medinfo-secondary-main px-[20px] py-[16px]"
-						>
-							<div className="flex gap-[12px]">
-								<div className="size-[56px] rounded-full bg-gray-500" />
-								<div className="space-y-[12px]">
-									<h2 className="text-[18px] font-semibold text-medinfo-primary-darker">
-										Alex.O
-									</h2>
-									<p className="text-[14px] font-normal">Men's health</p>
-								</div>
-							</div>
-							<div>
-								<h2>09:00</h2>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+					<ForWithWrapper
+						className="mt-6 flex flex-col gap-3"
+						each={appointmentRequestsArray}
+						renderItem={(request) => (
+							<li
+								key={request.id}
+								className="flex w-full justify-between rounded-[8px] border
+									border-medinfo-secondary-main px-5 py-4"
+							>
+								<span className="flex gap-3">
+									<span className="size-14 shrink-0 rounded-full bg-gray-500" />
+									<span className="space-y-3">
+										<h4 className="text-[18px] font-semibold text-medinfo-primary-darker">
+											{request.patientName}
+										</h4>
+										<p className="text-[14px] font-normal">{request.patientType}</p>
+									</span>
+								</span>
+								<span>{request.time}</span>
+							</li>
+						)}
+					/>
+				</article>
+			</section>
+		</Main>
 	);
 }
 
