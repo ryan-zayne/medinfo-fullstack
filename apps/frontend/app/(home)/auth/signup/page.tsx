@@ -7,14 +7,7 @@ import { toFormData } from "@zayne-labs/callapi/utils";
 import { use } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import {
-	DropZoneInput,
-	DropZoneInputImagePreview,
-	IconBox,
-	Logo,
-	NavLink,
-	Show,
-} from "@/components/common";
+import { DropZoneInput, IconBox, Logo, NavLink, Show } from "@/components/common";
 import { Button, DateTimePicker, Form, Select } from "@/components/ui";
 import { DropZone } from "@/components/ui/drop-zone";
 import { callBackendApiForQuery } from "@/lib/api/callBackendApi";
@@ -53,13 +46,13 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 			meta: { toast: { success: true } },
 
 			onSuccess: () => {
-				router.push(`/dashboard/${userRole}`);
+				router.push(`/auth/verify-email?email=${data.email}`);
 			},
 		});
 	});
 
 	return (
-		<Main className="w-full px-0 max-md:max-w-[400px] md:flex md:flex-col md:items-center">
+		<Main className="w-full max-md:max-w-[400px] md:flex md:flex-col md:items-center md:px-6">
 			<div
 				className="rounded-[16px] border-[1.4px] border-medinfo-light-2
 					shadow-[0_0_0_2px_hsl(0,0%,0%,0.25)] md:flex md:max-w-fit"
@@ -340,7 +333,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 
 									<Form.FieldBoundController
 										render={({ field }) => (
-											<DropZoneInput
+											<DropZoneInput.Root
 												allowedFileTypes={["image/jpeg", "image/png", "application/pdf"]}
 												maxFileSize={{ mb: 4 }}
 												disableFilePickerOpenOnAreaClick={true}
@@ -371,12 +364,12 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 													<p className="text-sm text-medinfo-dark-2">Maximum size: 4mb</p>
 												</DropZone.Area>
 
-												<DropZoneInputImagePreview
+												<DropZoneInput.ImagePreview
 													classNames={{
 														listContainer: "border-[1.4px] border-medinfo-primary-main",
 													}}
 												/>
-											</DropZoneInput>
+											</DropZoneInput.Root>
 										)}
 									/>
 
@@ -500,7 +493,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 					</div>
 				</section>
 
-				<section
+				<aside
 					className="flex w-[432px] flex-col items-center justify-center rounded-r-[16px]
 						bg-medinfo-primary-main px-[35px] text-center text-white max-md:hidden xl:shrink-0"
 				>
@@ -520,7 +513,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 							Sign in
 						</NavLink>
 					</Button>
-				</section>
+				</aside>
 			</div>
 		</Main>
 	);

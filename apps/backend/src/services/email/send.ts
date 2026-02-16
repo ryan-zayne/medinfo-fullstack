@@ -3,16 +3,21 @@ import type { CallbackFn } from "@zayne-labs/toolkit-type-helpers";
 import { consola } from "consola";
 import * as nodemailer from "nodemailer";
 import { ENVIRONMENT } from "@/config/env";
-import { pinoLogger } from "@/middleware/pinoLogger";
 
 const transporter = nodemailer.createTransport({
 	auth: {
-		pass: ENVIRONMENT.EMAIL_APP_PASSWORD,
-		user: ENVIRONMENT.EMAIL_USER,
+		pass:
+			ENVIRONMENT.NODE_ENV === "development" ?
+				ENVIRONMENT.EMAIL_APP_PASSWORD_DEV
+			:	ENVIRONMENT.EMAIL_APP_PASSWORD,
+		user: ENVIRONMENT.NODE_ENV === "development" ? ENVIRONMENT.EMAIL_USER_DEV : ENVIRONMENT.EMAIL_USER,
 	},
-	host: "smtp.gmail.com",
-	secure: true,
-	service: "Gmail",
+	host: ENVIRONMENT.NODE_ENV === "development" ? "smtp.ethereal.email" : "smtp.gmail.com",
+	port: ENVIRONMENT.NODE_ENV === "development" ? 587 : undefined,
+	...(ENVIRONMENT.NODE_ENV === "production" && {
+		secure: true,
+		service: "Gmail",
+	}),
 });
 
 export const sendEmail = async (options: EmailJobOptions) => {
@@ -33,13 +38,7 @@ export const sendEmail = async (options: EmailJobOptions) => {
 			to: data.to,
 		});
 	} catch (error) {
-		const message = `Failed to deliver '${type}' email to '${data.to}'`;
-
-		consola.error(message, error);
-
-		pinoLogger.error({
-			cause: error,
-			message,
-		});
+		consola.error(new Error(`Failed to deliver '${type}' email to '${data.to}'`, { cause: error }));
+		throw error;
 	}
 };

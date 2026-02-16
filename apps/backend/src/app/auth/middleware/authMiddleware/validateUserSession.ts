@@ -1,7 +1,7 @@
 /* eslint-disable import/no-named-as-default-member */
 import { db } from "@medinfo/db";
 import { users, type SelectUserType } from "@medinfo/db/schema/auth";
-import { defineEnum, type UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
+import type { UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
 import { eq } from "drizzle-orm";
 /* eslint-disable import/default */
 import jwt from "jsonwebtoken";
@@ -15,15 +15,7 @@ import {
 import { ENVIRONMENT } from "@/config/env";
 import { AppError } from "@/lib/utils";
 import { getFromCache } from "@/services/cache";
-
-const AUTH_ERROR_MESSAGES = defineEnum({
-	ACCOUNT_SUSPENDED: "Your account is currently suspended",
-	EMAIL_UNVERIFIED: "Your email is yet to be verified",
-	GENERIC_ERROR: "An error occurred. Please log in again",
-	INVALID_SESSION: "Invalid session. Please log in again",
-	SESSION_EXPIRED: "Session expired. Please log in again",
-	SESSION_NOT_EXIST: "Session doesn't exist. Please log in",
-});
+import { AUTH_ERROR_MESSAGES } from "./constants";
 
 type VerifyOptions = UnionDiscriminator<
 	[
@@ -67,7 +59,7 @@ const getAndVerifyUserFromToken = async (options: VerifyOptions) => {
 	// == So clear the refreshTokenArray to log the user out from all devices including current device, greatly diminishing the risk of another token reuse attack
 
 	if (!isTokenInWhitelist(currentUser.refreshTokenArray, zayneRefreshToken)) {
-		warnAboutTokenReuse({ compromisedToken: zayneRefreshToken, currentUser });
+		warnAboutTokenReuse({ compromisedRefreshToken: zayneRefreshToken, currentUser });
 
 		await db.update(users).set({ refreshTokenArray: [] }).where(eq(users.id, decodedPayload.id));
 

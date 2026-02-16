@@ -246,6 +246,13 @@ const authRoutes = () => {
 			data: withBaseSuccessResponse(z.null()),
 		},
 
+		"@post/auth/resend-verification-email": {
+			body: z.object({
+				email: z.email("Please enter a valid email"),
+			}),
+			data: withBaseSuccessResponse(z.null()),
+		},
+
 		"@post/auth/signin": {
 			body: z.object({
 				email: z.email("Please enter a valid email"),
@@ -266,10 +273,6 @@ const authRoutes = () => {
 			body: z.instanceof(FormData),
 			data: withBaseSuccessResponse(
 				z.object({
-					tokens: z.object({
-						access: TokenObjectSchema,
-						refresh: TokenObjectSchema,
-					}),
 					user: UserDataSchema,
 				})
 			),
@@ -278,9 +281,13 @@ const authRoutes = () => {
 		"@post/auth/verify-email": {
 			body: z.object({
 				code: z.string().length(6, "Code must be 6 digits long"),
-				userId: z.string(),
+				email: z.email("Please enter a valid email"),
 			}),
-			data: withBaseSuccessResponse(z.null()),
+			data: withBaseSuccessResponse(
+				z.object({
+					user: UserDataSchema.pick({ email: true, role: true }),
+				})
+			),
 		},
 	});
 };

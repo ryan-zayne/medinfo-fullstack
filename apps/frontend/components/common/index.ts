@@ -6,4 +6,4 @@ export { For, ForWithWrapper } from "./for";
 export { Switch } from "./switch";
 export { Overlay } from "./Overlay";
 export { NavLink } from "./NavLink";
-export * from "./DropZoneInput";
+export * as DropZoneInput from "./DropZoneInput";

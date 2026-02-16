@@ -6,7 +6,7 @@ export const redisCacheClient = createClient({
 	url:
 		ENVIRONMENT.NODE_ENV === "development" ?
 			ENVIRONMENT.REDIS_CACHE_URL_DEV
-		:	ENVIRONMENT.REDIS_CACHE_URL_PROD,
+		:	ENVIRONMENT.REDIS_CACHE_URL,
 });
 
 redisCacheClient.on("error", (error) => {

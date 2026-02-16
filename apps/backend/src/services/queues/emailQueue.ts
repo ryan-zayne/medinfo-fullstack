@@ -7,7 +7,7 @@ import { redisQueueClient } from "./utils/queueClient";
 const emailQueueKey = "emailQueue";
 
 export const emailQueue = new Queue<EmailJobOptions>(emailQueueKey, {
-	connection: redisQueueClient,
+	connection: redisQueueClient as never,
 	defaultJobOptions: {
 		attempts: 3,
 		backoff: {
@@ -18,14 +18,18 @@ export const emailQueue = new Queue<EmailJobOptions>(emailQueueKey, {
 });
 
 export const addEmailToQueue = async (options: EmailJobOptions) => {
-	const { data, type } = options;
+	const { data, onError, onSuccess, type } = options;
 
 	try {
 		await emailQueue.add(type, options, {
 			...(data.priority !== "high" && { priority: 2 }),
 		});
+
+		await onSuccess?.();
 	} catch (error) {
-		consola.error(`Failed to enqueue '${type}' email to '${data.to}'`, error);
+		consola.error(new Error(`Failed to enqueue '${type}' email to '${data.to}'`, { cause: error }));
+
+		await onError?.();
 
 		throw error;
 	}
@@ -42,7 +46,7 @@ const getEmailWorker = () => {
 			await sendEmail(job.data);
 		},
 		{
-			connection: redisQueueClient,
+			connection: redisQueueClient as never,
 			limiter: {
 				duration: 1000,
 				max: 1,
@@ -59,7 +63,7 @@ const getEmailWorker = () => {
 	);
 
 	emailWorker.on("error", (error) => {
-		consola.error(`Error processing email job: ${error.message}`, error);
+		consola.error(new Error(`Error processing email job: ${error.message}`, { cause: error }));
 	});
 
 	emailWorker.on("stalled", (jobId) => {
@@ -70,10 +74,10 @@ const getEmailWorker = () => {
 };
 
 const getEmailQueueEvents = () => {
-	emailQueueEvent ??= new QueueEvents(emailQueueKey, { connection: redisQueueClient });
+	emailQueueEvent ??= new QueueEvents(emailQueueKey, { connection: redisQueueClient as never });
 
 	emailQueueEvent.on("failed", ({ failedReason, jobId }) => {
-		consola.error(`Job ${jobId} failed with error ${failedReason}`, failedReason);
+		consola.error(`Job ${jobId} failed with error ${failedReason}`, { failedReason });
 	});
 
 	emailQueueEvent.on("waiting", ({ jobId }) => {
@@ -81,7 +85,7 @@ const getEmailQueueEvents = () => {
 	});
 
 	emailQueueEvent.on("completed", ({ jobId, returnvalue }) => {
-		consola.info(`Job ${jobId} completed`, returnvalue);
+		consola.info(`Job ${jobId} completed`, { returnvalue });
 	});
 
 	emailQueueEvent.on("retries-exhausted", ({ attemptsMade, jobId }) => {
@@ -89,7 +93,7 @@ const getEmailQueueEvents = () => {
 	});
 
 	emailQueueEvent.on("progress", ({ data, jobId }) => {
-		consola.debug(`Job ${jobId} progress:`, data);
+		consola.debug(`Job ${jobId} progress:`, { data });
 	});
 
 	return emailQueueEvent;

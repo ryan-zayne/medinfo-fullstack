@@ -10,7 +10,7 @@ import { AppError, getValidatedValue } from "@/lib/utils";
 const BASE_BACKEND_HOST =
 	ENVIRONMENT.NODE_ENV === "development" ?
 		ENVIRONMENT.BASE_BACKEND_HOST_DEV
-	:	ENVIRONMENT.BASE_BACKEND_HOST_PROD;
+	:	ENVIRONMENT.BASE_BACKEND_HOST;
 
 export const google = new arctic.Google(
 	ENVIRONMENT.GOOGLE_CLIENT_ID,
@@ -161,7 +161,7 @@ type UserResult =
 const BASE_FRONTEND_HOST =
 	ENVIRONMENT.NODE_ENV === "development" ?
 		ENVIRONMENT.BASE_FRONTEND_HOST_DEV
-	:	ENVIRONMENT.BASE_FRONTEND_HOST_PROD;
+	:	ENVIRONMENT.BASE_FRONTEND_HOST;
 
 const getRedirectURL = (role: SelectUserType["role"]) => {
 	return `${BASE_FRONTEND_HOST}/dashboard/${role}`;

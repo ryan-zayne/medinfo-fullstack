@@ -3,9 +3,7 @@ import { Redis } from "ioredis";
 import { ENVIRONMENT } from "@/config/env";
 
 const queueRedisURL =
-	ENVIRONMENT.NODE_ENV === "development" ?
-		ENVIRONMENT.REDIS_QUEUE_URL_DEV
-	:	ENVIRONMENT.REDIS_QUEUE_URL_PROD;
+	ENVIRONMENT.NODE_ENV === "development" ? ENVIRONMENT.REDIS_QUEUE_URL_DEV : ENVIRONMENT.REDIS_QUEUE_URL;
 
 export const redisQueueClient = new Redis(queueRedisURL, {
 	enableOfflineQueue: false,

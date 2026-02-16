@@ -63,6 +63,24 @@ type LayoutConfig<Route extends LayoutRoutes = LayoutRoutes> = {
   type __Unused = __Check
 }
 
+// Validate ../../../app/(home)/auth/verify-email/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/auth/verify-email">> = Specific
+  const handler = {} as typeof import("../../../app/(home)/auth/verify-email/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../../app/(home)/auth/verify-email/send/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/auth/verify-email/send">> = Specific
+  const handler = {} as typeof import("../../../app/(home)/auth/verify-email/send/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../../app/(home)/daily-tips/[id]/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/daily-tips/[id]">> = Specific

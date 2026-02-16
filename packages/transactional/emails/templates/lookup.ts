@@ -27,12 +27,12 @@ export const TEMPLATE_LOOKUP = defineEnumDeep(
 		verifyEmail: {
 			from: "MedInfo <donotreply@medical-info.com>",
 			subject: "Verify your email address",
-			template: getTemplateFn(import("./verify-email")),
+			template: getTemplateFn(import("./VerifyEmail")),
 		},
 		welcomeEmail: {
 			from: "MedInfo <donotreply@medical-info.com>",
 			subject: "Welcome to MedInfo",
-			template: getTemplateFn(import("./welcome-email")),
+			template: getTemplateFn(import("./WelcomeEmail")),
 		},
 	},
 	{ inferredUnionVariant: "none" }

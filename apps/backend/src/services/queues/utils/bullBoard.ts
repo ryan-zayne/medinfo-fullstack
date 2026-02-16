@@ -5,7 +5,7 @@ import { serveStatic } from "@hono/node-server/serve-static";
 import { emailQueue } from "../emailQueue";
 
 export const createBullBoardSetup = () => {
-	const baseQueuesPath = "/api/v1/queues";
+	const baseQueuesPath = "/api/v1/queues" as const;
 
 	const queuesServerAdapter = new HonoAdapter(serveStatic).setBasePath(baseQueuesPath);
 

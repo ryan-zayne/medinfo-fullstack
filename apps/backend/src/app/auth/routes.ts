@@ -10,8 +10,10 @@ import { validateWithZodMiddleware } from "@/middleware";
 import { getFromCache, removeFromCache, setCache } from "@/services/cache";
 import { uploadStreamToCloudinary } from "@/services/cloudinary";
 import { authMiddleware } from "./middleware/authMiddleware";
-import { getNecessaryUserDetails, sendVerificationEmail } from "./services/common";
+import { AUTH_ERROR_MESSAGES } from "./middleware/authMiddleware/constants";
+import { getNecessaryUserDetails } from "./services/common";
 import { deleteCookie, getCookie, setCookie } from "./services/cookie";
+import { sendVerificationEmail } from "./services/emails";
 import { hashValue, verifyHashedValue } from "./services/hash";
 import {
 	createGoogleAuthURL,
@@ -98,23 +100,8 @@ const authRoutes = new Hono()
 			setCache(`user:${result.newUser.id}`, result.newUser),
 		]);
 
-		const newZayneAccessTokenResult = generateAccessToken(result.newUser);
-
-		setCookie(ctx, {
-			expires: newZayneAccessTokenResult.expiresAt,
-			name: "zayneAccessToken",
-			value: newZayneAccessTokenResult.token,
-		});
-
-		setCookie(ctx, {
-			expires: result.newZayneRefreshTokenResult.expiresAt,
-			name: "zayneRefreshToken",
-			value: result.newZayneRefreshTokenResult.token,
-		});
-
 		return AppJsonResponse(ctx, {
 			data: {
-				tokens: { access: newZayneAccessTokenResult, refresh: result.newZayneRefreshTokenResult },
 				user: getNecessaryUserDetails(result.newUser),
 			},
 			message: "Account created successfully",
@@ -131,7 +118,7 @@ const authRoutes = new Hono()
 
 			if (!currentUser) {
 				throw new AppError({
-					cause: "No user found",
+					cause: "No user with this email found",
 					code: 401,
 					message: "Email or password is incorrect",
 				});
@@ -166,14 +153,19 @@ const authRoutes = new Hono()
 				});
 			}
 
-			if (!currentUser.emailVerifiedAt) {
-				await sendVerificationEmail(currentUser);
-			}
-
 			if (currentUser.suspendedAt) {
 				throw new AppError({
 					code: 401,
-					message: "Your account is currently suspended",
+					message: AUTH_ERROR_MESSAGES.ACCOUNT_SUSPENDED,
+				});
+			}
+
+			if (!currentUser.emailVerifiedAt) {
+				await sendVerificationEmail(currentUser);
+
+				throw new AppError({
+					code: 401,
+					message: AUTH_ERROR_MESSAGES.EMAIL_UNVERIFIED,
 				});
 			}
 
@@ -209,7 +201,7 @@ const authRoutes = new Hono()
 			if (!updatedUser) {
 				throw new AppError({
 					code: 500,
-					message: "Signin failed successfully",
+					message: "User update failed",
 				});
 			}
 
@@ -363,9 +355,22 @@ const authRoutes = new Hono()
 		"/verify-email",
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/auth/verify-email"].body),
 		async (ctx) => {
-			const { code, userId } = ctx.req.valid("json");
+			const { code, email } = ctx.req.valid("json");
 
-			const cachedHashedCode = await getFromCache<string>(`verify-email-code:${userId}`);
+			const [existingUser] = await db
+				.select({ id: users.id })
+				.from(users)
+				.where(eq(users.email, email))
+				.limit(1);
+
+			if (!existingUser) {
+				throw new AppError({
+					code: 404,
+					message: "No account found with this email address",
+				});
+			}
+
+			const cachedHashedCode = await getFromCache<string>(`verify-email-code:${email}`);
 
 			if (!cachedHashedCode) {
 				throw new AppError({
@@ -383,14 +388,61 @@ const authRoutes = new Hono()
 				});
 			}
 
-			await db.update(users).set({ emailVerifiedAt: new Date() }).where(eq(users.id, userId));
+			const [updatedUser] = await db
+				.update(users)
+				.set({ emailVerifiedAt: new Date() })
+				.where(eq(users.email, email))
+				.returning({ email: users.email, role: users.role });
 
-			await removeFromCache(`verify-email-code:${userId}`);
+			if (!updatedUser) {
+				throw new AppError({
+					code: 500,
+					message: "User update failed",
+				});
+			}
+
+			await removeFromCache(`verify-email-code:${email}`);
+
+			return AppJsonResponse(ctx, {
+				data: {
+					user: updatedUser,
+				},
+				message: "Account successfully verified!",
+				schema: backendApiSchemaRoutes["@post/auth/verify-email"].data,
+			});
+		}
+	)
+	.post(
+		"/resend-verification-email",
+		validateWithZodMiddleware(
+			"json",
+			backendApiSchemaRoutes["@post/auth/resend-verification-email"].body
+		),
+		async (ctx) => {
+			const { email } = ctx.req.valid("json");
+
+			const [existingUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+
+			if (!existingUser) {
+				throw new AppError({
+					code: 404,
+					message: "No account found with this email address",
+				});
+			}
+
+			if (existingUser.emailVerifiedAt) {
+				throw new AppError({
+					code: 400,
+					message: "Email is already verified",
+				});
+			}
+
+			await sendVerificationEmail(existingUser);
 
 			return AppJsonResponse(ctx, {
 				data: null,
-				message: "Account successfully verified!",
-				schema: backendApiSchemaRoutes["@post/auth/verify-email"].data,
+				message: "Verification email sent successfully",
+				schema: backendApiSchemaRoutes["@post/auth/resend-verification-email"].data,
 			});
 		}
 	)

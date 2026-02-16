@@ -1,4 +1,5 @@
 import { Button, Heading, render, Section, Text } from "@react-email/components";
+import * as React from "react";
 import { BaseLayout } from "../layouts/BaseLayout";
 
 export type VerifyEmailProps = {
@@ -60,7 +61,7 @@ export function VerifyEmail(props: VerifyEmailProps) {
 VerifyEmail.PreviewProps = {
 	name: "Dr. Doe",
 	validationCode: "123456",
-	validationUrl: "http://localhost:3001/auth/verify-email?code=123456",
+	validationUrl: "http://localhost:3001/auth/verify-email?email=dr.doe@example.com&code=123456",
 } satisfies VerifyEmailProps;
 
 export const TemplateFn = (props: VerifyEmailProps) => render(<VerifyEmail {...props} />);

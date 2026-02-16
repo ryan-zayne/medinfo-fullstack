@@ -12,7 +12,7 @@ type DropZoneInputProps = InferProps<typeof DropZone.Root> & {
 	onChange: (file: File) => void;
 };
 
-export function DropZoneInput(props: DropZoneInputProps) {
+function DropZoneInputRoot(props: DropZoneInputProps) {
 	const { onChange, onFilesChange, onValidationError, onValidationSuccess, ...restOfProps } = props;
 
 	const handleFileUpload: DropZoneInputProps["onFilesChange"] = (ctx) => {
@@ -47,13 +47,13 @@ type ImagePreviewProps = {
 	};
 };
 
-export function DropZoneInputImagePreview(props: ImagePreviewProps) {
+function DropZoneInputImagePreview(props: ImagePreviewProps) {
 	const { classNames } = props;
 
 	return (
 		<DropZone.FileList
 			className={cnMerge(
-				`relative mt-[13px] max-h-[140px] divide-y divide-gray-600 overflow-y-auto overscroll-y-contain
+				`relative mt-3.5 max-h-[140px] divide-y divide-gray-600 overflow-y-auto overscroll-y-contain
 				rounded-md border border-gray-600`,
 				classNames?.listContainer
 			)}
@@ -109,3 +109,7 @@ export function DropZoneInputImagePreview(props: ImagePreviewProps) {
 		</DropZone.FileList>
 	);
 }
+
+export const Root = DropZoneInputRoot;
+
+export const ImagePreview = DropZoneInputImagePreview;

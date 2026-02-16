@@ -78,7 +78,7 @@ export const buttonVariants = tv({
 
 			large: "h-12 w-full text-base md:text-[20px] md:font-medium",
 
-			medium: "h-12 p-6 text-base md:h-[64px] md:p-8 md:text-[20px] md:font-medium",
+			medium: "h-12 px-6 text-base md:h-[64px] md:p-8 md:text-[20px] md:font-medium",
 		},
 
 		theme: {
@@ -112,7 +112,7 @@ function Button<TElement extends React.ElementType>(props: PolymorphicProps<TEle
 		type = "button",
 		unstyled,
 		withInteractions = true,
-		...extraButtonProps
+		...restOfProps
 	} = props;
 
 	const Component = asChild ? Slot.Root : Element;
@@ -151,12 +151,7 @@ function Button<TElement extends React.ElementType>(props: PolymorphicProps<TEle
 
 	// == This technique helps prevents content shift when replacing children with spinner icon
 	return (
-		<Component
-			type={type}
-			className={BTN_CLASSES}
-			disabled={disabled || isDisabled}
-			{...extraButtonProps}
-		>
+		<Component type={type} className={BTN_CLASSES} disabled={disabled || isDisabled} {...restOfProps}>
 			{isLoading ? withIcon : children}
 		</Component>
 	);

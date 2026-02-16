@@ -13,7 +13,7 @@ This document lists all environment variables required by MedInfo backend applic
 ### Database Configuration
 
 - `DATABASE_URL_DEV` - PostgreSQL connection for development
-- `DATABASE_URL_PROD` - PostgreSQL connection for production
+- `DATABASE_URL` - PostgreSQL connection for production
 - `DB_MIGRATING` - Migration state flag
 - `DB_SEEDING` - Seeding state flag
 - `SEED_PASSWORD` - Default password for seeded users

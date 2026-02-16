@@ -1,4 +1,3 @@
-import { parseJSON } from "@zayne-labs/toolkit-core";
 import { isObject, type Awaitable, type UnmaskType } from "@zayne-labs/toolkit-type-helpers";
 import { consola } from "consola";
 import { differenceInSeconds } from "date-fns";
@@ -66,7 +65,7 @@ export const getFromCache = async <TCacheResult>(
 		return null as never;
 	}
 
-	const parsedCachedData = parseJSON(rawCachedData);
+	const parsedCachedData = JSON.parse(rawCachedData);
 
 	consola.info(`[CACHE HIT] for key ${key}`);
 

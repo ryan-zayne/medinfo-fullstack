@@ -22,7 +22,7 @@ COPY packages/env/package.json ./packages/env/package.json
 COPY packages/shared/package.json ./packages/shared/package.json
 
 # Install dependencies
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prefer-offline --prod --ignore-scripts --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm --filter=!@medinfo/frontend install --prefer-offline --prod --ignore-scripts --frozen-lockfile
 
 # Copy source code
 COPY apps/backend ./apps/backend

@@ -1,6 +1,7 @@
+import type { Awaitable } from "@zayne-labs/toolkit-type-helpers";
 import type { TEMPLATE_LOOKUP } from "./lookup";
-import type { VerifyEmailProps } from "./verify-email";
-import type { WelcomeEmailProps } from "./welcome-email";
+import type { VerifyEmailProps } from "./VerifyEmail";
+import type { WelcomeEmailProps } from "./WelcomeEmail";
 
 type WithCommonFields<TObject extends Record<string, unknown>> = TObject & {
 	priority?: "high" | "low";
@@ -17,12 +18,17 @@ type SatisfiesEmailJobOptionsType<
 > = TJobOptions;
 
 export type EmailJobOptions = SatisfiesEmailJobOptionsType<
-	| {
-			data: WithCommonFields<VerifyEmailProps>;
-			type: "verifyEmail";
-	  }
-	| {
-			data: WithCommonFields<WelcomeEmailProps>;
-			type: "welcomeEmail";
-	  }
+	{
+		onError?: () => Awaitable<void>;
+		onSuccess?: () => Awaitable<void>;
+	} & (
+		| {
+				data: WithCommonFields<VerifyEmailProps>;
+				type: "verifyEmail";
+		  }
+		| {
+				data: WithCommonFields<WelcomeEmailProps>;
+				type: "welcomeEmail";
+		  }
+	)
 >;

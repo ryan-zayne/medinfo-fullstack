@@ -81,3 +81,15 @@ export const updateAppointmentStatusMutation = () => {
 		mutationKey: ["appointments", "status"],
 	});
 };
+
+export const resendVerificationEmailMutation = () => {
+	return mutationOptions({
+		mutationFn: (bodyData: { email: string }) => {
+			return callBackendApiForQuery("@post/auth/resend-verification-email", {
+				body: bodyData,
+				meta: { toast: { success: true } },
+			});
+		},
+		mutationKey: ["auth", "resend-verification-email"],
+	});
+};

@@ -2,7 +2,7 @@ import { defineConfig } from "drizzle-kit";
 import { ENVIRONMENT } from "@/config/env";
 
 export const dbConnectionString =
-	ENVIRONMENT.NODE_ENV === "development" ? ENVIRONMENT.DATABASE_URL_DEV : ENVIRONMENT.DATABASE_URL_PROD;
+	ENVIRONMENT.NODE_ENV === "development" ? ENVIRONMENT.DATABASE_URL_DEV : ENVIRONMENT.DATABASE_URL;
 
 export const drizzleConfig = defineConfig({
 	casing: "snake_case",

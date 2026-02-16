@@ -2,12 +2,12 @@
 import { SelectUserSchema, type SelectUserType } from "@medinfo/db/schema/auth";
 import { pickKeys } from "@zayne-labs/toolkit-core";
 import { consola } from "consola";
-// eslint-disable-next-line import/default
+/* eslint-disable import/default */
 import jwt from "jsonwebtoken";
+/* eslint-enable import/default */
 import { z } from "zod";
 import { ENVIRONMENT } from "@/config/env";
 import { getValidatedValue } from "@/lib/utils";
-import { pinoLogger } from "@/middleware/pinoLogger";
 
 type JwtOptions<TExtraOptions> = TExtraOptions & {
 	secretKey: string;
@@ -83,10 +83,10 @@ export const isTokenInWhitelist = (
 };
 
 export const warnAboutTokenReuse = (options: {
-	compromisedToken: string;
+	compromisedRefreshToken: string;
 	currentUser: SelectUserType;
 }) => {
-	const { compromisedToken, currentUser } = options;
+	const { compromisedRefreshToken, currentUser } = options;
 
 	const message = "Possible token reuse detected!";
 
@@ -100,19 +100,17 @@ export const warnAboutTokenReuse = (options: {
 		"loginRetryCount",
 	]);
 
-	consola.warn(message, {
-		compromisedToken,
-		timestamp: new Date().toISOString(),
-		user,
-		userAgent: navigator.userAgent,
-	});
-	pinoLogger.warn({
-		compromisedToken,
-		message,
-		timestamp: new Date().toISOString(),
-		user,
-		userAgent: navigator.userAgent,
-	});
+	consola.warn(
+		new Error(message, {
+			cause: {
+				compromisedRefreshToken,
+				timestamp: new Date().toISOString(),
+				user,
+				userAgent: navigator.userAgent,
+			},
+		})
+	);
+
 	consola.trace(message);
 };
 
@@ -127,12 +125,12 @@ export const getUpdatedTokenResultArray = (options: {
 	}
 
 	// == If it turns out that the refreshToken is not in the whitelist array, the question is why would a user be signing in with a refreshToken that is not in the array?
-	// == So it can be seen as a token reuse situation. Whether it's valid or not is of no concern rn.
+	// == So it can be seen as a potential token reuse situation. Whether it's valid or not is of no concern rn.
 	// == Is it a possible token reuse attack or not? E no concern me.
 	// == Just log out the user from all other devices by removing all tokens from the array to avoid any possible issues
 
 	if (!isTokenInWhitelist(currentUser.refreshTokenArray, zayneRefreshToken)) {
-		warnAboutTokenReuse({ compromisedToken: zayneRefreshToken, currentUser });
+		warnAboutTokenReuse({ compromisedRefreshToken: zayneRefreshToken, currentUser });
 
 		return [];
 	}

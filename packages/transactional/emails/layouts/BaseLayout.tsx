@@ -11,6 +11,7 @@ import {
 	Tailwind,
 	Text,
 } from "@react-email/components";
+import * as React from "react";
 import { FRONTEND_URL } from "../constants";
 
 type EmailLayoutProps = {
