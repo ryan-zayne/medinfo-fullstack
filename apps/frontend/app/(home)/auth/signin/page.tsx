@@ -38,14 +38,24 @@ function SignInPage(props: PageProps<"/auth/signin">) {
 			body: data,
 			meta: { toast: { success: true } },
 
-			onSuccess: () => {
-				router.push(`/dashboard/${userRole}`);
+			onResponseError: (ctx) => {
+				const isEmailUnverifiedError =
+					ctx.response.status === 401
+					&& ctx.error.errorData.message.includes("email is yet to be verified");
+
+				if (isEmailUnverifiedError) {
+					router.push(`/auth/verify-email?email=${data.email}`);
+				}
+			},
+
+			onSuccess: (ctx) => {
+				router.push(`/dashboard/${ctx.data.data.user.role}`);
 			},
 		});
 	});
 
 	return (
-		<Main className="w-full px-0 max-md:max-w-[400px] md:flex md:flex-col md:items-center">
+		<Main className="w-full max-md:max-w-[400px] md:flex md:flex-col md:items-center md:px-6">
 			<div
 				className="rounded-[16px] border-[1.4px] border-medinfo-light-2
 					shadow-[0_0_0_2px_hsl(0,0%,0%,0.25)] md:flex md:max-w-fit"
@@ -170,7 +180,7 @@ function SignInPage(props: PageProps<"/auth/signin">) {
 					</div>
 				</section>
 
-				<section
+				<aside
 					className="flex max-w-[432px] flex-col items-center justify-center rounded-r-[16px]
 						bg-medinfo-primary-main px-[35px] text-center text-white max-md:hidden xl:shrink-0"
 				>
@@ -188,7 +198,7 @@ function SignInPage(props: PageProps<"/auth/signin">) {
 							Sign up
 						</NavLink>
 					</Button>
-				</section>
+				</aside>
 			</div>
 		</Main>
 	);

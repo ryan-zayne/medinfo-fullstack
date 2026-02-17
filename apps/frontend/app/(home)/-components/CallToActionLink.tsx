@@ -19,7 +19,7 @@ function CallToActionLink(
 			<NavLink
 				href={{
 					pathname: userSession ? `/dashboard/${userSession.role}` : "/auth/signin",
-					query: { user: "patient" },
+					...(!userSession && { query: { user: "patient" } }),
 				}}
 				{...restOfProps}
 			>
