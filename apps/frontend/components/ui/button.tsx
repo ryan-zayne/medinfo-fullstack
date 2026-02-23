@@ -72,13 +72,13 @@ export const buttonVariants = tv({
 		},
 
 		size: {
-			"full-width": "h-12 w-full text-base md:h-[64px] md:text-[20px] md:font-medium",
+			"full-width": "h-12 w-full px-6 text-base md:h-[64px] md:text-[18px] md:font-medium",
 
 			icon: "size-12 md:size-16",
 
-			large: "h-12 w-full text-base md:text-[20px] md:font-medium",
+			large: "h-12 w-full px-6 text-base md:text-[18px] md:font-medium",
 
-			medium: "h-12 px-6 text-base md:h-[64px] md:p-8 md:text-[20px] md:font-medium",
+			medium: "h-12 px-6 text-base md:h-[64px] md:px-8 md:text-[18px] md:font-medium",
 		},
 
 		theme: {
@@ -91,7 +91,7 @@ export const buttonVariants = tv({
 		},
 
 		withInteractions: {
-			true: `transition-[border-radius] duration-350 ease-[ease]
+			true: `transition-[border-radius,box-shadow] duration-350 ease-[ease]
 			hover:shadow-[0_4px_4px_0_hsl(0,0%,0%,0.12)]`,
 		},
 	},

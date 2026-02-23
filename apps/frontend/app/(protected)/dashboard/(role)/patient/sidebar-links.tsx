@@ -17,16 +17,17 @@ export const menuItems = [
 	{
 		children: [
 			{ href: "/dashboard/patient/appointments/book", title: "Book Appointment" },
+			{ href: "/dashboard/patient/appointments/pending", title: "Requests" },
 			{ href: "/dashboard/patient/appointments/upcoming", title: "Upcoming" },
 			{ href: "/dashboard/patient/appointments/history", title: "History" },
 		],
-		icon: <CalendarIcon fill="#FFFFFF" width={20} height={20} />,
+		icon: <CalendarIcon fill="#ffffff" width={20} height={20} />,
 		iconActive: <CalendarIcon fill="#344E41" width={20} height={20} />,
 		title: "Appointments",
 	},
 	{
 		href: "/dashboard/patient/messages",
-		icon: <MessageIcon fill="#FFFFFF" width={20} height={20} />,
+		icon: <MessageIcon fill="#ffffff" width={20} height={20} />,
 		iconActive: <MessageIcon fill="#344E41" width={20} height={20} />,
 		title: "Messages",
 	},

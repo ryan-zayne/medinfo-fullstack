@@ -2,6 +2,7 @@
 
 import { useRouter } from "@bprogress/next";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { use } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
@@ -9,6 +10,7 @@ import { IconBox, Logo, NavLink, Show } from "@/components/common";
 import { Button, Form } from "@/components/ui";
 import { callBackendApiForQuery } from "@/lib/api/callBackendApi";
 import { backendApiSchemaRoutes, type SignUpSchema } from "@/lib/api/callBackendApi/apiSchema";
+import { sessionQuery } from "@/lib/react-query/queryOptions";
 import { Main } from "../../-components";
 import { OAuthSection } from "../OAuthSection";
 
@@ -33,6 +35,8 @@ function SignInPage(props: PageProps<"/auth/signin">) {
 
 	const router = useRouter();
 
+	const queryClient = useQueryClient();
+
 	const onSubmit = form.handleSubmit(async (data) => {
 		await callBackendApiForQuery("@post/auth/signin", {
 			body: data,
@@ -48,7 +52,9 @@ function SignInPage(props: PageProps<"/auth/signin">) {
 				}
 			},
 
-			onSuccess: (ctx) => {
+			onSuccess: async (ctx) => {
+				await queryClient.invalidateQueries(sessionQuery());
+
 				router.push(`/dashboard/${ctx.data.data.user.role}`);
 			},
 		});

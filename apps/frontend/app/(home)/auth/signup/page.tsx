@@ -3,6 +3,7 @@
 import { useRouter } from "@bprogress/next";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignUpSchema as SignUpSchemaPrimitive } from "@medinfo/shared/validation/backendApiSchema";
+import { useQueryClient } from "@tanstack/react-query";
 import { toFormData } from "@zayne-labs/callapi/utils";
 import { use } from "react";
 import { useForm } from "react-hook-form";
@@ -11,6 +12,7 @@ import { DropZoneInput, IconBox, Logo, NavLink, Show } from "@/components/common
 import { Button, DateTimePicker, Form, Select } from "@/components/ui";
 import { DropZone } from "@/components/ui/drop-zone";
 import { callBackendApiForQuery } from "@/lib/api/callBackendApi";
+import { sessionQuery } from "@/lib/react-query/queryOptions";
 import { Main } from "../../-components";
 import { OAuthSection } from "../OAuthSection";
 
@@ -39,14 +41,16 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 	const { control } = form;
 
 	const router = useRouter();
+	const queryClient = useQueryClient();
 
 	const onSubmit = form.handleSubmit(async (data) => {
 		await callBackendApiForQuery("@post/auth/signup", {
 			body: toFormData(data),
 			meta: { toast: { success: true } },
 
-			onSuccess: () => {
-				router.push(`/auth/verify-email?email=${data.email}`);
+			onSuccess: async (ctx) => {
+				await queryClient.invalidateQueries(sessionQuery());
+				router.push(`/auth/verify-email?email=${ctx.data.data.user.email}`);
 			},
 		});
 	});

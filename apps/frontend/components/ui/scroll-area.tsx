@@ -4,12 +4,12 @@ import type { InferProps } from "@zayne-labs/toolkit-react/utils";
 import { ScrollArea as ScrollAreaPrimitive } from "radix-ui";
 import { cnMerge } from "@/lib/utils/cn";
 
-export function ScrollArea(props: InferProps<typeof ScrollAreaPrimitive.Root>) {
+function ScrollAreaRoot(props: InferProps<typeof ScrollAreaPrimitive.Root>) {
 	const { children, className, ...restProps } = props;
 
 	return (
 		<ScrollAreaPrimitive.Root
-			data-slot="scroll-area"
+			data-slot="scroll-area-root"
 			className={cnMerge("relative", className)}
 			{...restProps}
 		>
@@ -21,14 +21,14 @@ export function ScrollArea(props: InferProps<typeof ScrollAreaPrimitive.Root>) {
 				{children}
 			</ScrollAreaPrimitive.Viewport>
 
-			<ScrollBar />
+			<ScrollAreaScrollBar />
 
 			<ScrollAreaPrimitive.Corner />
 		</ScrollAreaPrimitive.Root>
 	);
 }
 
-export function ScrollBar(
+function ScrollAreaScrollBar(
 	props: InferProps<typeof ScrollAreaPrimitive.ScrollAreaScrollbar> & {
 		classNames?: {
 			base?: string;
@@ -58,3 +58,7 @@ export function ScrollBar(
 		</ScrollAreaPrimitive.ScrollAreaScrollbar>
 	);
 }
+
+export const Root = ScrollAreaRoot;
+
+export const ScrollBar = ScrollAreaScrollBar;

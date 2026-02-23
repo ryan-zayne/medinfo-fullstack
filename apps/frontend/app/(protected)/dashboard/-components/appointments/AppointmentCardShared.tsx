@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { AvatarGroupAnimated } from "@/components/animated/ui";
-import { Show } from "@/components/common";
-import { Avatar, Card } from "@/components/ui";
+import { ForWithWrapper, IconBox, Switch } from "@/components/common";
+import { Avatar, Card, Skeleton } from "@/components/ui";
 import type {
 	DoctorAppointmentQueryResultType,
 	PatientAppointmentQueryResultType,
@@ -9,83 +9,146 @@ import type {
 import { cnMerge } from "@/lib/utils/cn";
 
 export type AppointmentCardSharedProps = {
-	appointment: Pick<
-		DoctorAppointmentQueryResultType["data"]["appointments"][number]
-			& PatientAppointmentQueryResultType["data"]["appointments"][number],
-		"cancelledAt" | "dateOfAppointment" | "id" | "reason" | "status"
-	> & {
-		avatar: PatientAppointmentQueryResultType["data"]["appointments"][number]["doctorAvatar"];
-		name: PatientAppointmentQueryResultType["data"]["appointments"][number]["doctorName"];
-	};
+	appointment:
+		| DoctorAppointmentQueryResultType["data"]["appointments"][number]
+		| PatientAppointmentQueryResultType["data"]["appointments"][number];
 	children: React.ReactNode;
+	className?: string;
 	variant: "history" | "upcoming";
 };
 
-const getInitials = (name: AppointmentCardSharedProps["appointment"]["name"]) => {
-	const [firstName, lastName] = name.split(" ");
-	return `${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`.toUpperCase();
-};
-
 export function AppointmentCardShared(props: AppointmentCardSharedProps) {
-	const { appointment, children, variant } = props;
+	const { appointment, children, className, variant } = props;
+
+	const otherPartyDetails = appointment.role === "doctor" ? appointment.patient : appointment.doctor;
+
+	const otherPartyFullName =
+		appointment.role === "doctor" ? `Dr. ${otherPartyDetails.fullName}` : otherPartyDetails.fullName;
 
 	return (
 		<Card.Root
-			className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-md md:flex-row md:items-center
-				md:justify-between"
+			className={cnMerge(
+				`flex flex-col justify-between gap-4 rounded-[8px] border-[1.4px] border-medinfo-secondary-main
+				bg-white p-6 md:flex-row md:items-center`,
+				className
+			)}
 		>
 			<Card.Content className="flex gap-4">
 				<AvatarGroupAnimated.Root className="space-x-0" translate="5%">
 					<Avatar.Root className="size-14 rounded-full border border-medinfo-light-2">
-						<Avatar.Image src={appointment.avatar} alt={appointment.name} />
+						<Avatar.Image src={otherPartyDetails.avatar} alt={otherPartyFullName} />
 						<Avatar.Fallback
 							className="bg-medinfo-secondary-main text-lg font-bold text-medinfo-primary-darker"
 						>
-							{getInitials(appointment.name)}
+							{otherPartyDetails.firstName[0]}
+							{otherPartyDetails.lastName[0]}
 						</Avatar.Fallback>
 
 						<AvatarGroupAnimated.Tooltip
 							classNames={{ base: "bg-medinfo-primary-darker text-white" }}
 						>
-							{appointment.name}
+							{otherPartyFullName}
 						</AvatarGroupAnimated.Tooltip>
 					</Avatar.Root>
 				</AvatarGroupAnimated.Root>
 
 				<div className="flex flex-col gap-1">
-					<h3 className="text-lg font-semibold text-medinfo-dark-1">{appointment.name}</h3>
+					<h3 className="text-lg font-semibold text-medinfo-dark-1">{otherPartyFullName}</h3>
 					<p className="text-sm text-medinfo-dark-3">{appointment.reason}</p>
 					<p className="text-sm font-medium text-medinfo-primary-main">
-						{format(appointment.dateOfAppointment, "PPP 'at' p")}
+						{format(appointment.dateOfAppointment, "PPP '-' p")}
 					</p>
 
 					{appointment.status === "cancelled" && appointment.cancelledAt && (
 						<p className="text-xs text-medinfo-state-error-main italic">
-							Cancelled on {format(appointment.cancelledAt, "PPP 'at' p")}
+							Cancelled on {format(appointment.cancelledAt, "PPP '-' p")}
 						</p>
 					)}
 				</div>
 			</Card.Content>
 
-			<Card.Footer className="flex flex-col gap-3 md:flex-row md:items-center">
-				<span
-					className={cnMerge(
-						"w-fit rounded-full px-3 py-1 text-xs font-medium capitalize",
-						appointment.status === "pending"
-							&& "bg-medinfo-state-warning-subtle text-medinfo-state-warning-darker",
-						appointment.status === "confirmed"
-							&& "bg-medinfo-state-success-subtle text-medinfo-state-success-darker",
-						appointment.status === "cancelled"
-							&& "bg-medinfo-state-error-subtle text-medinfo-state-error-darker",
-						appointment.status === "completed"
-							&& "bg-medinfo-state-info-subtle text-medinfo-state-info-darker"
-					)}
-				>
-					{appointment.status}
-				</span>
-
-				<Show.Root when={variant === "upcoming"}>{children}</Show.Root>
-			</Card.Footer>
+			<Card.Footer>{variant === "upcoming" && children}</Card.Footer>
 		</Card.Root>
+	);
+}
+
+export function AppointmentCardSkeletonShared() {
+	return (
+		<div
+			className="flex items-center justify-between gap-4 rounded-2xl border
+				border-medinfo-secondary-main bg-white p-6"
+		>
+			<div className="flex gap-4">
+				<Skeleton className="size-14 rounded-full" />
+
+				<div className="flex flex-col gap-2">
+					<Skeleton className="h-5 w-32" />
+					<Skeleton className="h-4 w-48" />
+					<Skeleton className="h-4 w-40" />
+				</div>
+			</div>
+
+			<div className="flex gap-2">
+				<Skeleton className="h-10 w-24 rounded-lg" />
+				<Skeleton className="h-10 w-24 rounded-lg" />
+			</div>
+		</div>
+	);
+}
+
+type AppointmentCardEmptySharedProps = {
+	className?: string;
+	icon: string;
+	text: string;
+};
+
+export function AppointmentCardEmptyShared(props: AppointmentCardEmptySharedProps) {
+	const { className, icon, text } = props;
+
+	return (
+		<div
+			className={cnMerge(
+				`flex flex-col items-center justify-center gap-4 rounded-[8px] border-[1.4px]
+				border-medinfo-secondary-main bg-white py-20`,
+				className
+			)}
+		>
+			<IconBox icon={icon} className="size-16 text-medinfo-light-2" />
+
+			<p className="text-lg font-medium text-medinfo-dark-4">{text}</p>
+		</div>
+	);
+}
+
+export type AppointmentCardSwitchSharedProps = {
+	children: React.ReactNode;
+	emptyProps: AppointmentCardEmptySharedProps;
+	isEmpty: boolean | undefined;
+	isPending: boolean | undefined;
+	pendingClassNames?: {
+		container?: string;
+	};
+};
+
+export function AppointmentCardSwitchShared(props: AppointmentCardSwitchSharedProps) {
+	const { children, emptyProps, isEmpty, isPending, pendingClassNames } = props;
+
+	return (
+		<Switch.Root>
+			<Switch.Match when={isPending}>
+				<ForWithWrapper
+					as="div"
+					className={cnMerge("flex flex-col gap-4", pendingClassNames?.container)}
+					each={3}
+					renderItem={(index) => <AppointmentCardSkeletonShared key={index} />}
+				/>
+			</Switch.Match>
+
+			<Switch.Match when={isEmpty}>
+				<AppointmentCardEmptyShared {...emptyProps} />
+			</Switch.Match>
+
+			<Switch.Default>{children}</Switch.Default>
+		</Switch.Root>
 	);
 }

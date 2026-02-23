@@ -1,11 +1,14 @@
 import { useMutation } from "@tanstack/react-query";
 import { useDisclosure } from "@zayne-labs/toolkit-react";
+import { isToday } from "date-fns";
 import Link from "next/link";
+import { useState } from "react";
 import {
 	AppointmentCardShared,
 	type AppointmentCardSharedProps,
 } from "@/app/(protected)/dashboard/-components/appointments/AppointmentCardShared";
 import { DialogAnimated } from "@/components/animated/ui";
+import { IconBox } from "@/components/common";
 import { Button } from "@/components/ui";
 import { cancelAppointmentMutation } from "@/lib/react-query/mutationOptions";
 import {
@@ -20,7 +23,12 @@ type PatientAppointmentCardProps = Pick<AppointmentCardSharedProps, "variant"> &
 export function PatientAppointmentCard(props: PatientAppointmentCardProps) {
 	const { appointment, variant } = props;
 	const cancelMutation = useMutation(cancelAppointmentMutation());
-	const cancelDisclosure = useDisclosure();
+
+	const actionDisclosure = useDisclosure();
+
+	type ActionType = "cancelled";
+
+	const [actionType, setActionType] = useState<ActionType | null>(null);
 
 	const handleCancel = () => {
 		cancelMutation.mutate(
@@ -30,52 +38,74 @@ export function PatientAppointmentCard(props: PatientAppointmentCardProps) {
 			{
 				onSuccess: (_data, _vars, _result, context) => {
 					void context.client.invalidateQueries(patientAppointmentsQuery());
-					cancelDisclosure.onClose();
+					actionDisclosure.onClose();
 				},
 			}
 		);
 	};
 
+	const onOpenDialog = (type: ActionType) => {
+		setActionType(type);
+		actionDisclosure.onOpen();
+	};
+
+	const dialogContent = {
+		cancelled: {
+			description: `Are you sure you want to cancel your appointment with Dr. ${appointment.doctor.fullName}? This action cannot be undone.`,
+			title: "Cancel Appointment",
+			yesText: "Yes, Cancel",
+		},
+	} satisfies Record<
+		ActionType,
+		{
+			description: string;
+			title: string;
+			yesText: string;
+		}
+	>;
+
+	const currentAction = actionType ? dialogContent[actionType] : null;
+
 	return (
 		<>
-			<AppointmentCardShared
-				variant={variant}
-				appointment={{
-					avatar: appointment.doctorAvatar,
-					cancelledAt: appointment.cancelledAt,
-					dateOfAppointment: appointment.dateOfAppointment,
-					id: appointment.id,
-					name: `Dr. ${appointment.doctorName}`,
-					reason: appointment.reason,
-					status: appointment.status,
-				}}
-			>
-				<div className="flex gap-2">
-					{appointment.status === "confirmed" && appointment.meetingURL && (
-						<Button theme="primary" asChild={true}>
-							<Link href={appointment.meetingURL} target="_blank" rel="noopener noreferrer">
-								Join Meeting
-							</Link>
-						</Button>
-					)}
+			<AppointmentCardShared variant={variant} appointment={appointment}>
+				{appointment.status === "confirmed" && appointment.meetingURL && (
+					<Button
+						theme="primary"
+						size="large"
+						asChild={true}
+						isDisabled={!isToday(appointment.dateOfAppointment)}
+					>
+						<Link
+							onClick={(event) => {
+								if (!isToday(appointment.dateOfAppointment)) {
+									event.preventDefault();
+								}
+							}}
+							href={isToday(appointment.dateOfAppointment) ? appointment.meetingURL : ""}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							Join Meeting
+						</Link>
+					</Button>
+				)}
 
-					{(appointment.status === "pending" || appointment.status === "confirmed") && (
-						<Button theme="primary-ghost" onClick={cancelDisclosure.onOpen}>
-							Cancel
-						</Button>
-					)}
-				</div>
+				{appointment.status === "pending" && (
+					<Button unstyled={true} className="size-6.5" onClick={() => onOpenDialog("cancelled")}>
+						<IconBox icon="feather:x-circle" className="size-full text-medinfo-state-error-darker" />
+					</Button>
+				)}
 			</AppointmentCardShared>
 
-			<DialogAnimated.Root open={cancelDisclosure.isOpen} onOpenChange={cancelDisclosure.onToggle}>
+			<DialogAnimated.Root open={actionDisclosure.isOpen} onOpenChange={actionDisclosure.onToggle}>
 				<DialogAnimated.Content className="flex max-w-sm flex-col gap-6 rounded-2xl border-none p-6">
 					<DialogAnimated.Header>
 						<DialogAnimated.Title className="text-xl font-semibold text-medinfo-dark-1">
-							Cancel Appointment
+							{currentAction?.title}
 						</DialogAnimated.Title>
 						<DialogAnimated.Description className="mt-2 text-medinfo-dark-4">
-							Are you sure you want to cancel your appointment with Dr. {appointment.doctorName}?
-							This action cannot be undone.
+							{currentAction?.description}
 						</DialogAnimated.Description>
 					</DialogAnimated.Header>
 
@@ -86,9 +116,9 @@ export function PatientAppointmentCard(props: PatientAppointmentCardProps) {
 							isLoading={cancelMutation.isPending}
 							disabled={cancelMutation.isPending}
 						>
-							Yes, Cancel
+							{currentAction?.yesText}
 						</Button>
-						<Button theme="primary" onClick={cancelDisclosure.onClose}>
+						<Button theme="primary" onClick={actionDisclosure.onClose}>
 							No, Keep it
 						</Button>
 					</DialogAnimated.Footer>

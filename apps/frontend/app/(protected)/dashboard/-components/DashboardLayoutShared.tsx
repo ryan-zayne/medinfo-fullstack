@@ -17,7 +17,11 @@ function DashboardLayoutShared(props: DashboardLayoutProps) {
 
 	return (
 		<div className="flex grow lg:bg-medinfo-light-4">
-			<SidebarShared menuItems={menuItems} sessionQueryData={sessionQueryResult.data} />
+			<SidebarShared
+				className="max-lg:hidden"
+				menuItems={menuItems}
+				sessionQueryData={sessionQueryResult.data}
+			/>
 
 			<div className="flex w-full grow flex-col">
 				<HeaderShared menuItems={menuItems} sessionQueryData={sessionQueryResult.data} />

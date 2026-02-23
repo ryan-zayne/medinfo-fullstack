@@ -20,7 +20,7 @@ function DoctorAppointmentHistoryPage() {
 			description="View your past patient consultations."
 			isPending={doctorAppointmentsQueryResult.isPending}
 			isEmpty={historyAppointments.length === 0}
-			emptyState={{
+			emptyProps={{
 				icon: "lucide:history",
 				text: "No past appointments found.",
 			}}

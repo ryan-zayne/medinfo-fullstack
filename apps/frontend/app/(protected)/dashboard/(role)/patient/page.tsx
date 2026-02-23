@@ -1,67 +1,74 @@
 "use client";
 
-import Image from "next/image";
-import { ForWithWrapper } from "@/components/common/for";
-import { Card } from "@/components/ui";
-import { cnMerge } from "@/lib/utils/cn";
+import { useQuery } from "@tanstack/react-query";
+import { ForWithWrapper, NavLink } from "@/components/common";
+import NextIcon from "@/components/icons/NextIcon";
+import { patientAppointmentsQuery } from "@/lib/react-query/queryOptions";
+import { AppointmentCardSwitchShared } from "../../-components/appointments/AppointmentCardShared";
 import { Main } from "../../-components/Main";
+import { PatientAppointmentCard } from "./appointments/PatientAppointmentCard";
 
 const activityLogs = [
 	{ id: 1, title: "Children's health" },
-	{ id: 2, title: "Children's car" },
-	{ id: 3, title: "Children's car" },
-	{ id: 4, title: "Children's car" },
-	{ id: 5, title: "Children's car" },
-	{ id: 6, title: "Children's car" },
-	{ id: 7, title: "Children's car" },
-];
-
-const cardData = [
-	{ id: 1, price: "$0 - $120", slug: "Primary care appointment" },
-	{ id: 2, price: "$0 - $120", slug: "Primary care appointment" },
-	{ id: 3, price: "$0 - $120", slug: "Primary care appointment" },
-	{ id: 4, price: "$0 - $120", slug: "Primary care appointment" },
-	{ id: 5, price: "$0 - $120", slug: "Primary care appointment" },
-	{ id: 6, price: "$0 - $120", slug: "Primary care appointment" },
+	{ id: 2, title: "Men's health" },
+	{ id: 3, title: "Men's health" },
+	{ id: 4, title: "Sexual health" },
+	{ id: 5, title: "Children's health" },
+	{ id: 6, title: "Men's health" },
+	{ id: 7, title: "Sexual health" },
+	{ id: 8, title: "Children's health" },
 ];
 
 function PatientDashboardPage() {
+	const patientAppointmentsQueryResult = useQuery(patientAppointmentsQuery());
+
+	const upcomingAppointments =
+		patientAppointmentsQueryResult.data?.data.appointments.filter((app) => app.status === "confirmed")
+		?? [];
+
 	return (
-		<Main className="gap-6">
-			<section className="flex w-full flex-col gap-10 lg:flex-row">
-				<article className="w-full rounded-[16px] bg-white p-6 shadow-md lg:p-7">
+		<Main className="gap-12">
+			<section className="flex flex-col gap-6 md:flex-row">
+				<article
+					className="flex w-full flex-col gap-7.5 rounded-[16px] bg-white p-4
+						shadow-[0_4px_8px_theme(--color-medinfo-primary-main/0.25)] md:gap-[52px] md:p-8"
+				>
 					<header className="flex items-center justify-between">
-						<h2 className="text-[22px] font-medium text-medinfo-primary-main lg:text-[24px]">
+						<h2 className="text-[22px] font-medium text-medinfo-primary-main md:text-[24px]">
 							Overall activity
 						</h2>
-						<div>
-							<p className="font-normal text-medinfo-dark-2">2023</p>
-						</div>
+						<p className="font-normal text-medinfo-dark-2">2023</p>
 					</header>
-					<div>{/* <Image src={ChartImage} height={} alt="chart"/> */}</div>
+
+					<div className="flex grow items-center justify-center bg-gray-50">
+						<p className="text-medinfo-dark-3">Graph component will go here</p>
+					</div>
 				</article>
 
-				<article className="w-full rounded-[16px] bg-white p-6 shadow-md lg:max-w-[338px] lg:p-7">
-					<h2 className="text-[22px] font-medium text-medinfo-primary-main lg:text-[24px]">
+				<article
+					className="flex w-full flex-col gap-6 rounded-[16px] bg-white p-4
+						shadow-[0_4px_8px_theme(--color-medinfo-primary-main/0.25)] md:max-w-[338px] md:p-8"
+				>
+					<h2 className="text-[22px] font-medium text-medinfo-primary-main md:text-[24px]">
 						Activities
 					</h2>
 
-					<div className="mt-3 rounded-[8px] border border-medinfo-secondary-main">
-						<div
+					<div className="rounded-[8px] border border-medinfo-secondary-main">
+						<header
 							className="flex gap-8 rounded-t-[8px] bg-medinfo-secondary-main py-2 pl-2
 								font-semibold text-medinfo-dark-1"
 						>
 							<p>S/N</p>
 							<p>Log</p>
-						</div>
+						</header>
 
 						<ForWithWrapper
-							className="flex max-h-[296px] flex-col overflow-y-hidden pl-2"
+							className="flex flex-col pl-2"
 							each={activityLogs}
 							renderItem={(log, index) => (
-								<li key={log.id} className="flex gap-8 font-normal">
-									<span className="size-[29px]">{index + 1}</span>
-									<span>{log.title}</span>
+								<li key={log.id} className="flex gap-8 py-1 font-normal">
+									<p className="w-7">{index + 1}</p>
+									<p>{log.title}</p>
 								</li>
 							)}
 						/>
@@ -69,42 +76,47 @@ function PatientDashboardPage() {
 				</article>
 			</section>
 
-			<section className="w-full rounded-[16px] bg-white p-6 shadow-md lg:p-8">
-				<ForWithWrapper
-					className="grid grid-cols-1 gap-10 lg:grid-cols-2"
-					each={cardData}
-					renderItem={(card) => (
-						<Card.Root
-							as="li"
-							key={card.id}
-							className={cnMerge(
-								`flex cursor-pointer items-start gap-3 rounded-[16px] border
-								border-medinfo-secondary-main p-4 transition-shadow hover:shadow-md`,
-								"lg:gap-4 lg:p-7"
-							)}
-						>
-							<Card.Header className="size-16">
-								<Image
-									src="/assets/images/dashboard/Frame 2609432.png"
-									width={64}
-									height={64}
-									alt="product"
-								/>
-							</Card.Header>
-							<Card.Content className="flex-1 space-y-2">
-								<Card.Title
-									className="text-[18px] font-medium text-medinfo-primary-main lg:text-[20px]"
-								>
-									{card.slug}
-								</Card.Title>
-								<Card.Description className="text-[14px] text-medinfo-dark-2 lg:text-[16px]">
-									Lorem ipsum dolor sit amet consectetur. Massa nec imperdiet neque ut.
-								</Card.Description>
-								<p className="text-[14px] font-semibold text-medinfo-dark-1">{card.price}</p>
-							</Card.Content>
-						</Card.Root>
-					)}
-				/>
+			<section
+				className="flex flex-col gap-6 rounded-[16px] bg-white p-6
+					shadow-[0_4px_8px_theme(--color-medinfo-primary-main/0.25)] md:p-8"
+			>
+				<header
+					className="flex flex-col items-start gap-6 lg:flex-row lg:items-center lg:justify-between"
+				>
+					<h2 className="text-[22px] font-medium text-medinfo-primary-main md:text-[24px]">
+						Upcoming Appointments
+					</h2>
+
+					<NavLink
+						href="/dashboard/patient/appointments/upcoming"
+						className="flex items-center gap-2 font-medium lg:text-[20px]"
+					>
+						See all
+						<NextIcon />
+					</NavLink>
+				</header>
+
+				<AppointmentCardSwitchShared
+					isEmpty={upcomingAppointments.length === 0}
+					isPending={patientAppointmentsQueryResult.isPending}
+					pendingClassNames={{ container: "grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-10" }}
+					emptyProps={{
+						icon: "lucide:calendar-off",
+						text: "No upcoming appointments found.",
+					}}
+				>
+					<ForWithWrapper
+						className="flex flex-col gap-6 md:grid-cols-2 lg:gap-10"
+						each={upcomingAppointments.slice(0, 6)}
+						renderItem={(appointment) => (
+							<PatientAppointmentCard
+								key={appointment.id}
+								appointment={appointment}
+								variant="upcoming"
+							/>
+						)}
+					/>
+				</AppointmentCardSwitchShared>
 			</section>
 		</Main>
 	);

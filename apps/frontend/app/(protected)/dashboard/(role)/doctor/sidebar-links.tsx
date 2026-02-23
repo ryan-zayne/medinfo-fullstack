@@ -1,3 +1,4 @@
+import CalendarIcon from "@/components/icons/CalendarIcon";
 import CommunityIcon from "@/components/icons/CommunityIcon";
 import DashboardIcon from "@/components/icons/DashboardIcon";
 import LogoutIcon from "@/components/icons/LogoutIcon";
@@ -12,6 +13,16 @@ export const menuItems = [
 		icon: <DashboardIcon fill="#FFFFFF" width={20} height={20} />,
 		iconActive: <DashboardIcon fill="#344E41" width={20} height={20} />,
 		title: "Dashboard",
+	},
+	{
+		children: [
+			{ href: "/dashboard/doctor/appointments/pending", title: "Requests" },
+			{ href: "/dashboard/doctor/appointments/upcoming", title: "Upcoming" },
+			{ href: "/dashboard/doctor/appointments/history", title: "History" },
+		],
+		icon: <CalendarIcon fill="#FFFFFF" width={20} height={20} />,
+		iconActive: <CalendarIcon fill="#344E41" width={20} height={20} />,
+		title: "Appointments",
 	},
 	{
 		href: "/dashboard/doctor/messages",

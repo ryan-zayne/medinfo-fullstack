@@ -149,10 +149,13 @@ const appointmentsRoutes = new Hono()
 					id: appointments.id,
 					meetingId: appointments.meetingId,
 					meetingURL: appointments.meetingURL,
-					patientAvatar: users.avatar,
-					patientName: users.fullName,
+					patient: {
+						avatar: users.avatar,
+						firstName: users.firstName,
+						fullName: users.fullName,
+						lastName: users.lastName,
+					},
 					reason: appointments.reason,
-					role: users.role,
 					status: appointments.status,
 				})
 				.from(appointments)
@@ -162,7 +165,10 @@ const appointmentsRoutes = new Hono()
 
 			return AppJsonResponse(ctx, {
 				data: {
-					appointments: appointmentsResult,
+					appointments: appointmentsResult.map((item) => ({
+						...item,
+						role: currentUser.role as "doctor",
+					})),
 					pagination: {
 						limit,
 						total: appointmentsResult.length,
@@ -192,13 +198,16 @@ const appointmentsRoutes = new Hono()
 				.select({
 					cancelledAt: appointments.cancelledAt,
 					dateOfAppointment: appointments.dateOfAppointment,
-					doctorAvatar: users.avatar,
-					doctorName: users.fullName,
+					doctor: {
+						avatar: users.avatar,
+						firstName: users.firstName,
+						fullName: users.fullName,
+						lastName: users.lastName,
+					},
 					id: appointments.id,
 					meetingId: appointments.meetingId,
 					meetingURL: appointments.meetingURL,
 					reason: appointments.reason,
-					role: users.role,
 					status: appointments.status,
 				})
 				.from(appointments)
@@ -208,7 +217,10 @@ const appointmentsRoutes = new Hono()
 
 			return AppJsonResponse(ctx, {
 				data: {
-					appointments: appointmentsResult,
+					appointments: appointmentsResult.map((item) => ({
+						...item,
+						role: currentUser.role as "patient",
+					})),
 					pagination: {
 						limit,
 						total: appointmentsResult.length,

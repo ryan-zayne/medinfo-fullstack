@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import { useToggle } from "@zayne-labs/toolkit-react";
 import { isString, type UnionDiscriminator } from "@zayne-labs/toolkit-type-helpers";
 import Image from "next/image";
@@ -10,6 +11,8 @@ import { For, ForWithWrapper, IconBox, Logo, NavLink } from "@/components/common
 import type { MainAppRoutes } from "@/components/common/NavLink";
 import { HamburgerIcon, NotificationIcon, SearchIcon, XIcon } from "@/components/icons";
 import { Avatar, Button, Form } from "@/components/ui";
+import { redirectTo } from "@/lib/api/callBackendApi/plugins/utils/common";
+import { signoutMutation } from "@/lib/react-query/mutationOptions";
 import type { SessionQueryResultType } from "@/lib/react-query/queryOptions";
 import { capitalize } from "@/lib/utils";
 import { cnMerge } from "@/lib/utils/cn";
@@ -140,6 +143,14 @@ function MobileHeader(props: MobileHeaderProps) {
 
 	const pathname = usePathname();
 
+	const signoutMutationResult = useMutation(signoutMutation());
+
+	const onSignout = () => {
+		signoutMutationResult.mutate(undefined, {
+			onSuccess: () => redirectTo("/"),
+		});
+	};
+
 	return (
 		<header
 			className={cnMerge(
@@ -165,7 +176,7 @@ function MobileHeader(props: MobileHeaderProps) {
 				<article
 					className={cnMerge(
 						`fixed inset-[0_0_0_auto] flex flex-col items-center gap-7 overflow-x-hidden
-						bg-medinfo-primary-main pt-10 text-white transition-[width] ease-[ease]`,
+						bg-medinfo-primary-main py-10 text-white transition-[width] ease-[ease]`,
 						isNavShow ? "w-full duration-350" : "w-0 duration-500"
 					)}
 					onClick={(event) => {
@@ -187,7 +198,7 @@ function MobileHeader(props: MobileHeaderProps) {
 									<NavLink
 										transitionType="navbar"
 										href={item.href}
-										className="flex items-center gap-4 py-2"
+										className="flex w-fit items-center gap-4 py-2"
 									>
 										{item.icon}
 										{item.title}
@@ -238,15 +249,17 @@ function MobileHeader(props: MobileHeaderProps) {
 								)}
 
 								{item.href === null && (
-									<NavLink
-										transitionType="navbar"
-										href="#"
-										onClick={() => {}}
-										className="flex w-fit items-center gap-4 py-2"
+									<Button
+										unstyled={true}
+										loadingStyle="side-by-side"
+										isLoading={signoutMutationResult.isPending}
+										disabled={signoutMutationResult.isPending}
+										className="flex items-center gap-4 py-2"
+										onClick={onSignout}
 									>
 										{item.icon}
 										{item.title}
-									</NavLink>
+									</Button>
 								)}
 							</Fragment>
 						)}

@@ -1,4 +1,5 @@
 import {
+	env,
 	pipeline,
 	type FeatureExtractionPipeline,
 	type ProgressCallback,
@@ -15,15 +16,17 @@ export const createFeatureExtractionPipeline = () => {
 		if (instance === null) {
 			consola.info(`[HuggingFace] Initializing pipeline...`);
 
-			instance = pipeline(task, model, { device: "cpu", dtype: "q4", progress_callback }).catch(
-				(error) => {
-					consola.error(
-						"[HuggingFace] Pipeline creation failed:",
-						(error as Error | undefined)?.message
-					);
-					throw error;
-				}
-			);
+			env.allowLocalModels = false;
+
+			instance = pipeline(task, model, {
+				device: "cpu",
+				progress_callback,
+			}).catch((error) => {
+				const errorObject = new Error("[HuggingFace] Pipeline creation failed", { cause: error });
+
+				consola.error(errorObject);
+				throw errorObject;
+			});
 		}
 
 		return instance;

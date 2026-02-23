@@ -1,16 +1,34 @@
-import type { SelectUserType } from "@medinfo/db/schema/auth";
+import { db } from "@medinfo/db";
+import { emailVerificationCodes, type SelectUserType } from "@medinfo/db/schema/auth";
+import { eq } from "drizzle-orm";
 import { ENVIRONMENT } from "@/config/env";
-import { removeFromCache, setCache } from "@/services/cache";
 import { addEmailToQueue } from "@/services/queues";
 import { generateRandom6DigitKey } from "./common";
 import { hashValue } from "./hash";
 
 export const sendVerificationEmail = async (user: SelectUserType) => {
-	const emailVerificationCode = generateRandom6DigitKey();
+	const code = generateRandom6DigitKey();
 
-	const hashedCode = await hashValue(emailVerificationCode);
+	const hashedCode = await hashValue(code);
 
-	await setCache(`verify-email-code:${user.email}`, JSON.stringify(hashedCode), { expiry: 15 * 60 });
+	const codeExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+	await db
+		.insert(emailVerificationCodes)
+		.values({
+			code: hashedCode,
+			email: user.email,
+			expiresAt: codeExpiry,
+			userId: user.id,
+		})
+		.onConflictDoUpdate({
+			set: {
+				code: hashedCode,
+				email: user.email,
+				expiresAt: codeExpiry,
+			},
+			target: emailVerificationCodes.userId,
+		});
 
 	const FRONTEND_URL =
 		ENVIRONMENT.NODE_ENV === "development" ?
@@ -21,14 +39,12 @@ export const sendVerificationEmail = async (user: SelectUserType) => {
 		data: {
 			name: user.firstName,
 			to: user.email,
-			validationCode: emailVerificationCode,
-			validationUrl: `${FRONTEND_URL}/auth/verify-email?email=${user.email}&code=${emailVerificationCode}`,
+			validationCode: code,
+			validationUrl: `${FRONTEND_URL}/auth/verify-email?${new URLSearchParams({ code, email: user.email }).toString()}`,
 		},
-
 		onError: async () => {
-			await removeFromCache(`verify-email-code:${user.email}`);
+			await db.delete(emailVerificationCodes).where(eq(emailVerificationCodes.userId, user.id));
 		},
-
 		type: "verifyEmail",
 	});
 };

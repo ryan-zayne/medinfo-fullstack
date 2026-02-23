@@ -82,7 +82,7 @@ function AppointmentPage() {
 					count={stepperItems.length}
 					linear={true}
 					className="flex flex-col gap-8 rounded-[16px] p-4
-						shadow-[0_4px_6px_theme(--color-medinfo-primary-main/0.25)] md:p-8"
+						shadow-[0_4px_8px_theme(--color-medinfo-primary-main/0.25)] md:p-8"
 				>
 					<StepperList className="mb-7" />
 
@@ -136,15 +136,25 @@ function AppointmentPage() {
 										render={({ field }) => (
 											<DateTimePicker
 												variant="datetime"
-												formats={{
-													onChangeDate: "yyyy-MM-dd'T'HH:mm:ss",
-													visibleDate: "PPP - HH:mm:ss",
+												dateFormats={{
+													onChangeDate: "yyyy-MM-dd'T'HH:mm",
+													visibleDate: "PPP - hh:mm aa",
+												}}
+												timeSettings={{
+													hourOrder: "preserve",
+													// 9:00am - 5:00pm
+													hourRange: [...Array(9).keys()].map((index) => index + 9),
+													hourVariant: "12-hour",
+													minuteRange: [...Array(12).keys()].map((index) => index * 5),
+												}}
+												datePickerProps={{
+													disabled: { before: new Date() },
 												}}
 												className="h-12 gap-4 rounded-[8px] border-[1.4px]
 													border-medinfo-primary-main px-4 py-3 text-[14px] md:h-[64px]
 													md:py-5 md:text-base"
 												dateString={field.value}
-												placeholder="YYYY-MM-DD - 00:00:00"
+												placeholder="YYYY-MM-DD - 00:00"
 												onDateStringChange={field.onChange}
 											/>
 										)}
@@ -463,6 +473,7 @@ function AppointmentDialog(props: DialogMainContentProps) {
 	return (
 		<DialogAnimated.Root open={dialogCtx.isOpen} onOpenChange={dialogCtx.onToggle}>
 			<DialogAnimated.Content
+				aria-describedby=""
 				onPointerDownOutside={(e) => e.preventDefault()}
 				onEscapeKeyDown={() => stepsCtx.goToPrevStep()}
 				className={cnJoin(

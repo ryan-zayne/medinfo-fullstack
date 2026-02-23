@@ -1,220 +1,223 @@
 "use client";
 
-import { ForWithWrapper, IconBox } from "@/components/common";
+import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { ForWithWrapper, IconBox, NavLink } from "@/components/common";
 import CalendarIcon from "@/components/icons/CalendarIcon";
 import DollarSignIcon from "@/components/icons/DollarSignIcon";
 import NextIcon from "@/components/icons/NextIcon";
 import PatientIcon from "@/components/icons/PatientIcon";
+import { Button } from "@/components/ui";
+import { doctorAppointmentsQuery } from "@/lib/react-query/queryOptions";
 import { cnJoin } from "@/lib/utils/cn";
+import { AppointmentCardSwitchShared } from "../../-components/appointments/AppointmentCardShared";
 import { Main } from "../../-components/Main";
 
 const statsArray = [
 	{
 		bgColor: "bg-[#f0fdf6]",
-		icon: <DollarSignIcon />,
+		icon: <DollarSignIcon className="fill-medinfo-primary-main" />,
 		id: 1,
 		title: "Net income",
 		value: "$ 1200",
 	},
 	{
 		bgColor: "bg-[#eff4fb]",
-		icon: <PatientIcon />,
+		icon: <PatientIcon className="fill-medinfo-state-info-darker" />,
 		id: 2,
 		title: "Number of patients",
 		value: "890",
 	},
 	{
 		bgColor: "bg-[#F8F5DB]",
-		icon: <CalendarIcon width={44} height={44} />,
+		icon: <CalendarIcon width={44} height={44} className="fill-medinfo-state-warning-darker" />,
 		id: 3,
 		title: "Total appointments",
 		value: "65",
 	},
 ];
 
-const appointmentsArray = [
-	{
-		id: 1,
-		patientName: "Alex.O",
-		patientType: "Men's health",
-		time: "09:00",
-	},
-	{
-		id: 2,
-		patientName: "Alex.O",
-		patientType: "Men's health",
-		time: "09:00",
-	},
-	{
-		id: 3,
-		patientName: "Alex.O",
-		patientType: "Men's health",
-		time: "09:00",
-	},
-	{
-		id: 4,
-		patientName: "Alex.O",
-		patientType: "Men's health",
-		time: "09:00",
-	},
-];
-
-const appointmentRequestsArray = [
-	{
-		date: "19th February, 2023",
-		id: 1,
-		patientName: "Alex.O",
-		patientType: "Men's health",
-		time: "09:00",
-	},
-	{
-		date: "19th February, 2023",
-		id: 2,
-		patientName: "Mary.A",
-		patientType: "Sexual health",
-		time: "09:00",
-	},
-	{
-		date: "19th February, 2023",
-		id: 3,
-		patientName: "Alex.O",
-		patientType: "Men's health",
-		time: "09:00",
-	},
-	{
-		date: "19th February, 2023",
-		id: 4,
-		patientName: "Mary.A",
-		patientType: "Sexual health",
-		time: "09:00",
-	},
-];
-
 function DoctorPage() {
+	const doctorAppointmentsQueryResult = useQuery(doctorAppointmentsQuery());
+
+	const upcomingAppointments =
+		doctorAppointmentsQueryResult.data?.data.appointments.filter((app) => app.status === "confirmed")
+		?? [];
+
+	const pendingAppointments =
+		doctorAppointmentsQueryResult.data?.data.appointments.filter((app) => app.status === "pending")
+		?? [];
+
 	return (
-		<Main className="gap-6">
-			<section className="flex w-full flex-col gap-6 lg:flex-row">
+		<Main className="gap-12">
+			<section className="flex flex-col gap-6 md:flex-row">
 				<ForWithWrapper
-					className="flex flex-col gap-6"
+					className="flex w-full flex-col justify-between gap-6 md:max-w-[338px]"
 					each={statsArray}
 					renderItem={(stat) => (
 						<li
 							key={stat.id}
-							className="flex cursor-pointer items-start gap-3 rounded-[16px] border
-								border-medinfo-secondary-main bg-white p-4 shadow-sm transition-shadow
-								hover:shadow-md lg:gap-4 lg:p-7"
+							className="flex items-start gap-3 rounded-[16px] border border-medinfo-secondary-main
+								bg-white p-4 shadow-[0_4px_8px_theme(--color-medinfo-primary-main/0.25)] md:gap-4
+								md:p-7"
 						>
-							<div className={cnJoin("size-16 rounded-[8px] p-2", stat.bgColor)}>{stat.icon}</div>
-							<div className="flex-1 space-y-2">
-								<h3 className="text-[18px] font-medium lg:text-[20px]">{stat.title}</h3>
-								<p className="text-[14px] font-semibold text-medinfo-dark-1">{stat.value}</p>
+							<div className={cnJoin("size-[60px] rounded-[8px] p-2", stat.bgColor)}>
+								{stat.icon}
+							</div>
+
+							<div className="flex flex-col gap-2">
+								<h3 className="text-medinfo-dark-3">{stat.title}</h3>
+								<p className="text-[22px] font-medium text-medinfo-dark-1">{stat.value}</p>
 							</div>
 						</li>
 					)}
 				/>
 
-				<article className="flex grow flex-col gap-6 rounded-[16px] bg-white p-6 shadow-md lg:p-7">
+				<article
+					className="flex grow flex-col gap-6 rounded-[16px] bg-white p-6
+						shadow-[0_4px_8px_theme(--color-medinfo-primary-main/0.25)] md:p-7"
+				>
 					<header className="flex items-center justify-between">
-						<h2 className="text-[22px] font-medium text-medinfo-primary-main lg:text-[24px]">
+						<h2 className="text-[22px] font-medium text-medinfo-primary-main md:text-[24px]">
 							Overall activity
 						</h2>
 						<p className="font-normal text-medinfo-dark-2">2023</p>
 					</header>
 
-					<div className="flex min-h-[300px] items-center justify-center rounded-lg bg-gray-50">
+					<div className="flex min-h-[300px] items-center justify-center rounded-md bg-gray-50">
 						<p className="text-medinfo-dark-3">Graph component will go here</p>
 					</div>
 				</article>
 			</section>
 
-			<section
-				className="flex w-full flex-col gap-6 rounded-[16px] bg-white p-6 shadow-md lg:flex-row lg:p-8"
-			>
-				<article className="flex flex-1 flex-col gap-6">
-					<header className="flex flex-col items-start lg:flex-row lg:items-center lg:justify-between">
-						<h2 className="text-[18px] font-medium lg:text-[22px]">Today's appointment</h2>
-						<p className="text-[14px] font-normal">18th February, 2023</p>
+			<section className="flex flex-col gap-8 md:flex-row md:gap-10">
+				<article
+					className="flex w-full flex-col gap-3 rounded-[16px] bg-white p-4
+						shadow-[0_4px_8px_theme(--color-medinfo-primary-main/0.25)] md:gap-6 md:p-8"
+				>
+					<header
+						className="flex flex-col items-start text-medinfo-dark-1 md:flex-row md:items-center
+							md:justify-between"
+					>
+						<h2 className="text-[18px] font-medium md:text-[22px]">Upcoming appointments</h2>
+
+						<NavLink
+							href="/dashboard/doctor/appointments/upcoming"
+							className="flex items-center gap-2 font-medium lg:text-[20px]"
+						>
+							See all
+							<NextIcon />
+						</NavLink>
 					</header>
 
-					<div className="mt-3 flex items-center gap-4">
-						<p className="font-medium lg:text-[20px]">See all</p>
-						<NextIcon />
-					</div>
+					<AppointmentCardSwitchShared
+						isEmpty={upcomingAppointments.length === 0}
+						isPending={doctorAppointmentsQueryResult.isPending}
+						pendingClassNames={{ container: "flex flex-col gap-3 " }}
+						emptyProps={{
+							icon: "lucide:calendar-off",
+							text: "No upcoming appointments found.",
+						}}
+					>
+						<ForWithWrapper
+							className="flex flex-col gap-3"
+							each={upcomingAppointments.slice(0, 3)}
+							renderItem={(appointment) => (
+								<li
+									key={appointment.id}
+									className="flex w-full justify-between rounded-lg border
+										border-medinfo-secondary-main px-5 py-4"
+								>
+									<div className="flex gap-3">
+										<span className="size-14 shrink-0 rounded-full bg-gray-500" />
 
-					<ForWithWrapper
-						className="flex flex-col gap-3"
-						each={appointmentsArray}
-						renderItem={(appointment) => (
-							<li
-								key={appointment.id}
-								className="flex w-full justify-between rounded-[8px] border
-									border-medinfo-secondary-main px-5 py-4"
-							>
-								<div className="flex gap-3">
-									<span className="size-14 shrink-0 rounded-full bg-gray-500" />
-
-									<div className="flex flex-col gap-3">
-										<h4 className="text-[18px] font-semibold text-medinfo-primary-darker">
-											{appointment.patientName}
-										</h4>
-										<p className="text-[14px] font-normal">{appointment.patientType}</p>
+										<div className="flex flex-col gap-3">
+											<h4 className="text-[18px] font-semibold text-medinfo-primary-darker">
+												{appointment.patient.fullName}
+											</h4>
+											<p className="line-clamp-1 text-[14px] font-normal">
+												{appointment.reason}
+											</p>
+										</div>
 									</div>
-								</div>
 
-								<span>{appointment.time}</span>
-							</li>
-						)}
-					/>
+									<span>{format(appointment.dateOfAppointment, "HH:mm")}</span>
+								</li>
+							)}
+						/>
+					</AppointmentCardSwitchShared>
 				</article>
 
-				<article className="flex flex-1 flex-col gap-6">
+				<article
+					className="flex w-full flex-col gap-3 rounded-[16px] bg-white p-4
+						shadow-[0_4px_8px_theme(--color-medinfo-primary-main/0.25)] md:gap-6 md:p-8"
+				>
 					<header className="flex items-center justify-between">
-						<h2 className="text-[18px] font-medium lg:text-[22px]">Appointment requests</h2>
+						<h2 className="text-[18px] font-medium md:text-[22px]">Appointment requests</h2>
+
+						<NavLink
+							href="/dashboard/doctor/appointments/pending"
+							className="flex items-center gap-2 font-medium lg:text-[20px]"
+						>
+							See all
+							<NextIcon />
+						</NavLink>
 					</header>
-					<div className="mt-3 flex items-center gap-4">
-						<p className="font-medium lg:text-[20px]">See all</p>
-						<NextIcon />
-					</div>
 
-					<ForWithWrapper
-						className="flex flex-col gap-3"
-						each={appointmentRequestsArray}
-						renderItem={(request) => (
-							<li
-								key={request.id}
-								className="flex w-full justify-between rounded-[8px] border
-									border-medinfo-secondary-main px-5 py-4"
-							>
-								<div className="flex gap-3">
-									<span className="size-14 shrink-0 rounded-full bg-gray-500" />
+					<AppointmentCardSwitchShared
+						isEmpty={pendingAppointments.length === 0}
+						isPending={doctorAppointmentsQueryResult.isPending}
+						pendingClassNames={{ container: "flex flex-col gap-3" }}
+						emptyProps={{
+							icon: "lucide:calendar-off",
+							text: "No appointment requests found.",
+						}}
+					>
+						<ForWithWrapper
+							className="flex flex-col gap-3"
+							each={pendingAppointments.slice(0, 6)}
+							renderItem={(request) => (
+								<li
+									key={request.id}
+									className="flex w-full items-start justify-between rounded-lg border
+										border-medinfo-secondary-main px-5 py-4"
+								>
+									<div className="flex gap-3">
+										<span className="size-14 shrink-0 rounded-full bg-gray-500" />
 
-									<div className="flex flex-col gap-1">
-										<h4 className="text-[16px] font-semibold text-medinfo-primary-darker">
-											{request.patientName}
-										</h4>
-										<p className="text-[14px] font-normal text-medinfo-dark-3">
-											{request.patientType}
-										</p>
-										<p className="text-[12px] font-normal text-medinfo-dark-3">
-											{request.date} - {request.time}
-										</p>
+										<div className="flex flex-col gap-1">
+											<h4 className="text-[16px] font-semibold text-medinfo-primary-darker">
+												{request.patient.fullName}
+											</h4>
+											<p className="line-clamp-1 text-[14px] font-normal text-medinfo-dark-3">
+												{request.reason}
+											</p>
+											<p className="text-[12px] font-normal text-medinfo-dark-3">
+												{format(request.dateOfAppointment, "do MMMM, yyyy")} -{" "}
+												{format(request.dateOfAppointment, "HH:mm")}
+											</p>
+										</div>
 									</div>
-								</div>
 
-								<div className="flex gap-4">
-									<IconBox
-										icon="feather:x-circle"
-										className="size-6.5 text-medinfo-state-error-darker"
-									/>
+									<div className="flex gap-4">
+										<Button unstyled={true} className="size-6.5">
+											<IconBox
+												icon="feather:x-circle"
+												className="size-full text-medinfo-state-error-darker"
+											/>
+										</Button>
 
-									<IconBox
-										icon="material-symbols:check-circle-outline-rounded"
-										className="size-6.5 text-medinfo-state-success-darker"
-									/>
-								</div>
-							</li>
-						)}
-					/>
+										<Button unstyled={true} className="size-6.5">
+											<IconBox
+												icon="material-symbols:check-circle-outline-rounded"
+												className="size-full text-medinfo-state-success-darker"
+											/>
+										</Button>
+									</div>
+								</li>
+							)}
+						/>
+					</AppointmentCardSwitchShared>
 				</article>
 			</section>
 		</Main>

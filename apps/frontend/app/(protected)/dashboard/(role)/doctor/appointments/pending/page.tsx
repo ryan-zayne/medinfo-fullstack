@@ -9,25 +9,25 @@ import { DoctorAppointmentCard } from "../DoctorAppointmentCard";
 function DoctorUpcomingAppointmentsPage() {
 	const doctorAppointmentsQueryResult = useQuery(doctorAppointmentsQuery());
 
-	const upcomingAppointments =
-		doctorAppointmentsQueryResult.data?.data.appointments.filter((app) => app.status === "confirmed")
+	const pendingAppointments =
+		doctorAppointmentsQueryResult.data?.data.appointments.filter((app) => app.status === "pending")
 		?? [];
 
 	return (
 		<AppointmentPageShared
-			title="Upcoming Appointments"
-			description="Manage your scheduled consultations with patients."
-			isEmpty={upcomingAppointments.length === 0}
+			title="Appointment Requests"
+			description="Manage your appointment requests with patients."
+			isEmpty={pendingAppointments.length === 0}
 			isPending={doctorAppointmentsQueryResult.isPending}
 			emptyProps={{
 				icon: "lucide:calendar-off",
-				text: "No upcoming appointments found.",
+				text: "No appointment requests found.",
 			}}
 		>
 			<ForWithWrapper
 				as="div"
 				className="flex flex-col gap-4"
-				each={upcomingAppointments}
+				each={pendingAppointments}
 				renderItem={(appointment) => (
 					<DoctorAppointmentCard key={appointment.id} appointment={appointment} variant="upcoming" />
 				)}

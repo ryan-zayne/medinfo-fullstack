@@ -6,28 +6,28 @@ import { ForWithWrapper } from "@/components/common";
 import { patientAppointmentsQuery } from "@/lib/react-query/queryOptions";
 import { PatientAppointmentCard } from "../PatientAppointmentCard";
 
-function UpcomingAppointmentsPage() {
+function PatientAppointmentRequestsPage() {
 	const patientAppointmentsQueryResult = useQuery(patientAppointmentsQuery());
 
-	const upcomingAppointments =
-		patientAppointmentsQueryResult.data?.data.appointments.filter((app) => app.status === "confirmed")
+	const pendingAppointments =
+		patientAppointmentsQueryResult.data?.data.appointments.filter((app) => app.status === "pending")
 		?? [];
 
 	return (
 		<AppointmentPageShared
-			title="Upcoming Appointments"
-			description="Manage your scheduled consultations with doctors."
-			isEmpty={upcomingAppointments.length === 0}
+			title="Appointment Requests"
+			description="Manage your appointment requests with doctors."
+			isEmpty={pendingAppointments.length === 0}
 			isPending={patientAppointmentsQueryResult.isPending}
 			emptyProps={{
 				icon: "lucide:calendar-off",
-				text: "No upcoming appointments found.",
+				text: "No appointment requests found.",
 			}}
 		>
 			<ForWithWrapper
 				as="div"
 				className="flex flex-col gap-4"
-				each={upcomingAppointments}
+				each={pendingAppointments}
 				renderItem={(appointment) => (
 					<PatientAppointmentCard key={appointment.id} appointment={appointment} variant="upcoming" />
 				)}
@@ -36,4 +36,4 @@ function UpcomingAppointmentsPage() {
 	);
 }
 
-export default UpcomingAppointmentsPage;
+export default PatientAppointmentRequestsPage;

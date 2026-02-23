@@ -12,16 +12,17 @@ import { Button, Drawer } from "@/components/ui";
 import { redirectTo } from "@/lib/api/callBackendApi/plugins/utils/common";
 import { signoutMutation } from "@/lib/react-query/mutationOptions";
 import type { SessionQueryResultType } from "@/lib/react-query/queryOptions";
-import { cnJoin } from "@/lib/utils/cn";
+import { cnJoin, cnMerge } from "@/lib/utils/cn";
 import type { MenuItem } from "./HeaderShared";
 
 type SidebarProps = {
+	className?: string;
 	menuItems: MenuItem[];
 	sessionQueryData: SessionQueryResultType | undefined;
 };
 
 export function SidebarShared(props: SidebarProps) {
-	const { menuItems, sessionQueryData } = props;
+	const { className, menuItems, sessionQueryData } = props;
 
 	const pathname = usePathname();
 
@@ -29,9 +30,7 @@ export function SidebarShared(props: SidebarProps) {
 
 	const onSignout = () => {
 		signoutMutationResult.mutate(undefined, {
-			onSuccess: () => {
-				redirectTo("/");
-			},
+			onSuccess: () => redirectTo("/"),
 		});
 	};
 
@@ -39,11 +38,13 @@ export function SidebarShared(props: SidebarProps) {
 		// NOTE - Using the trapFocus prop as a hack to prevent radix within vaul from trapping focus like a massive idiot🙂
 		<Drawer.Root direction="left" trapFocus={false} modal={false} open={true} dismissible={false}>
 			<aside
-				className={cnJoin(
+				className={cnMerge(
 					// NOTE - These classes allow the sidebar to scroll only within itself.
 					"sticky top-0 flex h-svh overflow-y-auto",
 
-					"custom-scrollbar w-[240px] shrink-0"
+					"custom-scrollbar w-[240px] shrink-0",
+
+					className
 				)}
 			>
 				<Drawer.Header className="sr-only">

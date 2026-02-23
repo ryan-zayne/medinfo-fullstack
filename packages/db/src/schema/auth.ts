@@ -66,14 +66,15 @@ export type SelectUserType = typeof users.$inferSelect;
 // 	]
 // );
 
-export const emailVerificationTokens = pg.pgTable("email_verification_tokens", {
+export const emailVerificationCodes = pg.pgTable("email_verification_tokens", {
+	code: pg.text().notNull().unique(),
 	createdAt: pg.timestamp({ withTimezone: true }).defaultNow().notNull(),
-	email: pg.text().notNull(),
+	email: pg.text().unique().notNull(),
 	expiresAt: pg.timestamp({ withTimezone: true }).notNull(),
 	id: pg.uuid().defaultRandom().primaryKey(),
-	token: pg.text().notNull().unique(),
 	userId: pg
 		.uuid()
+		.unique()
 		.notNull()
 		.references(() => users.id, { onDelete: "cascade" }),
 });

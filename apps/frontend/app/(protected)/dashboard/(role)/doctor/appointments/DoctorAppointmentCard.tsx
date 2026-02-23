@@ -1,7 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 import { useDisclosure } from "@zayne-labs/toolkit-react";
+import { isPast } from "date-fns";
+import Link from "next/link";
+import { useState } from "react";
 import { AppointmentCardShared } from "@/app/(protected)/dashboard/-components/appointments/AppointmentCardShared";
 import { DialogAnimated } from "@/components/animated/ui";
+import { IconBox } from "@/components/common";
 import { Button } from "@/components/ui";
 import { updateAppointmentStatusMutation } from "@/lib/react-query/mutationOptions";
 import {
@@ -17,9 +21,14 @@ type DoctorAppointmentCardProps = {
 export function DoctorAppointmentCard(props: DoctorAppointmentCardProps) {
 	const { appointment, variant } = props;
 	const updateStatusMutation = useMutation(updateAppointmentStatusMutation());
-	const completeDisclosure = useDisclosure();
 
-	const handleStatusUpdate = (status: "completed" | "confirmed") => {
+	const actionDisclosure = useDisclosure();
+
+	type ActionType = Parameters<typeof updateStatusMutation.mutate>[0]["status"];
+
+	const [actionType, setActionType] = useState<ActionType | null>(null);
+
+	const handleStatusUpdate = (status: ActionType) => {
 		updateStatusMutation.mutate(
 			{
 				appointmentId: appointment.id,
@@ -28,71 +37,107 @@ export function DoctorAppointmentCard(props: DoctorAppointmentCardProps) {
 			{
 				onSuccess: (_data, _vars, _result, context) => {
 					void context.client.invalidateQueries(doctorAppointmentsQuery());
-					completeDisclosure.onClose();
+					actionDisclosure.onClose();
 				},
 			}
 		);
 	};
 
+	const onOpenDialog = (type: ActionType) => {
+		setActionType(type);
+		actionDisclosure.onOpen();
+	};
+
+	const dialogContent = {
+		cancelled: {
+			description: `Are you sure you want to cancel this appointment with ${appointment.patient.fullName}? This action cannot be undone.`,
+			title: "Cancel Appointment",
+			yesText: "Yes, Cancel",
+		},
+		completed: {
+			description: `Are you sure you want to mark this appointment with ${appointment.patient.fullName} as completed? This action will move it to the history.`,
+			title: "Complete Appointment",
+			yesText: "Yes, Complete",
+		},
+		confirmed: {
+			description: `Are you sure you want to confirm this appointment with ${appointment.patient.fullName}?`,
+			title: "Confirm Appointment",
+			yesText: "Yes, Confirm",
+		},
+	} satisfies Record<
+		ActionType,
+		{
+			description: string;
+			title: string;
+			yesText: string;
+		}
+	>;
+
+	const currentAction = actionType ? dialogContent[actionType] : null;
+
 	return (
 		<>
-			<AppointmentCardShared
-				variant={variant}
-				appointment={{
-					avatar: appointment.patientAvatar,
-					cancelledAt: appointment.cancelledAt,
-					dateOfAppointment: appointment.dateOfAppointment,
-					id: appointment.id,
-					name: appointment.patientName,
-					reason: appointment.reason,
-					status: appointment.status,
-				}}
-			>
-				<div className="flex gap-2">
-					{appointment.status === "pending" && (
-						<Button
-							theme="primary"
-							onClick={() => handleStatusUpdate("confirmed")}
-							disabled={updateStatusMutation.isPending}
-							isLoading={updateStatusMutation.isPending}
-						>
-							Confirm
+			<AppointmentCardShared variant={variant} appointment={appointment}>
+				{appointment.status === "pending" && (
+					<div className="flex gap-4">
+						<Button unstyled={true} className="size-6.5" onClick={() => onOpenDialog("cancelled")}>
+							<IconBox
+								icon="feather:x-circle"
+								className="size-full text-medinfo-state-error-darker"
+							/>
 						</Button>
-					)}
-					{appointment.status === "confirmed" && (
+
+						<Button unstyled={true} className="size-6.5" onClick={() => onOpenDialog("confirmed")}>
+							<IconBox
+								icon="material-symbols:check-circle-outline-rounded"
+								className="size-full text-medinfo-state-success-darker"
+							/>
+						</Button>
+					</div>
+				)}
+
+				{appointment.status === "confirmed" && (
+					<div className="flex gap-4">
+						{appointment.meetingURL && (
+							<Button theme="primary" asChild={true}>
+								<Link href={appointment.meetingURL} target="_blank" rel="noopener noreferrer">
+									Join Meeting
+								</Link>
+							</Button>
+						)}
+
 						<Button
 							theme="primary"
-							onClick={completeDisclosure.onOpen}
-							disabled={updateStatusMutation.isPending}
+							onClick={() => onOpenDialog("completed")}
+							disabled={!isPast(appointment.dateOfAppointment) || updateStatusMutation.isPending}
 						>
 							Complete
 						</Button>
-					)}
-				</div>
+					</div>
+				)}
 			</AppointmentCardShared>
 
-			<DialogAnimated.Root open={completeDisclosure.isOpen} onOpenChange={completeDisclosure.onToggle}>
+			<DialogAnimated.Root open={actionDisclosure.isOpen} onOpenChange={actionDisclosure.onToggle}>
 				<DialogAnimated.Content className="flex max-w-sm flex-col gap-6 rounded-2xl border-none p-6">
 					<DialogAnimated.Header>
 						<DialogAnimated.Title className="text-xl font-semibold text-medinfo-dark-1">
-							Complete Appointment
+							{currentAction?.title}
 						</DialogAnimated.Title>
 						<DialogAnimated.Description className="mt-2 text-medinfo-dark-4">
-							Are you sure you want to mark this appointment with {appointment.patientName} as
-							completed? This action will move it to the history.
+							{currentAction?.description}
 						</DialogAnimated.Description>
 					</DialogAnimated.Header>
 
 					<DialogAnimated.Footer className="flex justify-end gap-3">
 						<Button
 							theme="primary-ghost"
-							onClick={() => handleStatusUpdate("completed")}
+							onClick={() => actionType && handleStatusUpdate(actionType)}
 							isLoading={updateStatusMutation.isPending}
 							disabled={updateStatusMutation.isPending}
 						>
-							Yes, Complete
+							{currentAction?.yesText}
 						</Button>
-						<Button theme="primary" onClick={completeDisclosure.onClose}>
+						<Button theme="primary" onClick={actionDisclosure.onClose}>
 							No, Not yet
 						</Button>
 					</DialogAnimated.Footer>

@@ -1,13 +1,13 @@
 import { db } from "@medinfo/db";
-import { users } from "@medinfo/db/schema/auth";
+import { emailVerificationCodes, users } from "@medinfo/db/schema/auth";
 import { backendApiSchemaRoutes, SignUpSchema } from "@medinfo/shared/validation/backendApiSchema";
-import { differenceInHours } from "date-fns";
+import { differenceInHours, isFuture } from "date-fns";
 import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { AppError, AppJsonResponse, getValidatedValue } from "@/lib/utils";
 import { validateWithZodMiddleware } from "@/middleware";
-import { getFromCache, removeFromCache, setCache } from "@/services/cache";
+import { removeFromCache, setCache } from "@/services/cache";
 import { uploadStreamToCloudinary } from "@/services/cloudinary";
 import { authMiddleware } from "./middleware/authMiddleware";
 import { AUTH_ERROR_MESSAGES } from "./middleware/authMiddleware/constants";
@@ -47,10 +47,17 @@ const authRoutes = new Hono()
 
 		const medicalLicenseUrl = uploadResult ? uploadResult.secure_url : null;
 
-		const [existingUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+		const [existingUser] = await db
+			.select({ id: users.id })
+			.from(users)
+			.where(eq(users.email, email))
+			.limit(1);
 
 		if (existingUser) {
-			throw new AppError({ code: 400, message: "User already exists" });
+			throw new AppError({
+				code: 400,
+				message: "User already exists",
+			});
 		}
 
 		const passwordHash = await hashValue(password);
@@ -77,7 +84,10 @@ const authRoutes = new Hono()
 				.returning();
 
 			if (!insertedUser) {
-				throw new AppError({ code: 500, message: "Failed to create user" });
+				throw new AppError({
+					code: 500,
+					message: "Failed to create user",
+				});
 			}
 
 			const newZayneRefreshTokenResult = generateRefreshToken(insertedUser);
@@ -370,16 +380,33 @@ const authRoutes = new Hono()
 				});
 			}
 
-			const cachedHashedCode = await getFromCache<string>(`verify-email-code:${email}`);
+			const [result] = await db
+				.select({ code: emailVerificationCodes.code, expiresAt: emailVerificationCodes.expiresAt })
+				.from(emailVerificationCodes)
+				.where(eq(emailVerificationCodes.userId, existingUser.id))
+				.limit(1);
 
-			if (!cachedHashedCode) {
+			if (!result) {
 				throw new AppError({
+					cause: "No verification code found for this email",
 					code: 400,
 					message: "Invalid or expired verification code",
 				});
 			}
 
-			const isCodeValid = await verifyHashedValue(cachedHashedCode, code);
+			if (isFuture(result.expiresAt)) {
+				await db
+					.delete(emailVerificationCodes)
+					.where(eq(emailVerificationCodes.userId, existingUser.id));
+
+				throw new AppError({
+					cause: "Verification code has expired",
+					code: 400,
+					message: "Invalid or expired verification code",
+				});
+			}
+
+			const isCodeValid = await verifyHashedValue(result.code, code);
 
 			if (!isCodeValid) {
 				throw new AppError({
@@ -401,7 +428,7 @@ const authRoutes = new Hono()
 				});
 			}
 
-			await removeFromCache(`verify-email-code:${email}`);
+			await db.delete(emailVerificationCodes).where(eq(emailVerificationCodes.userId, existingUser.id));
 
 			return AppJsonResponse(ctx, {
 				data: {

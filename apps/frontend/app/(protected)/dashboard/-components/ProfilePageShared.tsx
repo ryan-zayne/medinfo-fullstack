@@ -25,7 +25,7 @@ function ProfilePageShared() {
 		<div className="flex flex-col gap-8 px-6 py-14">
 			<section
 				className="flex flex-col gap-5 rounded-[16px] p-4
-					shadow-[0_4px_6px_theme(--color-medinfo-primary-main/0.25)] lg:bg-white lg:p-8"
+					shadow-[0_4px_8px_theme(--color-medinfo-primary-main/0.25)] lg:bg-white lg:p-8"
 			>
 				<div
 					className="relative -z-10 size-[108px] rounded-full border-[1.4px]
@@ -47,7 +47,7 @@ function ProfilePageShared() {
 
 			<section
 				className="flex flex-col gap-5 rounded-[16px] p-4
-					shadow-[0_4px_6px_theme(--color-medinfo-primary-main/0.25)] lg:flex-row lg:justify-between
+					shadow-[0_4px_8px_theme(--color-medinfo-primary-main/0.25)] lg:flex-row lg:justify-between
 					lg:bg-white lg:p-8"
 			>
 				<h3 className="text-[18px] font-medium lg:min-w-[156px]">User Identity</h3>
@@ -153,7 +153,7 @@ function ProfilePageShared() {
 
 			<section
 				className="flex flex-col gap-5 rounded-[16px] p-4
-					shadow-[0_4px_6px_theme(--color-medinfo-primary-main/0.25)] lg:flex-row lg:justify-between
+					shadow-[0_4px_8px_theme(--color-medinfo-primary-main/0.25)] lg:flex-row lg:justify-between
 					lg:bg-white lg:p-8"
 			>
 				<h3 className="text-[18px] font-medium lg:min-w-[156px]">Contact Info</h3>
@@ -194,7 +194,7 @@ function ProfilePageShared() {
 
 			<section
 				className="flex flex-col gap-5 rounded-[16px] p-4
-					shadow-[0_4px_6px_theme(--color-medinfo-primary-main/0.25)] lg:flex-row lg:justify-between
+					shadow-[0_4px_8px_theme(--color-medinfo-primary-main/0.25)] lg:flex-row lg:justify-between
 					lg:bg-white lg:p-8"
 			>
 				<h3 className="text-[18px] font-medium lg:min-w-[156px]">Location</h3>
@@ -234,7 +234,7 @@ function ProfilePageShared() {
 
 			<section
 				className="flex flex-col gap-5 rounded-[16px] p-4
-					shadow-[0_4px_6px_theme(--color-medinfo-primary-main/0.25)] lg:flex-row lg:justify-between
+					shadow-[0_4px_8px_theme(--color-medinfo-primary-main/0.25)] lg:flex-row lg:justify-between
 					lg:bg-white lg:p-8"
 			>
 				<h3 className="text-[18px] font-medium lg:min-w-[156px]">Change Password</h3>

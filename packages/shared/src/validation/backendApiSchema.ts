@@ -335,9 +335,13 @@ const appointmentsRoutes = () => {
 				z.object({
 					appointments: z.array(
 						AppointmentDetailsSchema.extend({
-							patientAvatar: z.string(),
-							patientName: z.string(),
-							role: SelectUserSchema.shape.role,
+							patient: z.object({
+								avatar: z.string(),
+								firstName: z.string(),
+								fullName: z.string(),
+								lastName: z.string(),
+							}),
+							role: SelectUserSchema.shape.role.extract(["doctor"]),
 						})
 					),
 					pagination: PaginationSchema,
@@ -352,9 +356,13 @@ const appointmentsRoutes = () => {
 				z.object({
 					appointments: z.array(
 						AppointmentDetailsSchema.extend({
-							doctorAvatar: z.string(),
-							doctorName: z.string(),
-							role: SelectUserSchema.shape.role,
+							doctor: z.object({
+								avatar: z.string(),
+								firstName: z.string(),
+								fullName: z.string(),
+								lastName: z.string(),
+							}),
+							role: SelectUserSchema.shape.role.extract(["patient"]),
 						})
 					),
 					pagination: PaginationSchema,
@@ -367,7 +375,7 @@ const appointmentsRoutes = () => {
 		"@patch/appointments/status": {
 			body: z.object({
 				appointmentId: z.string(),
-				status: AppointmentDetailsSchema.shape.status.extract(["completed", "confirmed"]),
+				status: AppointmentDetailsSchema.shape.status.extract(["completed", "confirmed", "cancelled"]),
 			}),
 			data: withBaseSuccessResponse(z.null()),
 		},

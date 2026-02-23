@@ -4,10 +4,7 @@ import { differenceInSeconds } from "date-fns";
 import { redisCacheClient } from "./cacheClient";
 
 type CacheKeyType = UnmaskType<
-	| `health-tip:${string}`
-	| `refresh-token:${string}:${string}`
-	| `user:${string}`
-	| `verify-email-code:${string}`
+	`health-tip:${string}` | `refresh-token:${string}:${string}` | `user:${string}`
 >;
 
 export const setCache = async (

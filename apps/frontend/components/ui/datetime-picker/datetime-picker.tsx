@@ -1,4 +1,6 @@
 import { useControllableState } from "@zayne-labs/toolkit-react";
+import type { InferProps } from "@zayne-labs/toolkit-react/utils";
+import { isFunction } from "@zayne-labs/toolkit-type-helpers";
 import { format } from "date-fns";
 import { ForWithWrapper, IconBox } from "@/components/common";
 import { cnJoin, cnMerge } from "@/lib/utils/cn";
@@ -6,32 +8,53 @@ import { buttonVariants } from "../button";
 import { Calendar, CalendarDayButton } from "../calender";
 import { shadcnButtonVariants } from "../constants";
 import * as Popover from "../popover";
-import { ScrollArea } from "../scroll-area";
+import * as ScrollArea from "../scroll-area";
 import { getDateFromString } from "./getDateFromString";
+
+type OrderType = "ascending" | "descending" | "preserve" | ((resolvedRange: number[]) => number[]);
+
+type TimeSettings = {
+	hourOrder?: OrderType;
+	hourRange?: number[];
+	hourVariant?: "12-hour" | "24-hour";
+	minuteOrder?: OrderType;
+	minuteRange?: number[];
+};
 
 type DatePickerProps = {
 	className?: string;
-	dateString?: string;
-	defaultDateString?: string;
-	formats?: {
+	dateFormats?: {
 		onChangeDate?: string;
 		visibleDate?: string;
 	};
+	datePickerProps?: Omit<InferProps<typeof Calendar>, "captionLayout" | "mode" | "onSelect" | "selected">;
+	dateString?: string;
+	defaultDateString?: string;
 	onDateStringChange?: (dateString?: string) => void;
 	placeholder?: string;
+	timeSettings?: TimeSettings;
+
 	variant?: "date" | "datetime" | "time";
 };
 
 export function DateTimePicker(props: DatePickerProps) {
 	const {
 		className,
+		dateFormats,
+		datePickerProps,
 		dateString: dateStringProp,
 		defaultDateString: defaultDateStringProp = "",
-		formats,
 		onDateStringChange: onDateStringChangeProp,
 		placeholder,
+		timeSettings,
 		variant = "date",
 	} = props;
+
+	const {
+		classNames: calenderClassNames,
+		components: calenderComponents,
+		...restOfCalenderProps
+	} = datePickerProps ?? {};
 
 	const [dateString, setDateString] = useControllableState({
 		defaultProp: defaultDateStringProp,
@@ -58,69 +81,124 @@ export function DateTimePicker(props: DatePickerProps) {
 					)}
 				>
 					<span className={cnJoin(!date && "text-medinfo-dark-4")}>
-						{date ? format(date, formats?.visibleDate ?? "PPP") : placeholder}
+						{date ? format(date, dateFormats?.visibleDate ?? "PPP") : placeholder}
 					</span>
 
 					<IconBox icon="solar:calendar-outline" className="size-5" />
 				</button>
 			</Popover.Trigger>
 
-			<Popover.Content className="w-auto border-none p-0">
-				<div className="flex rounded-[10px] border-[1.4px] border-medinfo-primary-main">
-					{showDatePicker && (
-						<Calendar
-							mode="single"
-							captionLayout="dropdown"
-							classNames={{
-								button_next:
-									"hover:bg-medinfo-primary-lighter hover:text-shadcn-primary-foreground",
-								button_previous:
-									"hover:bg-medinfo-primary-lighter hover:text-shadcn-primary-foreground",
-								today: "bg-medinfo-primary-lighter",
-							}}
-							components={{
-								// eslint-disable-next-line react-x/no-nested-component-definitions
-								DayButton: ({ className: innerClassName, ...innerProps }) => (
-									<CalendarDayButton
-										className={cnMerge(
-											`hover:bg-medinfo-primary-subtle hover:text-medinfo-body-color
-											data-[selected-single=true]:bg-medinfo-primary-main`,
-											innerClassName
-										)}
-										{...innerProps}
-									/>
-								),
-							}}
-							selected={date}
-							onSelect={(selectedDate) => {
-								if (!selectedDate) return;
+			<Popover.Content
+				className="flex w-fit rounded-[10px] border-[1.4px] border-medinfo-primary-main p-0"
+			>
+				{showDatePicker && (
+					<Calendar
+						mode="single"
+						captionLayout="dropdown"
+						classNames={{
+							button_next: "hover:bg-medinfo-primary-lighter hover:text-shadcn-primary-foreground",
+							button_previous:
+								"hover:bg-medinfo-primary-lighter hover:text-shadcn-primary-foreground",
+							today: "bg-medinfo-primary-lighter",
 
-								setDateString(format(selectedDate, formats?.onChangeDate ?? "MM-dd-yyyy"));
-							}}
-						/>
-					)}
+							...calenderClassNames,
+						}}
+						components={{
+							// eslint-disable-next-line react-x/no-nested-component-definitions
+							DayButton: (innerProps) => (
+								<CalendarDayButton
+									{...innerProps}
+									className={cnMerge(
+										`hover:bg-medinfo-primary-subtle hover:text-medinfo-body-color
+										data-[selected-single=true]:bg-medinfo-primary-main`,
+										// eslint-disable-next-line react-x/prefer-destructuring-assignment
+										innerProps.className
+									)}
+								/>
+							),
 
-					{showTimePicker && (
-						<TimeScrollArea
-							dateValue={date ?? new Date()}
-							onChange={setDateString as typeof onDateStringChangeProp}
-							formats={formats}
-						/>
-					)}
-				</div>
+							...calenderComponents,
+						}}
+						selected={date}
+						onSelect={(selectedDate) => {
+							if (!selectedDate) return;
+
+							setDateString(format(selectedDate, dateFormats?.onChangeDate ?? "MM-dd-yyyy"));
+						}}
+						{...restOfCalenderProps}
+					/>
+				)}
+
+				{showTimePicker && (
+					<TimePicker
+						dateValue={date ?? new Date()}
+						onDateStringChange={setDateString as typeof onDateStringChangeProp}
+						timeSettings={timeSettings}
+						dateFormats={dateFormats}
+					/>
+				)}
 			</Popover.Content>
 		</Popover.Root>
 	);
 }
 
-type TimeScrollAreaProps = {
-	dateValue: Date;
-	formats: DatePickerProps["formats"];
-	onChange: DatePickerProps["onDateStringChange"];
+const resolve12HourVariant = (hour: number) => {
+	const hour12 = hour % 12;
+
+	return hour12 === 0 ? 12 : hour12;
 };
 
-function TimeScrollArea(props: TimeScrollAreaProps) {
-	const { dateValue, formats, onChange } = props;
+const resolveOrder = (
+	options:
+		| (Required<Pick<TimeSettings, "hourOrder" | "hourRange">> & { type: "hour" })
+		| (Required<Pick<TimeSettings, "minuteOrder" | "minuteRange">> & { type: "minute" })
+) => {
+	const { type } = options;
+
+	const selectedOrder = type === "hour" ? options.hourOrder : options.minuteOrder;
+
+	const selectedRange = type === "hour" ? options.hourRange : options.minuteRange;
+
+	if (isFunction(selectedOrder)) {
+		return selectedOrder(selectedRange);
+	}
+
+	switch (selectedOrder) {
+		case "ascending": {
+			return selectedRange.toSorted((a, b) => a - b);
+		}
+
+		case "descending": {
+			return selectedRange.toSorted((a, b) => b - a);
+		}
+
+		case "preserve": {
+			return selectedRange;
+		}
+
+		default: {
+			selectedOrder satisfies never;
+			throw new Error(`Invalid ${type} order: '${selectedOrder}'`);
+		}
+	}
+};
+
+type TimePickerProps = Pick<DatePickerProps, "dateFormats" | "onDateStringChange" | "timeSettings"> & {
+	dateValue: Date;
+};
+
+function TimePicker(props: TimePickerProps) {
+	const { dateFormats, dateValue, onDateStringChange, timeSettings } = props;
+
+	const {
+		hourOrder = "descending",
+		hourVariant = "24-hour",
+		minuteOrder = "preserve",
+	} = timeSettings ?? {};
+
+	const hourRange = timeSettings?.hourRange ?? [...Array(24).keys()];
+
+	const minuteRange = timeSettings?.minuteRange ?? [...Array(60).keys()];
 
 	function handleTimeChange(variant: "am-pm" | "hour" | "minute", value: number | string) {
 		const newDate = new Date(dateValue);
@@ -130,20 +208,33 @@ function TimeScrollArea(props: TimeScrollAreaProps) {
 				const hours = newDate.getHours();
 
 				if (value === "AM" && hours >= 12) {
-					newDate.setHours(hours - 12);
+					const modifiedHours = hours - 12;
+					hourRange.includes(modifiedHours) && newDate.setHours(modifiedHours);
 				}
 
 				if (value === "PM" && hours < 12) {
-					newDate.setHours(hours + 12);
+					const modifiedHours = hours + 12;
+					hourRange.includes(modifiedHours) && newDate.setHours(modifiedHours);
 				}
+
 				break;
 			}
 
 			case "hour": {
-				const hour = Number(value);
+				const hourNumber = Number(value);
 
-				// newDate.setHours(newDate.getHours() >= 12 ? hour + 12 : hour);
-				newDate.setHours(hour);
+				if (hourVariant === "12-hour") {
+					const isPM = newDate.getHours() >= 12;
+
+					const hour24 = (hourNumber % 12) + (isPM ? 12 : 0);
+					const oppositeHour24 = (hour24 + 12) % 24;
+
+					hourRange.includes(hour24) ? newDate.setHours(hour24) : newDate.setHours(oppositeHour24);
+					break;
+				}
+
+				newDate.setHours(hourNumber);
+
 				break;
 			}
 
@@ -159,19 +250,47 @@ function TimeScrollArea(props: TimeScrollAreaProps) {
 			}
 		}
 
-		onChange?.(format(newDate, formats?.onChangeDate ?? "MM-dd-yyyy HH:mm:ss"));
+		onDateStringChange?.(
+			format(
+				newDate,
+				dateFormats?.onChangeDate
+					?? (hourVariant === "12-hour" ? "dd-MM-yyyy - hh:mm aa" : "dd-MM-yyyy - HH:mm")
+			)
+		);
 	}
+
+	const resolvedHourRange =
+		hourVariant === "12-hour" ?
+			[...new Set(hourRange.map((hour) => resolve12HourVariant(hour)))]
+		:	hourRange;
+
+	const resolvedHours = resolveOrder({
+		hourOrder,
+		hourRange: resolvedHourRange,
+		type: "hour",
+	});
+
+	const resolvedMinutes = resolveOrder({
+		minuteOrder,
+		minuteRange,
+		type: "minute",
+	});
+
 	return (
-		<div className="flex h-[332px] divide-x divide-y-0 divide-medinfo-primary-main">
-			<ScrollArea className="w-auto">
+		<div className="flex max-h-[300px] w-fit divide-x divide-medinfo-primary-main">
+			<ScrollArea.Root>
 				<ForWithWrapper
 					className="flex flex-col p-2"
-					each={[...Array(24).keys()].toReversed()}
+					each={resolvedHours}
 					renderItem={(hour) => (
 						<button
-							type="button"
-							data-selected={dateValue.getHours() === hour}
 							key={hour}
+							type="button"
+							data-selected={
+								hourVariant === "12-hour" ?
+									resolve12HourVariant(dateValue.getHours()) === hour
+								:	dateValue.getHours() === hour
+							}
 							className={cnMerge(
 								"aspect-square shrink-0",
 								shadcnButtonVariants({ size: "icon", variant: "ghost" }),
@@ -185,18 +304,18 @@ function TimeScrollArea(props: TimeScrollAreaProps) {
 						</button>
 					)}
 				/>
-			</ScrollArea>
+			</ScrollArea.Root>
 
-			<ScrollArea className="w-64 sm:w-auto">
+			<ScrollArea.Root>
 				<ForWithWrapper
 					as="div"
 					className="flex flex-col p-2"
-					each={[...Array(12).keys()].map((index) => index * 5)}
+					each={resolvedMinutes}
 					renderItem={(minute) => (
 						<button
+							key={minute}
 							type="button"
 							data-selected={dateValue.getMinutes() === minute}
-							key={minute}
 							className={cnMerge(
 								"aspect-square shrink-0",
 								shadcnButtonVariants({ size: "icon", variant: "ghost" }),
@@ -206,43 +325,41 @@ function TimeScrollArea(props: TimeScrollAreaProps) {
 							)}
 							onClick={() => handleTimeChange("minute", minute)}
 						>
-							{minute}
+							{minute.toString().padStart(2, "0")}
 						</button>
 					)}
 				/>
-			</ScrollArea>
+			</ScrollArea.Root>
 
-			{/*
-			<ScrollArea>
-				<ForWithWrapper
-					as="div"
-					className="flex flex-col p-2"
-					each={["AM", "PM"]}
-					renderItem={(am_pm) => (
-						<button
-							type="button"
-							key={am_pm}
-							data-selected={
-								(am_pm === "AM" && dateValue.getHours() < 12)
-								|| (am_pm === "PM" && dateValue.getHours() >= 12)
-							}
-							className={cnMerge(
-								"aspect-square shrink-0",
-								shadcnButtonVariants({
-									size: "icon",
-									variant: "ghost",
-									className: `hover:bg-medinfo-primary-subtle hover:text-medinfo-body-color
+			{hourVariant === "12-hour" && (
+				<ScrollArea.Root>
+					<ForWithWrapper
+						as="div"
+						className="flex flex-col p-2"
+						each={["AM", "PM"]}
+						renderItem={(am_pm) => (
+							<button
+								key={am_pm}
+								type="button"
+								data-selected={
+									(am_pm === "AM" && dateValue.getHours() < 12)
+									|| (am_pm === "PM" && dateValue.getHours() >= 12)
+								}
+								className={cnMerge(
+									"aspect-square shrink-0",
+									shadcnButtonVariants({ size: "icon", variant: "ghost" }),
+									`hover:bg-medinfo-primary-subtle hover:text-medinfo-body-color
 									data-[selected=true]:bg-medinfo-primary-main
-									data-[selected=true]:text-shadcn-primary-foreground`,
-								})
-							)}
-							onClick={() => handleTimeChange("am-pm", am_pm)}
-						>
-							{am_pm}
-						</button>
-					)}
-				/>
-			</ScrollArea> */}
+									data-[selected=true]:text-shadcn-primary-foreground`
+								)}
+								onClick={() => handleTimeChange("am-pm", am_pm)}
+							>
+								{am_pm}
+							</button>
+						)}
+					/>
+				</ScrollArea.Root>
+			)}
 		</div>
 	);
 }

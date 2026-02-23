@@ -14,5 +14,6 @@
 	},
 
 	"cSpell.words": ["dotenvx", "heroui", "medinfo"],
-	"typescript.autoClosingTags": false
+	"typescript.autoClosingTags": false,
+	"chatgpt.commentCodeLensEnabled": false
 }
