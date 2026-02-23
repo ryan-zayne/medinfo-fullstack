@@ -15,8 +15,8 @@
 	},
 	"dependencies": {
 		"@react-email/components": "1.0.8",
-		"@zayne-labs/toolkit-react": "0.12.42",
-		"@zayne-labs/toolkit-type-helpers": "0.12.42",
+		"@zayne-labs/toolkit-react": "0.12.43",
+		"@zayne-labs/toolkit-type-helpers": "0.12.43",
 		"react": "19.2.4",
 		"react-dom": "19.2.4"
 	},
@@ -27,7 +27,7 @@
 		"@types/react-dom": "19.2.3",
 		"@zayne-labs/tsconfig": "0.11.30",
 		"react-email": "5.2.8",
-		"tailwindcss": "4.2.0",
+		"tailwindcss": "4.2.1",
 		"tsdown": "catalog:",
 		"typescript": "catalog:"
 	}

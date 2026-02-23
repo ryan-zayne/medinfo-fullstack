@@ -6,7 +6,7 @@ import { addEmailToQueue } from "@/services/queues";
 import { generateRandom6DigitKey } from "./common";
 import { hashValue } from "./hash";
 
-export const sendVerificationEmail = async (user: SelectUserType) => {
+export const sendVerificationEmail = async (user: Pick<SelectUserType, "email" | "firstName" | "id">) => {
 	const code = generateRandom6DigitKey();
 
 	const hashedCode = await hashValue(code);

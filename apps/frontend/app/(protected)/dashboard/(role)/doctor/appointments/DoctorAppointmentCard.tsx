@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useDisclosure } from "@zayne-labs/toolkit-react";
-import { isPast } from "date-fns";
+import { isToday } from "date-fns";
 import Link from "next/link";
 import { useState } from "react";
 import { AppointmentCardShared } from "@/app/(protected)/dashboard/-components/appointments/AppointmentCardShared";
@@ -24,11 +24,11 @@ export function DoctorAppointmentCard(props: DoctorAppointmentCardProps) {
 
 	const actionDisclosure = useDisclosure();
 
-	type ActionType = Parameters<typeof updateStatusMutation.mutate>[0]["status"];
+	type StatusType = Parameters<typeof updateStatusMutation.mutate>[0]["status"];
 
-	const [actionType, setActionType] = useState<ActionType | null>(null);
+	const [statusState, setStatusState] = useState<StatusType | null>(null);
 
-	const handleStatusUpdate = (status: ActionType) => {
+	const handleStatusUpdate = (status: StatusType) => {
 		updateStatusMutation.mutate(
 			{
 				appointmentId: appointment.id,
@@ -43,8 +43,8 @@ export function DoctorAppointmentCard(props: DoctorAppointmentCardProps) {
 		);
 	};
 
-	const onOpenDialog = (type: ActionType) => {
-		setActionType(type);
+	const handleOpenDialog = (type: StatusType) => {
+		setStatusState(type);
 		actionDisclosure.onOpen();
 	};
 
@@ -65,7 +65,7 @@ export function DoctorAppointmentCard(props: DoctorAppointmentCardProps) {
 			yesText: "Yes, Confirm",
 		},
 	} satisfies Record<
-		ActionType,
+		StatusType,
 		{
 			description: string;
 			title: string;
@@ -73,21 +73,29 @@ export function DoctorAppointmentCard(props: DoctorAppointmentCardProps) {
 		}
 	>;
 
-	const currentAction = actionType ? dialogContent[actionType] : null;
+	const currentAction = statusState ? dialogContent[statusState] : null;
 
 	return (
 		<>
 			<AppointmentCardShared variant={variant} appointment={appointment}>
 				{appointment.status === "pending" && (
 					<div className="flex gap-4">
-						<Button unstyled={true} className="size-6.5" onClick={() => onOpenDialog("cancelled")}>
+						<Button
+							unstyled={true}
+							className="size-6.5"
+							onClick={() => handleOpenDialog("cancelled")}
+						>
 							<IconBox
 								icon="feather:x-circle"
 								className="size-full text-medinfo-state-error-darker"
 							/>
 						</Button>
 
-						<Button unstyled={true} className="size-6.5" onClick={() => onOpenDialog("confirmed")}>
+						<Button
+							unstyled={true}
+							className="size-6.5"
+							onClick={() => handleOpenDialog("confirmed")}
+						>
 							<IconBox
 								icon="material-symbols:check-circle-outline-rounded"
 								className="size-full text-medinfo-state-success-darker"
@@ -96,7 +104,29 @@ export function DoctorAppointmentCard(props: DoctorAppointmentCardProps) {
 					</div>
 				)}
 
-				{appointment.status === "confirmed" && (
+				{appointment.status === "confirmed" && appointment.meetingURL && (
+					<Button
+						theme="primary"
+						size="large"
+						asChild={true}
+						isDisabled={!isToday(appointment.dateOfAppointment)}
+					>
+						<Link
+							onClick={(event) => {
+								if (!isToday(appointment.dateOfAppointment)) {
+									event.preventDefault();
+								}
+							}}
+							href={isToday(appointment.dateOfAppointment) ? appointment.meetingURL : ""}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							Join Meeting
+						</Link>
+					</Button>
+				)}
+
+				{/* {appointment.status === "confirmed" && (
 					<div className="flex gap-4">
 						{appointment.meetingURL && (
 							<Button theme="primary" asChild={true}>
@@ -114,7 +144,7 @@ export function DoctorAppointmentCard(props: DoctorAppointmentCardProps) {
 							Complete
 						</Button>
 					</div>
-				)}
+				)} */}
 			</AppointmentCardShared>
 
 			<DialogAnimated.Root open={actionDisclosure.isOpen} onOpenChange={actionDisclosure.onToggle}>
@@ -131,7 +161,7 @@ export function DoctorAppointmentCard(props: DoctorAppointmentCardProps) {
 					<DialogAnimated.Footer className="flex justify-end gap-3">
 						<Button
 							theme="primary-ghost"
-							onClick={() => actionType && handleStatusUpdate(actionType)}
+							onClick={() => statusState && handleStatusUpdate(statusState)}
 							isLoading={updateStatusMutation.isPending}
 							disabled={updateStatusMutation.isPending}
 						>

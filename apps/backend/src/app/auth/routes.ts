@@ -1,6 +1,7 @@
 import { db } from "@medinfo/db";
 import { emailVerificationCodes, users } from "@medinfo/db/schema/auth";
 import { backendApiSchemaRoutes, SignUpSchema } from "@medinfo/shared/validation/backendApiSchema";
+import { pickKeys } from "@zayne-labs/toolkit-core";
 import { differenceInHours, isFuture } from "date-fns";
 import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
@@ -191,8 +192,6 @@ const authRoutes = new Hono()
 				});
 			}
 
-			const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
-
 			const newZayneRefreshTokenResult = generateRefreshToken(currentUser);
 
 			const [updatedUser] = await db
@@ -201,7 +200,10 @@ const authRoutes = new Hono()
 					lastLoginAt: new Date(),
 					loginRetryCount: 0,
 					refreshTokenArray: [
-						...getUpdatedTokenResultArray({ currentUser, zayneRefreshToken }),
+						...getUpdatedTokenResultArray({
+							currentUser,
+							zayneRefreshToken: getCookie(ctx, "zayneRefreshToken"),
+						}),
 						newZayneRefreshTokenResult,
 					],
 				})
@@ -448,7 +450,11 @@ const authRoutes = new Hono()
 		async (ctx) => {
 			const { email } = ctx.req.valid("json");
 
-			const [existingUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+			const [existingUser] = await db
+				.select(pickKeys(users, ["id", "emailVerifiedAt", "email", "firstName"]))
+				.from(users)
+				.where(eq(users.email, email))
+				.limit(1);
 
 			if (!existingUser) {
 				throw new AppError({

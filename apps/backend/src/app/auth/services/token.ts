@@ -2,6 +2,7 @@
 import { SelectUserSchema, type SelectUserType } from "@medinfo/db/schema/auth";
 import { pickKeys } from "@zayne-labs/toolkit-core";
 import { consola } from "consola";
+import { isFuture } from "date-fns";
 /* eslint-disable import/default */
 import jwt from "jsonwebtoken";
 /* eslint-enable import/default */
@@ -121,7 +122,7 @@ export const getUpdatedTokenResultArray = (options: {
 	const { currentUser, zayneRefreshToken } = options;
 
 	if (!zayneRefreshToken) {
-		return currentUser.refreshTokenArray;
+		return currentUser.refreshTokenArray.filter((item) => !isFuture(item.expiresAt));
 	}
 
 	// == If it turns out that the refreshToken is not in the whitelist array, the question is why would a user be signing in with a refreshToken that is not in the array?
@@ -136,7 +137,7 @@ export const getUpdatedTokenResultArray = (options: {
 	}
 
 	const updatedTokenResultArray = currentUser.refreshTokenArray.filter(
-		(item) => item.token !== zayneRefreshToken
+		(item) => item.token !== zayneRefreshToken && !isFuture(item.expiresAt)
 	);
 
 	return updatedTokenResultArray;

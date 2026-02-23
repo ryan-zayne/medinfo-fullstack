@@ -23,7 +23,7 @@ export function AppointmentCardShared(props: AppointmentCardSharedProps) {
 	const otherPartyDetails = appointment.role === "doctor" ? appointment.patient : appointment.doctor;
 
 	const otherPartyFullName =
-		appointment.role === "doctor" ? `Dr. ${otherPartyDetails.fullName}` : otherPartyDetails.fullName;
+		appointment.role === "patient" ? `Dr. ${otherPartyDetails.fullName}` : otherPartyDetails.fullName;
 
 	return (
 		<Card.Root
@@ -108,14 +108,14 @@ export function AppointmentCardEmptyShared(props: AppointmentCardEmptySharedProp
 	return (
 		<div
 			className={cnMerge(
-				`flex flex-col items-center justify-center gap-4 rounded-[8px] border-[1.4px]
-				border-medinfo-secondary-main bg-white py-20`,
+				`flex flex-col items-center justify-center gap-6 rounded-[8px] border-[1.4px]
+				border-medinfo-secondary-main bg-white px-8 py-20`,
 				className
 			)}
 		>
 			<IconBox icon={icon} className="size-16 text-medinfo-light-2" />
 
-			<p className="text-lg font-medium text-medinfo-dark-4">{text}</p>
+			<p className="text-center font-medium text-medinfo-dark-4">{text}</p>
 		</div>
 	);
 }
