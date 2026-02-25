@@ -9,6 +9,8 @@
 	"editor.detectIndentation": false,
 	"editor.insertSpaces": false,
 
+	"tailwindCSS.lint.suggestCanonicalClasses": "ignore",
+
 	"editor.codeActionsOnSave": {
 		"source.addMissingImports": "never"
 	},

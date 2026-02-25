@@ -117,15 +117,15 @@ function DesktopHeader(props: DesktopHeaderProps) {
 							{sessionQueryData?.data.user.firstName[0]}
 							{sessionQueryData?.data.user.lastName[0]}
 						</Avatar.Fallback>
-
-						{sessionQueryData?.data.user.fullName && (
-							<AvatarGroupAnimated.Tooltip
-								classNames={{ base: "bg-medinfo-primary-darker text-white" }}
-							>
-								{sessionQueryData.data.user.fullName}
-							</AvatarGroupAnimated.Tooltip>
-						)}
 					</Avatar.Root>
+
+					{sessionQueryData?.data.user.fullName && (
+						<AvatarGroupAnimated.Tooltip
+							classNames={{ base: "bg-medinfo-primary-darker text-white" }}
+						>
+							{sessionQueryData.data.user.fullName}
+						</AvatarGroupAnimated.Tooltip>
+					)}
 				</AvatarGroupAnimated.Root>
 			</div>
 		</header>

@@ -14,7 +14,7 @@ import { DialogAnimated } from "@/components/animated/ui";
 import { IconBox, NavLink, Show } from "@/components/common";
 import { getElementList } from "@/components/common/for";
 import { CloseIcon, GreenSpinnerIcon } from "@/components/icons";
-import { Button, DateTimePicker, Form, Select } from "@/components/ui";
+import { Avatar, Button, DateTimePicker, Form, Select } from "@/components/ui";
 import { backendApiSchemaRoutes } from "@/lib/api/callBackendApi/apiSchema";
 import {
 	bookAppointmentMutation,
@@ -490,13 +490,25 @@ function AppointmentDialog(props: DialogMainContentProps) {
 
 						<DialogAnimated.Header className="flex flex-col items-center gap-2">
 							<figure className="flex flex-col items-center gap-2">
-								<Image
-									src={matchedDoctor?.avatar ?? (doctorAvatar as string)}
-									className="size-[72px]"
-									width={72}
-									height={72}
-									alt=""
-								/>
+								<Avatar.Root className="size-[72px]">
+									<Avatar.Image asChild={true}>
+										<Image
+											src={matchedDoctor?.avatar ?? (doctorAvatar as string)}
+											className="size-full"
+											width={72}
+											height={72}
+											alt=""
+										/>
+									</Avatar.Image>
+
+									<Avatar.Fallback
+										className="bg-medinfo-secondary-main text-[18px] font-bold
+											text-medinfo-primary-darker"
+									>
+										{matchedDoctor?.firstName[0]}
+										{matchedDoctor?.lastName[0]}
+									</Avatar.Fallback>
+								</Avatar.Root>
 								<figcaption className="flex items-center gap-1">
 									<p className="text-medinfo-dark-3">
 										Dr. {capitalize(matchedDoctor?.firstName)}{" "}
