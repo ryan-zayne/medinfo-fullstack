@@ -1,5 +1,5 @@
 import { IconBox } from "@/components/common";
-import { ForWithWrapper, getElementList } from "@/components/common/for";
+import { For, ForWithWrapper } from "@/components/common/for";
 import { Button, Card } from "@/components/ui";
 import { cnJoin, tw } from "@/lib/utils/cn";
 import { Main } from "../../../-components/Main";
@@ -69,8 +69,6 @@ type PricingCardProps = {
 
 function PricingCard(props: PricingCardProps) {
 	const { banner, features, prices, title } = props;
-
-	const [For] = getElementList("base");
 
 	const hasGetStartedButton = banner?.title !== "active";
 
