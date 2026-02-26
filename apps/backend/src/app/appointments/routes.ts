@@ -103,6 +103,8 @@ const appointmentsRoutes = new Hono()
 				.returning();
 
 			if (!newAppointment) {
+				await deleteMeeting(zoomMeetingDetails.id);
+
 				throw new AppError({
 					code: 500,
 					message: "Failed to book appointment",

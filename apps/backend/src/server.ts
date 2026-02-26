@@ -64,6 +64,3 @@ process.on("unhandledRejection", (error) => {
 		process.exit(1);
 	});
 });
-
-// Doing this to enable vercel deployment to work
-// export default app as never;

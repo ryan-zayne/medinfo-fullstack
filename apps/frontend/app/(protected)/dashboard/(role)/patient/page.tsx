@@ -1,8 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { ForWithWrapper, NavLink } from "@/components/common";
+import { ForWithWrapper, NavLink, Show, Switch } from "@/components/common";
 import NextIcon from "@/components/icons/NextIcon";
+import { Skeleton } from "@/components/ui";
 import { patientAppointmentsQuery } from "@/lib/react-query/queryOptions";
 import { AppointmentCardSwitchShared } from "../../-components/appointments/AppointmentCardShared";
 import { Main } from "../../-components/Main";
@@ -40,8 +41,30 @@ function PatientDashboardPage() {
 						<p className="font-normal text-medinfo-dark-2">2023</p>
 					</header>
 
-					<div className="flex grow items-center justify-center bg-gray-50">
-						<p className="text-medinfo-dark-3">Graph component will go here</p>
+					<div className="flex grow items-center justify-center bg-gray-50 pt-4">
+						<Show.Root when={patientAppointmentsQueryResult.isPending}>
+							<Show.Content>
+								<div
+									className="flex h-[200px] w-full items-end gap-2 overflow-hidden px-4 md:gap-4
+										md:px-6"
+								>
+									<ForWithWrapper
+										each={12}
+										renderItem={(index) => (
+											<Skeleton
+												key={index}
+												className="w-full rounded-t-sm md:rounded-t-md"
+												style={{ height: `${Math.max(20, (index * 13) % 100)}%` }}
+											/>
+										)}
+									/>
+								</div>
+							</Show.Content>
+
+							<Show.Fallback>
+								<p className="text-medinfo-dark-3">Graph component will go here</p>
+							</Show.Fallback>
+						</Show.Root>
 					</div>
 				</article>
 
@@ -62,16 +85,32 @@ function PatientDashboardPage() {
 							<p>Log</p>
 						</header>
 
-						<ForWithWrapper
-							className="flex flex-col pl-2"
-							each={activityLogs}
-							renderItem={(log, index) => (
-								<li key={log.id} className="flex gap-8 py-1 font-normal">
-									<p className="w-7">{index + 1}</p>
-									<p>{log.title}</p>
-								</li>
-							)}
-						/>
+						<Switch.Root>
+							<Switch.Match when={patientAppointmentsQueryResult.isPending}>
+								<ForWithWrapper
+									className="flex flex-col gap-2 p-2"
+									each={7}
+									renderItem={(index) => (
+										<div key={index} className="flex gap-8 py-2">
+											<Skeleton className="h-4 w-5" />
+											<Skeleton className="h-4 w-32" />
+										</div>
+									)}
+								/>
+							</Switch.Match>
+							<Switch.Default>
+								<ForWithWrapper
+									className="flex flex-col gap-2 p-2"
+									each={activityLogs}
+									renderItem={(log, index) => (
+										<li key={log.id} className="flex gap-8 py-1 font-normal">
+											<p className="w-7">{index + 1}</p>
+											<p>{log.title}</p>
+										</li>
+									)}
+								/>
+							</Switch.Default>
+						</Switch.Root>
 					</div>
 				</article>
 			</section>

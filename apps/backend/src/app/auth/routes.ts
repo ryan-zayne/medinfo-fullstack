@@ -5,7 +5,9 @@ import { pickKeys } from "@zayne-labs/toolkit-core";
 import { differenceInHours, isFuture } from "date-fns";
 import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
+import { rateLimiter } from "hono-rate-limiter";
 import { z } from "zod";
+import { authRateLimiterOptions } from "@/config/rateLimiterOptions";
 import { AppError, AppJsonResponse, getValidatedValue } from "@/lib/utils";
 import { validateWithZodMiddleware } from "@/middleware";
 import { removeFromCache, setCache } from "@/services/cache";
@@ -25,7 +27,7 @@ import { generateAccessToken, generateRefreshToken, getUpdatedTokenResultArray }
 
 const authRoutes = new Hono()
 	.basePath("/auth")
-	.post("/signup", async (ctx) => {
+	.post("/signup", rateLimiter(authRateLimiterOptions), async (ctx) => {
 		const formDataBody = await ctx.req.parseBody();
 
 		const {
@@ -121,6 +123,7 @@ const authRoutes = new Hono()
 	})
 	.post(
 		"/signin",
+		rateLimiter(authRateLimiterOptions),
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/auth/signin"].body),
 		async (ctx) => {
 			const { email, password } = ctx.req.valid("json");
@@ -499,6 +502,23 @@ const authRoutes = new Hono()
 		return AppJsonResponse(ctx, {
 			data: null,
 			message: "Signed out successfully",
+			schema: backendApiSchemaRoutes["@get/auth/signout"].data,
+		});
+	})
+	.get("/signout/all", authMiddleware, async (ctx) => {
+		const currentUser = ctx.get("currentUser");
+
+		await Promise.all([
+			db.update(users).set({ refreshTokenArray: [] }).where(eq(users.id, currentUser.id)),
+			removeFromCache(`user:${currentUser.id}`),
+		]);
+
+		deleteCookie(ctx, "zayneAccessToken");
+		deleteCookie(ctx, "zayneRefreshToken");
+
+		return AppJsonResponse(ctx, {
+			data: null,
+			message: "Signed out from all devices successfully",
 			schema: backendApiSchemaRoutes["@get/auth/signout"].data,
 		});
 	})

@@ -8,4 +8,12 @@ const rateLimiterOptions = {
 	windowMs: 15 * 60 * 1000,
 } satisfies Parameters<typeof rateLimiter>[0];
 
-export { rateLimiterOptions };
+const authRateLimiterOptions = {
+	keyGenerator: (ctx) => ctx.req.header("x-forwarded-for") ?? "unknown",
+	limit: 5,
+	message: "Too many login attempts from this IP, please try again after 15 minutes.",
+	standardHeaders: "draft-6",
+	windowMs: 15 * 60 * 1000,
+} satisfies Parameters<typeof rateLimiter>[0];
+
+export { authRateLimiterOptions, rateLimiterOptions };

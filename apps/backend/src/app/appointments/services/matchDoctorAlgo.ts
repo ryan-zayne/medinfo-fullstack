@@ -1,5 +1,6 @@
 import type { DoctorUserSchemaType } from "@medinfo/shared/validation/backendApiSchema";
 import { createFeatureExtractionPipeline } from "@/services/ai/huggingFace";
+import { getFromCache } from "@/services/cache";
 
 /**
  * @description Computes the dot product between two vectors.
@@ -72,9 +73,21 @@ const createDoctorVectors = async (doctors: DoctorUserSchemaType[]): Promise<num
 
 	const specialties = doctors.map((doctor) => doctor.specialty);
 
-	const response = await extractor(specialties, { normalize: true, pooling: "mean" });
+	// Create a deterministic cache key based on the doctor IDs
+	const sortedDoctorIds = doctors
+		.map((d) => d.id)
+		.toSorted()
+		.join(",");
 
-	return response.tolist() as number[][];
+	const cacheKey = `doctor-vectors:${sortedDoctorIds}` as const;
+
+	return getFromCache(cacheKey, {
+		onCacheMiss: async () => {
+			const response = await extractor(specialties, { normalize: true, pooling: "mean" });
+			return response.tolist() as number[][];
+		},
+		onCacheMissExpiry: 12 * 60 * 60, // 12 hours
+	});
 };
 
 type DoctorWithScore = DoctorUserSchemaType & { similarityScore: number };

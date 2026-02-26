@@ -7,7 +7,7 @@ import { redisQueueClient } from "./utils/queueClient";
 const emailQueueKey = "emailQueue";
 
 export const emailQueue = new Queue<EmailJobOptions>(emailQueueKey, {
-	connection: redisQueueClient as never,
+	connection: redisQueueClient,
 	defaultJobOptions: {
 		attempts: 3,
 		backoff: {
@@ -46,7 +46,7 @@ const getEmailWorker = () => {
 			await sendEmail(job.data);
 		},
 		{
-			connection: redisQueueClient as never,
+			connection: redisQueueClient,
 			limiter: {
 				duration: 1000,
 				max: 1,
@@ -63,37 +63,42 @@ const getEmailWorker = () => {
 	);
 
 	emailWorker.on("error", (error) => {
-		consola.error(new Error(`Error processing email job: ${error.message}`, { cause: error }));
+		consola.error(
+			new Error(
+				`Error processing email job: ${error.message}. Redis Status: ${redisQueueClient.status}`,
+				{ cause: error }
+			)
+		);
 	});
 
 	emailWorker.on("stalled", (jobId) => {
-		consola.warn(`Job ${jobId} stalled - will be retried by another worker`);
+		consola.warn(`Job ''${jobId}'' stalled - will be retried by another worker`);
 	});
 
 	return emailWorker;
 };
 
 const getEmailQueueEvents = () => {
-	emailQueueEvent ??= new QueueEvents(emailQueueKey, { connection: redisQueueClient as never });
+	emailQueueEvent ??= new QueueEvents(emailQueueKey, { connection: redisQueueClient });
 
 	emailQueueEvent.on("failed", ({ failedReason, jobId }) => {
-		consola.error(`Job ${jobId} failed with error ${failedReason}`, { failedReason });
+		consola.error(`Job '${jobId}' failed with error ${failedReason}`, { failedReason });
 	});
 
 	emailQueueEvent.on("waiting", ({ jobId }) => {
-		consola.info(`A job with ID ${jobId} is waiting`);
+		consola.info(`Job '${jobId}' is waiting`);
 	});
 
 	emailQueueEvent.on("completed", ({ jobId, returnvalue }) => {
-		consola.info(`Job ${jobId} completed`, { returnvalue });
+		consola.info(`Job '${jobId}' completed`, { returnvalue });
 	});
 
 	emailQueueEvent.on("retries-exhausted", ({ attemptsMade, jobId }) => {
-		consola.error(`Job ${jobId} failed after ${attemptsMade} attempts - no more retries`);
+		consola.error(`Job '${jobId}' failed after ${attemptsMade} attempts - no more retries`);
 	});
 
 	emailQueueEvent.on("progress", ({ data, jobId }) => {
-		consola.debug(`Job ${jobId} progress:`, { data });
+		consola.debug(`Job '${jobId}' progress:`, { data });
 	});
 
 	return emailQueueEvent;

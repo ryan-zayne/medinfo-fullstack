@@ -103,9 +103,9 @@ export const createMeeting = async (options: CreateMeetingOptions) => {
 	return result.data;
 };
 
-export const deleteMeeting = async (meetingId: string) => {
+export const deleteMeeting = async (meetingId: number | string) => {
 	const result = await callZoomApi("@delete/https://api.zoom.us/v2/meetings/:meetingId", {
-		params: { meetingId },
+		params: { meetingId: String(meetingId) },
 	});
 
 	if (result.error) {
