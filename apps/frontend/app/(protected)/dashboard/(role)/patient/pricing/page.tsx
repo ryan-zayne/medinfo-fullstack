@@ -1,3 +1,5 @@
+"use client";
+
 import { IconBox } from "@/components/common";
 import { For, ForWithWrapper } from "@/components/common/for";
 import { Button, Card } from "@/components/ui";
