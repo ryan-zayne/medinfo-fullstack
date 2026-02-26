@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { ForWithWrapper, NavLink, Show, Switch } from "@/components/common";
+import { ForWithWrapper, NavLink, Show } from "@/components/common";
 import NextIcon from "@/components/icons/NextIcon";
 import { Skeleton } from "@/components/ui";
 import { patientAppointmentsQuery } from "@/lib/react-query/queryOptions";
@@ -85,8 +85,8 @@ function PatientDashboardPage() {
 							<p>Log</p>
 						</header>
 
-						<Switch.Root>
-							<Switch.Match when={patientAppointmentsQueryResult.isPending}>
+						<Show.Root when={patientAppointmentsQueryResult.isPending}>
+							<Show.Content>
 								<ForWithWrapper
 									className="flex flex-col gap-2 p-2"
 									each={7}
@@ -97,8 +97,9 @@ function PatientDashboardPage() {
 										</div>
 									)}
 								/>
-							</Switch.Match>
-							<Switch.Default>
+							</Show.Content>
+
+							<Show.Fallback>
 								<ForWithWrapper
 									className="flex flex-col gap-2 p-2"
 									each={activityLogs}
@@ -109,8 +110,8 @@ function PatientDashboardPage() {
 										</li>
 									)}
 								/>
-							</Switch.Default>
-						</Switch.Root>
+							</Show.Fallback>
+						</Show.Root>
 					</div>
 				</article>
 			</section>
