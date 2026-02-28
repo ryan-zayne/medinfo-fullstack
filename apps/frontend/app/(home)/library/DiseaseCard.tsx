@@ -27,7 +27,7 @@ export function DiseaseCard(props: DiseaseCardProps) {
 			className={cnJoin(
 				type === "grid" && "relative h-full w-fit max-lg:max-h-[176px]",
 				type === "list"
-					&& "w-full flex-row gap-[44px] rounded-[16px] border-2 border-medinfo-primary-main p-6"
+					&& "flex w-full gap-[44px] rounded-[16px] border-2 border-medinfo-primary-main p-6"
 			)}
 		>
 			<Card.Header>
@@ -103,8 +103,7 @@ export function DiseaseCardSkeleton(props: DiseaseCardSkeletonProps) {
 			className={cnJoin(
 				type === "grid" && "relative h-full w-fit max-lg:max-h-[176px]",
 				type === "list"
-					&& `w-full flex-row gap-6 rounded-2xl border-2 border-medinfo-primary-main p-4 lg:gap-11
-					lg:p-6`
+					&& "flex w-full gap-6 rounded-2xl border-2 border-medinfo-primary-main p-4 lg:gap-11 lg:p-6"
 			)}
 		>
 			<Card.Header className={cnJoin(type === "list" && "shrink-0")}>
@@ -186,7 +185,7 @@ export function AlternateDiseaseCard(props: AlternateDiseaseCardProps) {
 			className={cnJoin(
 				type === "grid" && "max-w-[161px] shrink-0 lg:max-w-[340px]",
 				type === "list"
-					&& `w-fit flex-row gap-4 rounded-[16px] bg-medinfo-secondary-subtle p-3
+					&& `flex w-fit gap-4 rounded-[16px] bg-medinfo-secondary-subtle p-3
 					shadow-[0_4px_4px_hsl(0,0%,0%,0.12)] lg:p-6`,
 				className
 			)}

@@ -6,8 +6,10 @@ import { redisQueueClient } from "./utils/queueClient";
 
 const emailQueueKey = "emailQueue";
 
+const connection = redisQueueClient as never;
+
 export const emailQueue = new Queue<EmailJobOptions>(emailQueueKey, {
-	connection: redisQueueClient,
+	connection,
 	defaultJobOptions: {
 		attempts: 3,
 		backoff: {
@@ -46,7 +48,7 @@ const getEmailWorker = () => {
 			await sendEmail(job.data);
 		},
 		{
-			connection: redisQueueClient,
+			connection,
 			limiter: {
 				duration: 1000,
 				max: 1,
@@ -79,7 +81,7 @@ const getEmailWorker = () => {
 };
 
 const getEmailQueueEvents = () => {
-	emailQueueEvent ??= new QueueEvents(emailQueueKey, { connection: redisQueueClient });
+	emailQueueEvent ??= new QueueEvents(emailQueueKey, { connection });
 
 	emailQueueEvent.on("failed", ({ failedReason, jobId }) => {
 		consola.error(`Job '${jobId}' failed with error ${failedReason}`, { failedReason });
