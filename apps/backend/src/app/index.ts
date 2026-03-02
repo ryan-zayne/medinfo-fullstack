@@ -1,5 +1,5 @@
+import { createHonoApp } from "@/lib/hono";
 import { createBullBoardSetup } from "@/services/queues/utils/bullBoard";
-import { createHonoApp } from "../lib/factory";
 import { appointmentsRoutes } from "./appointments/routes";
 import { authRoutes } from "./auth/routes";
 import { diseasesRoutes } from "./diseases/routes";
