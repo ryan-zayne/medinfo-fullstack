@@ -39,7 +39,6 @@ function NavLink(
 
 	return (
 		<Link
-			prefetch={false}
 			href={resolvedHref}
 			data-active={isActive}
 			className={cnMerge(

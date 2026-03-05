@@ -8,8 +8,7 @@ import {
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { AppError, AppJsonResponse } from "@/lib/utils";
-import { validateWithZodMiddleware } from "@/middleware";
-import { authMiddleware } from "../auth/middleware/authMiddleware";
+import { authMiddleware, authorizeRoleMiddleware, validateWithZodMiddleware } from "@/middleware";
 import { getTopDoctors } from "./services/matchDoctorAlgo";
 import { createMeeting, deleteMeeting } from "./services/zoomApi/api";
 
@@ -18,6 +17,7 @@ const appointmentsRoutes = new Hono()
 	.use(authMiddleware)
 	.post(
 		"/match-doctor",
+		authorizeRoleMiddleware(["patient"]),
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/appointments/match-doctor"].body),
 		async (ctx) => {
 			const { reason } = ctx.req.valid("json");
@@ -49,6 +49,7 @@ const appointmentsRoutes = new Hono()
 	)
 	.post(
 		"/book",
+		authorizeRoleMiddleware(["patient"], { errorMessage: "Only patients can book appointments" }),
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/appointments/book"].body),
 		async (ctx) => {
 			const {
@@ -62,13 +63,6 @@ const appointmentsRoutes = new Hono()
 			} = ctx.req.valid("json");
 
 			const currentUser = ctx.get("currentUser");
-
-			if (currentUser.role !== "patient") {
-				throw new AppError({
-					code: 401,
-					message: "Only patients can book appointments",
-				});
-			}
 
 			const [doctor] = await db.select().from(users).where(eq(users.id, doctorId)).limit(1);
 
@@ -131,18 +125,12 @@ const appointmentsRoutes = new Hono()
 
 	.get(
 		"/doctor/all",
+		authorizeRoleMiddleware(["doctor"], { errorMessage: "Only doctors can access this route" }),
 		validateWithZodMiddleware("query", backendApiSchemaRoutes["@get/appointments/doctor/all"].query),
 		async (ctx) => {
 			const { limit = 10 } = ctx.req.valid("query") ?? {};
 
 			const currentUser = ctx.get("currentUser");
-
-			if (currentUser.role !== "doctor") {
-				throw new AppError({
-					code: 401,
-					message: "Only doctors can access this route",
-				});
-			}
 
 			const appointmentsResult = await db
 				.select({
@@ -183,18 +171,12 @@ const appointmentsRoutes = new Hono()
 	)
 	.get(
 		"/patient/all",
+		authorizeRoleMiddleware(["patient"], { errorMessage: "Only patients can access this route" }),
 		validateWithZodMiddleware("query", backendApiSchemaRoutes["@get/appointments/patient/all"].query),
 		async (ctx) => {
 			const { limit = 10 } = ctx.req.valid("query") ?? {};
 
 			const currentUser = ctx.get("currentUser");
-
-			if (currentUser.role !== "patient") {
-				throw new AppError({
-					code: 401,
-					message: "Only patients can access this route",
-				});
-			}
 
 			const appointmentsResult = await db
 				.select({
@@ -235,18 +217,12 @@ const appointmentsRoutes = new Hono()
 	)
 	.patch(
 		"/status",
+		authorizeRoleMiddleware(["doctor"], { errorMessage: "Only doctors can update appointment status" }),
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@patch/appointments/status"].body),
 		async (ctx) => {
 			const { appointmentId, status } = ctx.req.valid("json");
 
 			const currentUser = ctx.get("currentUser");
-
-			if (currentUser.role !== "doctor") {
-				throw new AppError({
-					code: 401,
-					message: "Only doctors can update appointment status",
-				});
-			}
 
 			const [appointment] = await db
 				.select({ doctorId: appointments.doctorId, id: appointments.id })
@@ -279,6 +255,7 @@ const appointmentsRoutes = new Hono()
 	)
 	.delete(
 		"/cancel",
+		authorizeRoleMiddleware(["doctor", "patient"]),
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@delete/appointments/cancel"].body),
 		async (ctx) => {
 			const { appointmentId } = ctx.req.valid("json");
