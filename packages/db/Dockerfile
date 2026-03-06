@@ -1,35 +1,43 @@
 # ================================================================
 # Stage 1: Base - Setup pnpm
 # ================================================================
-FROM node:22-alpine AS base
+FROM dhi.io/node:22-alpine3.22-dev AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@10.26.0 --activate
-
 WORKDIR /app
 
 # ================================================================
-# Stage 2: Prepare deps
+# Stage 2: Dependencies
 # ================================================================
-FROM base AS prepare-deps
+FROM base AS deps
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY packages/db ./packages/db
 COPY packages/env ./packages/env
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
+# Install only production dependencies with BuildKit cache
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install \
+    --prod \
+    --frozen-lockfile
 
 # ================================================================
-# Stage 3: DB Setup
+# Stage 3: Production Runtime
 # ================================================================
-FROM base AS setup
+FROM dhi.io/node:22-alpine3.22 AS production
 
-COPY --from=prepare-deps /app/node_modules ./node_modules
-COPY --from=prepare-deps /app/packages/db ./packages/db
-COPY --from=prepare-deps /app/packages/env ./packages/env
+WORKDIR /app
 
+# Copy optimized node_modules from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/packages/db ./packages/db
+COPY --from=deps /app/packages/env ./packages/env
 
 WORKDIR /app/packages/db
 
-# Run migrations
-CMD ["sh", "-c", "pnpm db:generate && pnpm db:migrate && pnpm db:seed"]
+# Set production environment
+ENV NODE_ENV=production
+
+# Run database migrations and seeding
+CMD ["node", "./node_modules/.bin/pnpm", "db:generate", "&&", "pnpm", "db:migrate", "&&", "pnpm", "db:seed"]

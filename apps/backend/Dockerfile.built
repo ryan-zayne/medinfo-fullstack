@@ -1,39 +1,53 @@
 # ================================================================
-# Stage 1: Base - Setup pnpm
+# Stage 1: Base - Setup pnpm (Build Stage)
 # ================================================================
-FROM node:22-slim AS base
+FROM node:24.14.0-alpine3.22 AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack prepare pnpm@10.28.2 --activate
+RUN corepack enable && corepack prepare pnpm@10.30.3 --activate
 WORKDIR /app
 
-
 # ================================================================
-# Stage 2: Builder
+# Stage 2: Dependencies - Install all deps
 # ================================================================
-FROM base AS builder
+FROM base AS deps
 
-# Copy workspace configuration
+# Copy workspace configuration first (best for layer caching)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Copy necessary files
+# Copy only package.json files for dependency resolution
+COPY apps/backend/package.json ./apps/backend/package.json
+COPY packages/db/package.json ./packages/db/package.json
+COPY packages/env/package.json ./packages/env/package.json
+COPY packages/shared/package.json ./packages/shared/package.json
+
+# Install ALL dependencies (including devDependencies for building)
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm --filter=!@medinfo/frontend install --prefer-offline --frozen-lockfile
+
+# ================================================================
+# Stage 3: Builder
+# ================================================================
+FROM deps AS builder
+
+# Copy source code
 COPY apps/backend ./apps/backend
 COPY packages ./packages
 
-# Build and Deploy
-RUN pnpm --filter=@medinfo/backend build && pnpm --filter=@medinfo/backend deploy --prod --prefer-offline  --legacy ./pruned
+# Build and Deploy with pnpm
+RUN pnpm --filter @medinfo/backend build && pnpm --filter @medinfo/backend deploy --prod --prefer-offline --legacy ./pruned
 
 # ================================================================
-# Stage 3: Runner - Production Image
+# Stage 4: Runner - Production Image
 # ================================================================
 FROM base AS runner
 
-COPY --from=builder /app/pruned/node_modules ./node_modules
-COPY --from=builder /app/pruned/dist ./dist
+# Copy built artifacts from builder stage
+COPY --from=builder /app/apps/backend/pruned ./
 
 EXPOSE 8000
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8000/ || exit 1
+# Improved healthcheck with curl (lighter than wget)
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
 
 CMD ["pnpm", "start:built"]
