@@ -7,7 +7,8 @@ import { sessionQuery } from "@/lib/react-query/queryOptions";
 
 // eslint-disable-next-line ts-eslint/no-explicit-any
 function withProtection(WrappedComponent: React.ComponentType<any>) {
-	return function ProtectedComponent(props: UnknownObject) {
+	// eslint-disable-next-line react-x/component-hook-factories
+	function ProtectedComponent(props: UnknownObject) {
 		const sessionQueryResult = useQuery(sessionQuery());
 
 		if (sessionQueryResult.data) {
@@ -15,7 +16,9 @@ function withProtection(WrappedComponent: React.ComponentType<any>) {
 		}
 
 		return <LoadingScreen />;
-	};
+	}
+
+	return ProtectedComponent;
 }
 
 export { withProtection };

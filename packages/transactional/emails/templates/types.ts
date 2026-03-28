@@ -1,9 +1,10 @@
 import type { Awaitable } from "@zayne-labs/toolkit-type-helpers";
 import type { TEMPLATE_LOOKUP } from "./lookup";
+import type { ResetPasswordEmailProps } from "./ResetPasswordEmail"; // NEW
 import type { VerifyEmailProps } from "./VerifyEmail";
 import type { WelcomeEmailProps } from "./WelcomeEmail";
 
-type WithCommonFields<TObject extends Record<string, unknown>> = TObject & {
+export type WithCommonFields<TObject extends Record<string, unknown>> = TObject & {
 	priority?: "high" | "low";
 	to: string;
 };
@@ -22,6 +23,10 @@ export type EmailJobOptions = SatisfiesEmailJobOptionsType<
 		onError?: () => Awaitable<void>;
 		onSuccess?: () => Awaitable<void>;
 	} & (
+		| {
+				data: WithCommonFields<ResetPasswordEmailProps>;
+				type: "resetPassword";
+		  }
 		| {
 				data: WithCommonFields<VerifyEmailProps>;
 				type: "verifyEmail";

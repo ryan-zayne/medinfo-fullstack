@@ -233,8 +233,8 @@ export function AlternateDiseaseCard(props: AlternateDiseaseCardProps) {
 				<p
 					className={cnJoin(
 						"text-xs",
-						type === "list" && "text-medinfo-dark-1 lg:text-base lg:leading-6",
-						type === "grid" && "text-medinfo-body-color lg:text-[18px] lg:leading-[26px]"
+						type === "list" && "text-medinfo-dark-1 lg:text-base/6",
+						type === "grid" && "text-medinfo-body-color lg:text-[18px]/[26px]"
 					)}
 				>
 					{type === "grid" ?

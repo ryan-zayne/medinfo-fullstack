@@ -1,8 +1,8 @@
 import { db } from "@medinfo/db";
-import { emailVerificationCodes, users } from "@medinfo/db/schema/auth";
+import { emailVerificationCodes, passwordResetTokens, users } from "@medinfo/db/schema/auth";
 import { backendApiSchemaRoutes, SignUpSchema } from "@medinfo/shared/validation/backendApiSchema";
 import { pickKeys } from "@zayne-labs/toolkit-core";
-import { differenceInHours, isFuture } from "date-fns";
+import { differenceInHours, isPast } from "date-fns";
 import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { rateLimiter } from "hono-rate-limiter";
@@ -15,7 +15,7 @@ import { removeFromCache, setCache } from "@/services/cache";
 import { uploadStreamToCloudinary } from "@/services/cloudinary";
 import { getNecessaryUserDetails } from "./services/common";
 import { deleteCookie, getCookie, setCookie } from "./services/cookie";
-import { sendVerificationEmail } from "./services/emails";
+import { sendPasswordResetEmail, sendVerificationEmail } from "./services/emails";
 import { hashValue, verifyHashedValue } from "./services/hash";
 import {
 	createGoogleAuthURL,
@@ -26,7 +26,8 @@ import { generateAccessToken, generateRefreshToken, getUpdatedTokenResultArray }
 
 const authRoutes = new Hono()
 	.basePath("/auth")
-	.post("/signup", rateLimiter(authRateLimiterOptions), async (ctx) => {
+	.use(rateLimiter(authRateLimiterOptions))
+	.post("/signup", async (ctx) => {
 		const formDataBody = await ctx.req.parseBody();
 
 		const {
@@ -108,7 +109,7 @@ const authRoutes = new Hono()
 		});
 
 		await Promise.all([
-			sendVerificationEmail(result.newUser),
+			sendVerificationEmail(result.newUser, db),
 			setCache(`user:${result.newUser.id}`, result.newUser),
 		]);
 
@@ -122,7 +123,6 @@ const authRoutes = new Hono()
 	})
 	.post(
 		"/signin",
-		rateLimiter(authRateLimiterOptions),
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/auth/signin"].body),
 		async (ctx) => {
 			const { email, password } = ctx.req.valid("json");
@@ -174,7 +174,7 @@ const authRoutes = new Hono()
 			}
 
 			if (!currentUser.emailVerifiedAt) {
-				await sendVerificationEmail(currentUser);
+				await sendVerificationEmail(currentUser, db);
 
 				throw new AppError({
 					code: 401,
@@ -365,6 +365,56 @@ const authRoutes = new Hono()
 			return ctx.redirect(result.redirectURL);
 		}
 	)
+
+	.get("/signout", authMiddleware, async (ctx) => {
+		const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
+
+		const currentUser = ctx.get("currentUser");
+
+		await Promise.all([
+			db
+				.update(users)
+				.set({ refreshTokenArray: getUpdatedTokenResultArray({ currentUser, zayneRefreshToken }) })
+				.where(eq(users.id, currentUser.id)),
+			removeFromCache(`user:${currentUser.id}`),
+		]);
+
+		deleteCookie(ctx, "zayneAccessToken");
+
+		deleteCookie(ctx, "zayneRefreshToken");
+
+		return AppJsonResponse(ctx, {
+			data: null,
+			message: "Signed out successfully",
+			schema: backendApiSchemaRoutes["@get/auth/signout"].data,
+		});
+	})
+	.get("/signout/all", authMiddleware, async (ctx) => {
+		const currentUser = ctx.get("currentUser");
+
+		await Promise.all([
+			db.update(users).set({ refreshTokenArray: [] }).where(eq(users.id, currentUser.id)),
+			removeFromCache(`user:${currentUser.id}`),
+		]);
+
+		deleteCookie(ctx, "zayneAccessToken");
+		deleteCookie(ctx, "zayneRefreshToken");
+
+		return AppJsonResponse(ctx, {
+			data: null,
+			message: "Signed out from all devices successfully",
+			schema: backendApiSchemaRoutes["@get/auth/signout"].data,
+		});
+	})
+	.get("/session", authMiddleware, (ctx) => {
+		const currentUser = ctx.get("currentUser");
+
+		return AppJsonResponse(ctx, {
+			data: { user: getNecessaryUserDetails(currentUser) },
+			message: "Session fetched successfully",
+			schema: backendApiSchemaRoutes["@get/auth/session"].data,
+		});
+	})
 	.post(
 		"/verify-email",
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/auth/verify-email"].body),
@@ -379,8 +429,9 @@ const authRoutes = new Hono()
 
 			if (!existingUser) {
 				throw new AppError({
-					code: 404,
-					message: "No account found with this email address",
+					cause: "No user found with provided email",
+					code: 400,
+					message: "Invalid or expired verification code",
 				});
 			}
 
@@ -392,13 +443,13 @@ const authRoutes = new Hono()
 
 			if (!result) {
 				throw new AppError({
-					cause: "No verification code found for this email",
+					cause: "No verification code found for this user",
 					code: 400,
 					message: "Invalid or expired verification code",
 				});
 			}
 
-			if (isFuture(result.expiresAt)) {
+			if (isPast(result.expiresAt)) {
 				await db
 					.delete(emailVerificationCodes)
 					.where(eq(emailVerificationCodes.userId, existingUser.id));
@@ -414,8 +465,9 @@ const authRoutes = new Hono()
 
 			if (!isCodeValid) {
 				throw new AppError({
+					cause: "Invalid verification code",
 					code: 400,
-					message: "Invalid verification code",
+					message: "Invalid or expired verification code",
 				});
 			}
 
@@ -472,7 +524,7 @@ const authRoutes = new Hono()
 				});
 			}
 
-			await sendVerificationEmail(existingUser);
+			await sendVerificationEmail(existingUser, db);
 
 			return AppJsonResponse(ctx, {
 				data: null,
@@ -481,54 +533,250 @@ const authRoutes = new Hono()
 			});
 		}
 	)
-	.get("/signout", authMiddleware, async (ctx) => {
-		const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
+	.post(
+		"/forgot-password",
+		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/auth/forgot-password"].body),
+		async (ctx) => {
+			const { email } = ctx.req.valid("json");
 
-		const currentUser = ctx.get("currentUser");
+			const [existingUser] = await db
+				.select({
+					email: users.email,
+					firstName: users.firstName,
+					id: users.id,
+					passwordResetRetryCount: users.passwordResetRetryCount,
+				})
+				.from(users)
+				.where(eq(users.email, email))
+				.limit(1);
 
-		await Promise.all([
-			db
+			if (!existingUser) {
+				throw new AppError({
+					code: 404,
+					message: "No user found with provided email",
+				});
+			}
+
+			if (existingUser.passwordResetRetryCount >= 3) {
+				await db
+					.update(users)
+					.set({
+						suspendedAt: new Date(),
+					})
+					.where(eq(users.id, existingUser.id));
+
+				throw new AppError({
+					code: 401,
+					message: "Password reset retries exceeded! Account suspended temporarily",
+				});
+			}
+
+			await db.transaction(async (tx) => {
+				await tx
+					.update(users)
+					.set({
+						passwordResetRetryCount: sql`${users.passwordResetRetryCount} + 1`,
+					})
+					.where(eq(users.id, existingUser.id));
+
+				await sendPasswordResetEmail(existingUser, tx as unknown as typeof db);
+			});
+
+			return AppJsonResponse(ctx, {
+				data: null,
+				message: `Password reset link sent to ${email}`,
+				schema: backendApiSchemaRoutes["@post/auth/forgot-password"].data,
+			});
+		}
+	)
+	.post(
+		"/reset-password",
+		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/auth/reset-password"].body),
+		async (ctx) => {
+			const { email, newPassword, token } = ctx.req.valid("json");
+
+			const [existingUser] = await db
+				.select({ id: users.id })
+				.from(users)
+				.where(eq(users.email, email))
+				.limit(1);
+
+			if (!existingUser) {
+				throw new AppError({
+					code: 400,
+					message: "Invalid or expired reset token",
+				});
+			}
+
+			const [result] = await db
+				.select({
+					expiresAt: passwordResetTokens.expiresAt,
+					id: passwordResetTokens.id,
+					token: passwordResetTokens.token,
+				})
+				.from(passwordResetTokens)
+				.where(eq(passwordResetTokens.userId, existingUser.id))
+				.limit(1);
+
+			if (!result) {
+				throw new AppError({
+					cause: "No reset token found for this user",
+					code: 400,
+					message: "Invalid or expired reset token",
+				});
+			}
+
+			if (isPast(result.expiresAt)) {
+				await db
+					.delete(emailVerificationCodes)
+					.where(eq(emailVerificationCodes.userId, existingUser.id));
+
+				throw new AppError({
+					cause: "Reset token has expired",
+					code: 400,
+					message: "Invalid or expired reset token",
+				});
+			}
+
+			const isTokenValid = await verifyHashedValue(token, result.token);
+
+			if (!isTokenValid) {
+				throw new AppError({
+					cause: "Invalid reset token",
+					code: 400,
+					message: "Invalid or expired reset token",
+				});
+			}
+
+			const newPasswordHash = await hashValue(newPassword);
+
+			const { updatedUser } = await db.transaction(async (tx) => {
+				const [updatedUserResult] = await tx
+					.update(users)
+					.set({
+						passwordChangedAt: new Date(),
+						passwordHash: newPasswordHash,
+						passwordResetRetryCount: 0,
+						// Sign out from all devices
+						refreshTokenArray: [],
+					})
+					.where(eq(users.id, existingUser.id))
+					.returning({ id: users.id });
+
+				await tx.delete(passwordResetTokens).where(eq(passwordResetTokens.id, result.id));
+
+				return { updatedUser: updatedUserResult };
+			});
+
+			if (!updatedUser) {
+				throw new AppError({
+					code: 400,
+					message: "Password reset failed",
+				});
+			}
+
+			await removeFromCache(`user:${updatedUser.id}`);
+
+			// TODO - send password reset complete email
+
+			return AppJsonResponse(ctx, {
+				data: null,
+				message: "Password reset successfully. Please sign in with your new password.",
+				schema: backendApiSchemaRoutes["@post/auth/reset-password"].data,
+			});
+		}
+	)
+	.patch(
+		"/update-profile",
+		authMiddleware,
+		validateWithZodMiddleware("json", backendApiSchemaRoutes["@patch/auth/update-profile"].body),
+		async (ctx) => {
+			const { bio, city, country, firstName, gender, lastName } = ctx.req.valid("json");
+
+			const currentUser = ctx.get("currentUser");
+
+			const fullName =
+				firstName || lastName ?
+					`${firstName ?? currentUser.firstName} ${lastName ?? currentUser.lastName}`
+				:	undefined;
+
+			const [updatedUser] = await db
 				.update(users)
-				.set({ refreshTokenArray: getUpdatedTokenResultArray({ currentUser, zayneRefreshToken }) })
-				.where(eq(users.id, currentUser.id)),
-			removeFromCache(`user:${currentUser.id}`),
-		]);
+				.set({
+					...(bio && { bio }),
+					...(city && { city }),
+					...(country && { country }),
+					...(firstName && { firstName }),
+					...(fullName && { fullName }),
+					...(gender && { gender }),
+					...(lastName && { lastName }),
+				})
+				.where(eq(users.id, currentUser.id))
+				.returning();
 
-		deleteCookie(ctx, "zayneAccessToken");
+			if (!updatedUser) {
+				throw new AppError({
+					code: 500,
+					message: "Failed to update profile",
+				});
+			}
 
-		deleteCookie(ctx, "zayneRefreshToken");
+			await setCache(`user:${updatedUser.id}`, updatedUser);
 
-		return AppJsonResponse(ctx, {
-			data: null,
-			message: "Signed out successfully",
-			schema: backendApiSchemaRoutes["@get/auth/signout"].data,
-		});
-	})
-	.get("/signout/all", authMiddleware, async (ctx) => {
-		const currentUser = ctx.get("currentUser");
+			return AppJsonResponse(ctx, {
+				data: { user: getNecessaryUserDetails(updatedUser) },
+				message: "Profile updated successfully",
+				schema: backendApiSchemaRoutes["@patch/auth/update-profile"].data,
+			});
+		}
+	)
+	.patch(
+		"/change-password",
+		authMiddleware,
+		validateWithZodMiddleware("json", backendApiSchemaRoutes["@patch/auth/change-password"].body),
+		async (ctx) => {
+			const { currentPassword, newPassword } = ctx.req.valid("json");
 
-		await Promise.all([
-			db.update(users).set({ refreshTokenArray: [] }).where(eq(users.id, currentUser.id)),
-			removeFromCache(`user:${currentUser.id}`),
-		]);
+			const currentUser = ctx.get("currentUser");
 
-		deleteCookie(ctx, "zayneAccessToken");
-		deleteCookie(ctx, "zayneRefreshToken");
+			if (!currentUser.passwordHash) {
+				throw new AppError({
+					code: 400,
+					message: "This account uses Google sign-in and has no password to change.",
+				});
+			}
 
-		return AppJsonResponse(ctx, {
-			data: null,
-			message: "Signed out from all devices successfully",
-			schema: backendApiSchemaRoutes["@get/auth/signout"].data,
-		});
-	})
-	.get("/session", authMiddleware, (ctx) => {
-		const currentUser = ctx.get("currentUser");
+			const isValidPassword = await verifyHashedValue(currentUser.passwordHash, currentPassword);
 
-		return AppJsonResponse(ctx, {
-			data: { user: getNecessaryUserDetails(currentUser) },
-			message: "Session fetched successfully",
-			schema: backendApiSchemaRoutes["@get/auth/session"].data,
-		});
-	});
+			if (!isValidPassword) {
+				throw new AppError({
+					code: 401,
+					message: "Current password is incorrect",
+				});
+			}
+
+			const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
+
+			const newPasswordHash = await hashValue(newPassword);
+
+			await db
+				.update(users)
+				.set({
+					passwordChangedAt: new Date(),
+					passwordHash: newPasswordHash,
+					// Sign out from other devices aside from current one
+					refreshTokenArray: currentUser.refreshTokenArray.filter(
+						(item) => item.token === zayneRefreshToken
+					),
+				})
+				.where(eq(users.id, currentUser.id));
+
+			return AppJsonResponse(ctx, {
+				data: null,
+				message: "Password changed successfully",
+				schema: backendApiSchemaRoutes["@patch/auth/change-password"].data,
+			});
+		}
+	);
 
 export { authRoutes };

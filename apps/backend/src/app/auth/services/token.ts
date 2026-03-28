@@ -2,7 +2,7 @@
 import { SelectUserSchema, type SelectUserType } from "@medinfo/db/schema/auth";
 import { pickKeys } from "@zayne-labs/toolkit-core";
 import { consola } from "consola";
-import { isFuture } from "date-fns";
+import { isPast } from "date-fns";
 /* eslint-disable import/default */
 import jwt from "jsonwebtoken";
 /* eslint-enable import/default */
@@ -107,7 +107,7 @@ export const warnAboutTokenReuse = (options: {
 				compromisedRefreshToken,
 				timestamp: new Date().toISOString(),
 				user,
-				userAgent: navigator.userAgent,
+				userAgent: globalThis.navigator.userAgent,
 			},
 		})
 	);
@@ -122,13 +122,8 @@ export const getUpdatedTokenResultArray = (options: {
 	const { currentUser, zayneRefreshToken } = options;
 
 	if (!zayneRefreshToken) {
-		return currentUser.refreshTokenArray.filter((item) => !isFuture(item.expiresAt));
+		return currentUser.refreshTokenArray.filter((item) => !isPast(item.expiresAt));
 	}
-
-	// == If it turns out that the refreshToken is not in the whitelist array, the question is why would a user be signing in with a refreshToken that is not in the array?
-	// == So it can be seen as a potential token reuse situation. Whether it's valid or not is of no concern rn.
-	// == Is it a possible token reuse attack or not? E no concern me.
-	// == Just log out the user from all other devices by removing all tokens from the array to avoid any possible issues
 
 	if (!isTokenInWhitelist(currentUser.refreshTokenArray, zayneRefreshToken)) {
 		warnAboutTokenReuse({ compromisedRefreshToken: zayneRefreshToken, currentUser });
@@ -137,7 +132,7 @@ export const getUpdatedTokenResultArray = (options: {
 	}
 
 	const updatedTokenResultArray = currentUser.refreshTokenArray.filter(
-		(item) => item.token !== zayneRefreshToken && !isFuture(item.expiresAt)
+		(item) => item.token !== zayneRefreshToken && !isPast(item.expiresAt)
 	);
 
 	return updatedTokenResultArray;

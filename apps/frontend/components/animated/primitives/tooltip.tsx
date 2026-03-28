@@ -1,3 +1,4 @@
+/* eslint-disable react-x/set-state-in-effect */
 "use client";
 
 import {

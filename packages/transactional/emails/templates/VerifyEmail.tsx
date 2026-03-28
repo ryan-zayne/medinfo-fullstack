@@ -1,15 +1,18 @@
 import { Button, Heading, render, Section, Text } from "@react-email/components";
 import * as React from "react";
+import { FRONTEND_URL } from "../constants";
 import { BaseLayout } from "../layouts/BaseLayout";
 
 export type VerifyEmailProps = {
+	email: string;
 	name: string;
 	validationCode: string;
-	validationUrl: string;
 };
 
 export function VerifyEmail(props: VerifyEmailProps) {
-	const { name, validationCode, validationUrl } = props;
+	const { email, name, validationCode } = props;
+
+	const validationUrl = `${FRONTEND_URL}/auth/verify-email?${new URLSearchParams({ code: validationCode, email }).toString()}`;
 
 	return (
 		<BaseLayout preview="Verify your email address for MedInfo">
@@ -59,9 +62,9 @@ export function VerifyEmail(props: VerifyEmailProps) {
 }
 
 VerifyEmail.PreviewProps = {
+	email: "dr.doe@example.com",
 	name: "Dr. Doe",
 	validationCode: "123456",
-	validationUrl: "http://localhost:3001/auth/verify-email?email=dr.doe@example.com&code=123456",
 } satisfies VerifyEmailProps;
 
 export const TemplateFn = (props: VerifyEmailProps) => render(<VerifyEmail {...props} />);

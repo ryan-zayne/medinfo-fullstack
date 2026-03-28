@@ -14,20 +14,21 @@
 		"lint:type-check": "tsc --pretty -p tsconfig.json"
 	},
 	"dependencies": {
-		"@react-email/components": "1.0.8",
-		"@zayne-labs/toolkit-react": "0.12.44",
-		"@zayne-labs/toolkit-type-helpers": "0.12.44",
+		"@medinfo/shared": "workspace:*",
+		"@react-email/components": "1.0.10",
+		"@zayne-labs/toolkit-react": "0.12.46",
+		"@zayne-labs/toolkit-type-helpers": "0.12.46",
 		"react": "19.2.4",
 		"react-dom": "19.2.4"
 	},
 	"devDependencies": {
-		"@react-email/preview-server": "5.2.9",
+		"@react-email/preview-server": "5.2.10",
 		"@total-typescript/ts-reset": "0.6.1",
 		"@types/react": "19.2.14",
 		"@types/react-dom": "19.2.3",
-		"@zayne-labs/tsconfig": "0.11.30",
-		"react-email": "5.2.9",
-		"tailwindcss": "4.2.1",
+		"@zayne-labs/tsconfig": "0.12.4",
+		"react-email": "5.2.10",
+		"tailwindcss": "4.2.2",
 		"tsdown": "catalog:",
 		"typescript": "catalog:"
 	}

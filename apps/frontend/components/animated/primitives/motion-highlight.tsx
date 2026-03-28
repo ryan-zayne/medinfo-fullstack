@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-x/set-state-in-effect */
 /* eslint-disable react-you-might-not-need-an-effect/no-derived-state */
 /* eslint-disable react-x/no-unstable-default-props */
 "use client";

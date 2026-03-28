@@ -1,5 +1,5 @@
-import type { AppRoutes as AppRoutesType } from ".next/dev/types/routes";
+import type { AppRoutes as AppRouteTypes } from "./.next/dev/types/routes";
 
 declare global {
-	export type AppRoutes = AppRoutesType;
+	export type AppRoutes = AppRouteTypes;
 }

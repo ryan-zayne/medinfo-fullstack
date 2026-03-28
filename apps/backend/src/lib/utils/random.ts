@@ -1,36 +1,32 @@
 import crypto from "node:crypto";
 import { promisify } from "node:util";
 
-export const generateRandomBytes = async (
-	options: { encoding?: BufferEncoding; length?: number } = {}
+export const generateRandomBytesAsync = async (
+	options: { encoding?: BufferEncoding; size?: number } = {}
 ) => {
-	const { encoding = "hex", length = 60 } = options;
-
-	const byteLength = Math.ceil(length / 2);
+	const { encoding = "hex", size = 32 } = options;
 
 	const promisifiedRandomBytes = promisify(crypto.randomBytes);
 
-	const awaitedBuffer = await promisifiedRandomBytes(byteLength);
+	const buffer = await promisifiedRandomBytes(size);
 
-	const randomString = awaitedBuffer.toString(encoding).slice(0, length);
-
-	return randomString;
-};
-
-export const generateRandomBytesSync = (options: { encoding?: BufferEncoding; length?: number } = {}) => {
-	const { encoding = "hex", length = 60 } = options;
-
-	const byteLength = Math.ceil(length / 2);
-
-	const randomString = crypto.randomBytes(byteLength).toString(encoding).slice(0, length);
+	const randomString = buffer.toString(encoding);
 
 	return randomString;
 };
 
-export const generateRandomUUID = (options: { length?: number } = {}) => {
-	const { length } = options;
+export const generateRandomBytes = (options: { encoding?: BufferEncoding; size?: number } = {}) => {
+	const { encoding = "hex", size = 32 } = options;
 
-	const randomUUID = length ? crypto.randomUUID().slice(0, length) : crypto.randomUUID();
+	const randomString = crypto.randomBytes(size).toString(encoding);
+
+	return randomString;
+};
+
+export const generateRandomUUID = (options: { size?: number } = {}) => {
+	const { size } = options;
+
+	const randomUUID = size ? crypto.randomUUID().slice(0, size) : crypto.randomUUID();
 
 	return randomUUID;
 };
@@ -39,4 +35,10 @@ export const generateRandomInteger = ({ max = 100, min = 0 } = {}) => {
 	const randomInteger = crypto.randomInt(min, max);
 
 	return randomInteger;
+};
+
+export const generateRandom6DigitCode = () => {
+	const randomNum = crypto.randomInt(0, 1000000).toString().padStart(6, "0");
+
+	return randomNum;
 };

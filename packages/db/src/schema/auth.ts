@@ -5,6 +5,8 @@ export const users = pg.pgTable(
 	"users",
 	{
 		avatar: pg.text().notNull(),
+		bio: pg.text(),
+		city: pg.text(),
 		country: pg.text(),
 		createdAt: pg.timestamp({ withTimezone: true }).notNull().defaultNow(),
 		deletedAt: pg.timestamp({ withTimezone: true }),
@@ -20,7 +22,9 @@ export const users = pg.pgTable(
 		lastName: pg.text().notNull(),
 		loginRetryCount: pg.integer().notNull().default(0),
 		medicalLicense: pg.text(),
+		passwordChangedAt: pg.timestamp({ withTimezone: true }),
 		passwordHash: pg.text(),
+		passwordResetRetryCount: pg.integer().notNull().default(0),
 		refreshTokenArray: pg
 			.jsonb()
 			.notNull()
@@ -66,12 +70,25 @@ export type SelectUserType = typeof users.$inferSelect;
 // 	]
 // );
 
-export const emailVerificationCodes = pg.pgTable("email_verification_tokens", {
+export const emailVerificationCodes = pg.pgTable("email_verification_codes", {
 	code: pg.text().notNull().unique(),
 	createdAt: pg.timestamp({ withTimezone: true }).defaultNow().notNull(),
 	email: pg.text().unique().notNull(),
 	expiresAt: pg.timestamp({ withTimezone: true }).notNull(),
 	id: pg.uuid().defaultRandom().primaryKey(),
+	userId: pg
+		.uuid()
+		.unique()
+		.notNull()
+		.references(() => users.id, { onDelete: "cascade" }),
+});
+
+export const passwordResetTokens = pg.pgTable("password_reset_tokens", {
+	createdAt: pg.timestamp({ withTimezone: true }).defaultNow().notNull(),
+	email: pg.text().unique().notNull(),
+	expiresAt: pg.timestamp({ withTimezone: true }).notNull(),
+	id: pg.uuid().defaultRandom().primaryKey(),
+	token: pg.text().notNull().unique(),
 	userId: pg
 		.uuid()
 		.unique()

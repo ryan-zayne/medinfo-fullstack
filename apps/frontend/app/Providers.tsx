@@ -19,7 +19,7 @@ function Providers(props: ProvidersProps) {
 		<QueryClientProvider client={queryClient}>
 			<ProgressProvider
 				height="2.5px"
-				color="hsl(150,21%,17%)"
+				color="var(--color-medinfo-primary-darker)"
 				options={{ showSpinner: true }}
 				shallowRouting={true}
 			>

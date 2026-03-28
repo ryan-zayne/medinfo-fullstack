@@ -4,13 +4,16 @@ import { FRONTEND_URL } from "../constants";
 import { BaseLayout } from "../layouts/BaseLayout";
 
 export type WelcomeEmailProps = {
-	loginUrl: string;
 	name: string;
 	role: "doctor" | "patient";
 };
 
 export function WelcomeEmail(props: WelcomeEmailProps) {
-	const { loginUrl, name, role } = props;
+	const { name, role } = props;
+
+	const loginURL = `${FRONTEND_URL}/auth/signin?user=${role}`;
+
+	const supportURL = `${FRONTEND_URL}/support`;
 
 	return (
 		<BaseLayout preview={`Welcome to MedInfo Nigeria ${role === "doctor" ? "Partner Network" : ""}`}>
@@ -35,7 +38,7 @@ export function WelcomeEmail(props: WelcomeEmailProps) {
 				<Button
 					className="inline-block rounded-full bg-medinfo-primary-main px-10 py-4 text-sm
 						font-semibold text-white no-underline shadow-md"
-					href={loginUrl}
+					href={loginURL}
 				>
 					{role === "doctor" ? "Access Provider Dashboard" : "Explore Dashboard"}
 				</Button>
@@ -43,7 +46,7 @@ export function WelcomeEmail(props: WelcomeEmailProps) {
 
 			<Text className="mb-0 text-sm/relaxed text-medinfo-dark-4">
 				If you have any questions, feel free to reply to this email or visit our{" "}
-				<Button className="text-medinfo-primary-main underline" href={`${FRONTEND_URL}/help`}>
+				<Button className="text-medinfo-primary-main underline" href={supportURL}>
 					Help Center
 				</Button>
 				.
@@ -53,7 +56,6 @@ export function WelcomeEmail(props: WelcomeEmailProps) {
 }
 
 WelcomeEmail.PreviewProps = {
-	loginUrl: "http://localhost:3000/auth/signin",
 	name: "Dr. Doe",
 	role: "doctor",
 } satisfies WelcomeEmailProps;

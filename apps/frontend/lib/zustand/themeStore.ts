@@ -3,17 +3,21 @@ import { createReactStore } from "@zayne-labs/toolkit-react/zustand-compat";
 import type { StateCreator } from "zustand";
 import { persist } from "zustand/middleware";
 
+type Theme = "dark" | "light" | "system";
+
+type SystemTheme = "dark" | "light";
+
 type ThemeStore = {
 	actions: {
 		initThemeOnLoad: () => void;
-		setTheme: (newTheme: "dark" | "light") => void;
+		setTheme: (newTheme: Theme) => void;
 		toggleTheme: () => void;
 	};
 	isDarkMode: boolean;
 
-	systemTheme: "dark" | "light";
+	systemTheme: SystemTheme;
 
-	theme: "dark" | "light" | "system";
+	theme: Theme;
 };
 
 const getPrefersDarkMode = () => {
@@ -25,11 +29,12 @@ const themeStoreObjectFn: StateCreator<ThemeStore> = (set, get) => ({
 		initThemeOnLoad: () => {
 			const { systemTheme, theme: persistedTheme } = get();
 
-			document.documentElement.dataset.theme =
-				persistedTheme === "system" ? systemTheme : persistedTheme;
+			const resolvedTheme = persistedTheme === "system" ? systemTheme : persistedTheme;
+
+			document.documentElement.dataset.theme = resolvedTheme;
 		},
 
-		setTheme: (newTheme: "dark" | "light") => {
+		setTheme: (newTheme) => {
 			document.documentElement.dataset.theme = newTheme;
 
 			set({ isDarkMode: newTheme === "dark", theme: newTheme });
@@ -38,9 +43,9 @@ const themeStoreObjectFn: StateCreator<ThemeStore> = (set, get) => ({
 		toggleTheme: () => {
 			const { actions, systemTheme, theme: persistedTheme } = get();
 
-			const currentTheme = persistedTheme === "system" ? systemTheme : persistedTheme;
+			const resolvedTheme = persistedTheme === "system" ? systemTheme : persistedTheme;
 
-			const newTheme = currentTheme === "light" ? "dark" : "light";
+			const newTheme = resolvedTheme === "light" ? "dark" : "light";
 
 			actions.setTheme(newTheme);
 		},
@@ -56,9 +61,7 @@ const themeStoreObjectFn: StateCreator<ThemeStore> = (set, get) => ({
 export const useThemeStore = createReactStore<ThemeStore>()(
 	persist(themeStoreObjectFn, {
 		migrate: (persistedState) => persistedState,
-
 		name: "colorScheme",
-
 		partialize: ({ isDarkMode, theme }) => ({ isDarkMode, theme }),
 		version: 1,
 	})

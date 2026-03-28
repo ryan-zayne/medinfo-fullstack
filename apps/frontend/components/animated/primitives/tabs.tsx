@@ -1,9 +1,8 @@
+/* eslint-disable react-x/set-state-in-effect */
 /* eslint-disable react-you-might-not-need-an-effect/no-derived-state */
 /* eslint-disable react-you-might-not-need-an-effect/no-chain-state-updates */
-/* eslint-disable react-you-might-not-need-an-effect/no-pass-data-to-parent */
 /* eslint-disable react-hooks/preserve-manual-memoization */
 /* eslint-disable react-x/no-unstable-default-props */
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { toArray } from "@zayne-labs/toolkit-core";

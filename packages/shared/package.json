@@ -14,13 +14,14 @@
 	"dependencies": {
 		"@dotenvx/dotenvx": "catalog:",
 		"@medinfo/db": "workspace:*",
-		"@zayne-labs/callapi": "1.11.46",
+		"@medinfo/env": "workspace:*",
+		"@zayne-labs/callapi": "1.12.1",
 		"consola": "3.4.2",
 		"zod": "catalog:"
 	},
 	"devDependencies": {
 		"@total-typescript/ts-reset": "0.6.1",
-		"@zayne-labs/tsconfig": "^0.11.30",
+		"@zayne-labs/tsconfig": "^0.12.4",
 		"tsdown": "catalog:",
 		"typescript": "catalog:"
 	}

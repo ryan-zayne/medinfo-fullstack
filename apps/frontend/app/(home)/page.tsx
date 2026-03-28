@@ -70,7 +70,7 @@ function HomePage() {
 						<span>doctors</span>
 					</h1>
 
-					<p className="mt-[15px] md:text-[18px] md:leading-[26px]">
+					<p className="mt-[15px] md:text-[18px]/[26px]">
 						Getting the right health information shouldn’t be complicated, and talking to a doctor
 						shouldn’t feel like a big task. That’s why we’ve made it easy for you to access reliable
 						knowledge and chat with some of the best doctors in the field. Whether you have a simple

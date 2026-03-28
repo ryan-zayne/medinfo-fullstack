@@ -246,10 +246,58 @@ const authRoutes = () => {
 			data: withBaseSuccessResponse(z.null()),
 		},
 
+		"@patch/auth/change-password": {
+			body: z
+				.object({
+					confirmNewPassword: PasswordSchema,
+					currentPassword: z.string().min(1, "Current password is required"),
+					newPassword: PasswordSchema,
+				})
+				.refine((data) => data.newPassword === data.confirmNewPassword, {
+					message: "New passwords do not match",
+					path: ["confirmNewPassword"],
+				}),
+			data: withBaseSuccessResponse(z.null()),
+		},
+
+		"@patch/auth/update-profile": {
+			body: z
+				.object({
+					bio: z.string().max(500, "Bio must be under 500 characters").optional(),
+					city: z.string().optional(),
+					country: z.string().optional(),
+					firstName: z.string().min(1).optional(),
+					gender: z.enum(["male", "female"]).optional(),
+					lastName: z.string().min(1).optional(),
+				})
+				.partial(),
+			data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
+		},
+
+		"@post/auth/forgot-password": {
+			body: z.object({ email: z.email("Please enter a valid email") }),
+			data: withBaseSuccessResponse(z.null()),
+		},
+
 		"@post/auth/resend-verification-email": {
 			body: z.object({
 				email: z.email("Please enter a valid email"),
 			}),
+			data: withBaseSuccessResponse(z.null()),
+		},
+
+		"@post/auth/reset-password": {
+			body: z
+				.object({
+					confirmNewPassword: PasswordSchema,
+					email: z.email("Please enter a valid email"),
+					newPassword: PasswordSchema,
+					token: z.string().min(1, "Reset token is required"),
+				})
+				.refine((data) => data.newPassword === data.confirmNewPassword, {
+					message: "Passwords do not match",
+					path: ["confirmNewPassword"],
+				}),
 			data: withBaseSuccessResponse(z.null()),
 		},
 

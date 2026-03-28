@@ -1,19 +1,25 @@
-import { db } from "@medinfo/db";
-import { emailVerificationCodes, type SelectUserType } from "@medinfo/db/schema/auth";
+import type { db } from "@medinfo/db";
+import { emailVerificationCodes, passwordResetTokens, type SelectUserType } from "@medinfo/db/schema/auth";
+import { add } from "date-fns";
 import { eq } from "drizzle-orm";
-import { ENVIRONMENT } from "@/config/env";
+import { generateRandom6DigitCode, generateRandomBytes } from "@/lib/utils/random";
 import { addEmailToQueue } from "@/services/queues";
-import { generateRandom6DigitKey } from "./common";
 import { hashValue } from "./hash";
 
-export const sendVerificationEmail = async (user: Pick<SelectUserType, "email" | "firstName" | "id">) => {
-	const code = generateRandom6DigitKey();
+export const sendVerificationEmail = async (
+	user: Pick<SelectUserType, "email" | "firstName" | "id">,
+	dbClient: typeof db
+) => {
+	const code = generateRandom6DigitCode();
 
 	const hashedCode = await hashValue(code);
 
-	const codeExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+	const codeExpiry = add(new Date(), { minutes: 15 });
 
-	await db
+	// Invalidate any existing codes for this user before creating a new one
+	// await dbClient.delete(emailVerificationCodes).where(eq(emailVerificationCodes.userId, user.id));
+
+	await dbClient
 		.insert(emailVerificationCodes)
 		.values({
 			code: hashedCode,
@@ -30,21 +36,61 @@ export const sendVerificationEmail = async (user: Pick<SelectUserType, "email" |
 			target: emailVerificationCodes.userId,
 		});
 
-	const FRONTEND_URL =
-		ENVIRONMENT.NODE_ENV === "development" ?
-			ENVIRONMENT.BASE_FRONTEND_HOST_DEV
-		:	ENVIRONMENT.BASE_FRONTEND_HOST;
-
 	await addEmailToQueue({
 		data: {
+			email: user.email,
 			name: user.firstName,
 			to: user.email,
 			validationCode: code,
-			validationUrl: `${FRONTEND_URL}/auth/verify-email?${new URLSearchParams({ code, email: user.email }).toString()}`,
 		},
 		onError: async () => {
-			await db.delete(emailVerificationCodes).where(eq(emailVerificationCodes.userId, user.id));
+			await dbClient.delete(emailVerificationCodes).where(eq(emailVerificationCodes.userId, user.id));
 		},
 		type: "verifyEmail",
+	});
+};
+
+export const sendPasswordResetEmail = async (
+	user: Pick<SelectUserType, "email" | "firstName" | "id">,
+	dbClient: typeof db
+) => {
+	const rawToken = generateRandomBytes();
+
+	const tokenExpiry = add(new Date(), { minutes: 20 });
+
+	// Invalidate any existing tokens for this user before creating a new one
+	// await dbClient.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, user.id));
+
+	const hashedToken = await hashValue(rawToken);
+
+	await dbClient
+		.insert(passwordResetTokens)
+		.values({
+			email: user.email,
+			expiresAt: tokenExpiry,
+			token: hashedToken,
+			userId: user.id,
+		})
+		.onConflictDoUpdate({
+			set: {
+				email: user.email,
+				expiresAt: tokenExpiry,
+				token: hashedToken,
+			},
+			target: passwordResetTokens.userId,
+		});
+
+	await addEmailToQueue({
+		data: {
+			email: user.email,
+			name: user.firstName,
+			priority: "high",
+			to: user.email,
+			token: hashedToken,
+		},
+		onError: async () => {
+			await dbClient.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, user.id));
+		},
+		type: "resetPassword",
 	});
 };

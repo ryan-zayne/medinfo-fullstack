@@ -7,10 +7,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cnMerge } from "@/lib/utils/cn";
 
-const isRelativeLink = (value: string | UrlObject | null | undefined): value is string => {
-	return isString(value) && !value.startsWith("/");
-};
-
 export type MainAppRoutes<TAppRoutes extends AppRoutes = AppRoutes> =
 	TAppRoutes extends `${infer TPrefix}/[${string}]` ? `${TPrefix}/${AnyString}` : TAppRoutes;
 
@@ -27,22 +23,15 @@ function NavLink(
 
 	const pathname = usePathname();
 
-	if (!isString(href) && isRelativeLink(href.pathname)) {
-		Reflect.set(href, "pathname", `${pathname}/${href.pathname}`);
-	}
-
-	const resolvedHref =
-		isString(href) && isRelativeLink(href) ? `${pathname}/${href.replaceAll(" ", "")}` : href;
-
-	const isActive =
-		isString(resolvedHref) ? pathname === resolvedHref : pathname === resolvedHref.pathname;
+	const isActive = isString(href) ? pathname === href : pathname === href.pathname;
 
 	return (
 		<Link
-			href={resolvedHref}
+			href={href}
 			data-active={isActive}
 			className={cnMerge(
 				transitionType !== "no-transition" && "nav-link-transition relative",
+				// eslint-disable-next-line tailwindcss-better/no-unknown-classes
 				transitionType === "navbar" && "nav-mobile",
 				className
 			)}

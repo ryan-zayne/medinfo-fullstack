@@ -52,7 +52,7 @@ pnpm dev:frontend
 
 - **Docker Desktop** (recommended) or Docker Engine
 - **Node.js 18+** (for frontend development)
-- **pnpm 10.30.3+** (package manager)
+- **pnpm 10.33.0+** (package manager)
 
 ### Step-by-Step Setup
 

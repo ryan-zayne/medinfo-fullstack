@@ -104,7 +104,7 @@ export function DateTimePicker(props: DatePickerProps) {
 							...calenderClassNames,
 						}}
 						components={{
-							// eslint-disable-next-line react-x/no-nested-component-definitions
+							// eslint-disable-next-line react-x/component-hook-factories, react-x/no-nested-component-definitions
 							DayButton: (innerProps) => (
 								<CalendarDayButton
 									{...innerProps}
@@ -131,6 +131,7 @@ export function DateTimePicker(props: DatePickerProps) {
 
 				{showTimePicker && (
 					<TimePicker
+						// eslint-disable-next-line react-x/purity
 						dateValue={date ?? new Date()}
 						onDateStringChange={setDateString as typeof onDateStringChangeProp}
 						timeSettings={timeSettings}

@@ -20,13 +20,13 @@
 	},
 	"dependencies": {
 		"@dotenvx/dotenvx": "catalog:",
-		"@faker-js/faker": "^10.3.0",
+		"@faker-js/faker": "^10.4.0",
 		"@medinfo/env": "workspace:*",
 		"@node-rs/argon2": "^2.0.2",
-		"@zayne-labs/tsconfig": "0.11.30",
+		"@zayne-labs/tsconfig": "0.12.4",
 		"consola": "3.4.2",
 		"cross-env": "^10.1.0",
-		"drizzle-kit": "0.31.9",
+		"drizzle-kit": "0.31.10",
 		"drizzle-orm": "0.45.1",
 		"drizzle-zod": "0.8.3",
 		"pg": "8.20.0",
@@ -35,7 +35,7 @@
 	},
 	"devDependencies": {
 		"@total-typescript/ts-reset": "0.6.1",
-		"@types/pg": "8.18.0",
+		"@types/pg": "8.20.0",
 		"tsdown": "catalog:",
 		"typescript": "catalog:"
 	}

@@ -1,5 +1,6 @@
 import type { db } from "@medinfo/db";
 import { users, type SelectUserType } from "@medinfo/db/schema/auth";
+import { getFrontendURL } from "@medinfo/shared/common";
 import { callApi } from "@zayne-labs/callapi";
 import * as arctic from "arctic";
 import { eq } from "drizzle-orm";
@@ -158,13 +159,8 @@ type UserResult =
 			variant: "new-user";
 	  };
 
-const BASE_FRONTEND_HOST =
-	ENVIRONMENT.NODE_ENV === "development" ?
-		ENVIRONMENT.BASE_FRONTEND_HOST_DEV
-	:	ENVIRONMENT.BASE_FRONTEND_HOST;
-
 const getRedirectURL = (role: SelectUserType["role"]) => {
-	return `${BASE_FRONTEND_HOST}/dashboard/${role}`;
+	return `${getFrontendURL()}/dashboard/${role}`;
 };
 
 export const findOrCreateUserFromGoogle = async (

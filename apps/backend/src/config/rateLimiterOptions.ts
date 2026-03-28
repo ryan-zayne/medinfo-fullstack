@@ -1,19 +1,19 @@
-import { rateLimiter } from "hono-rate-limiter";
+import type { ConfigProps } from "hono-rate-limiter";
 
 const rateLimiterOptions = {
 	keyGenerator: (ctx) => ctx.req.header("x-forwarded-for") ?? "unknown",
 	limit: 100,
 	message: "Too many requests from this IP, please try again later.",
-	standardHeaders: "draft-6", // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+	standardHeaders: "draft-7",
 	windowMs: 15 * 60 * 1000,
-} satisfies Parameters<typeof rateLimiter>[0];
+} satisfies ConfigProps;
 
 const authRateLimiterOptions = {
 	keyGenerator: (ctx) => ctx.req.header("x-forwarded-for") ?? "unknown",
 	limit: 5,
-	message: "Too many login attempts from this IP, please try again after 15 minutes.",
-	standardHeaders: "draft-6",
-	windowMs: 15 * 60 * 1000,
-} satisfies Parameters<typeof rateLimiter>[0];
+	message: "Too many auth attempts from this IP, please try again later.",
+	standardHeaders: "draft-7",
+	windowMs: 30 * 60 * 1000,
+} satisfies ConfigProps;
 
 export { authRateLimiterOptions, rateLimiterOptions };

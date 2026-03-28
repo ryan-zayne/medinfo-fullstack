@@ -18,7 +18,7 @@ The Docker setup includes:
 - **Docker Desktop** (recommended) or Docker Engine
 - **Docker Compose** (included with Docker Desktop)
 - **Node.js 18+** (for frontend development)
-- **pnpm 10.30.3+** (package manager)
+- **pnpm 10.33.0+** (package manager)
 
 ### Step-by-Step Setup
 

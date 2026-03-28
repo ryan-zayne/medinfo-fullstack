@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import { checkUserSession } from "@/lib/api/callBackendApi/plugins/utils/session";
 
 function withProtectionServer(WrappedComponent: React.ComponentType, pathname: AppRoutes) {
-	return async function AuthComponent(props: UnknownObject) {
+	// eslint-disable-next-line react-x/component-hook-factories
+	async function AuthComponent(props: UnknownObject) {
 		const { error } = await checkUserSession();
 
 		if (error) {
@@ -11,7 +12,9 @@ function withProtectionServer(WrappedComponent: React.ComponentType, pathname: A
 		}
 
 		return <WrappedComponent {...props} />;
-	};
+	}
+
+	return AuthComponent;
 }
 
 export { withProtectionServer };

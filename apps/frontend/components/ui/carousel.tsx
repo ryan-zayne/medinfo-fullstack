@@ -1,4 +1,4 @@
-/* eslint-disable react-you-might-not-need-an-effect/no-pass-data-to-parent */
+/* eslint-disable react-x/set-state-in-effect */
 "use client";
 
 import { createCustomContext, useCallbackRef } from "@zayne-labs/toolkit-react";
