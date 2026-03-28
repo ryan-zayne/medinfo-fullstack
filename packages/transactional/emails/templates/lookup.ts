@@ -24,6 +24,11 @@ const getTemplateFn =
 
 export const TEMPLATE_LOOKUP = defineEnumDeep(
 	{
+		passwordResetComplete: {
+			from: "MedInfo <donotreply@medical-info.com>",
+			subject: "Password Reset Successful",
+			template: getTemplateFn(import("./PasswordResetCompleteEmail")),
+		},
 		resetPassword: {
 			from: "MedInfo <donotreply@medical-info.com>",
 			subject: "Reset your password",

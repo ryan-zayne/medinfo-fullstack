@@ -1,5 +1,6 @@
 import type { Awaitable } from "@zayne-labs/toolkit-type-helpers";
 import type { TEMPLATE_LOOKUP } from "./lookup";
+import type { PasswordResetCompleteEmailProps } from "./PasswordResetCompleteEmail";
 import type { ResetPasswordEmailProps } from "./ResetPasswordEmail"; // NEW
 import type { VerifyEmailProps } from "./VerifyEmail";
 import type { WelcomeEmailProps } from "./WelcomeEmail";
@@ -23,6 +24,10 @@ export type EmailJobOptions = SatisfiesEmailJobOptionsType<
 		onError?: () => Awaitable<void>;
 		onSuccess?: () => Awaitable<void>;
 	} & (
+		| {
+				data: WithCommonFields<PasswordResetCompleteEmailProps>;
+				type: "passwordResetComplete";
+		  }
 		| {
 				data: WithCommonFields<ResetPasswordEmailProps>;
 				type: "resetPassword";

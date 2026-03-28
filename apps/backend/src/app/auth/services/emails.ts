@@ -102,3 +102,15 @@ export const sendPasswordResetEmail = async (
 		type: "resetPassword",
 	});
 };
+
+export const sendPasswordResetCompleteEmail = async (
+	user: Pick<SelectUserType, "email" | "firstName">
+) => {
+	await addEmailToQueue({
+		data: {
+			name: user.firstName,
+			to: user.email,
+		},
+		type: "passwordResetComplete",
+	});
+};

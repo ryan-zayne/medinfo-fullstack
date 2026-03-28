@@ -15,7 +15,11 @@ import { removeFromCache, setCache } from "@/services/cache";
 import { uploadStreamToCloudinary } from "@/services/cloudinary";
 import { getNecessaryUserDetails } from "./services/common";
 import { deleteCookie, getCookie, setCookie } from "./services/cookie";
-import { sendPasswordResetEmail, sendVerificationEmail } from "./services/emails";
+import {
+	sendPasswordResetCompleteEmail,
+	sendPasswordResetEmail,
+	sendVerificationEmail,
+} from "./services/emails";
 import { hashValue, verifyHashedValue } from "./services/hash";
 import {
 	createGoogleAuthURL,
@@ -622,7 +626,6 @@ const authRoutes = new Hono()
 				});
 			}
 
-			// Decode and validate the JWT token structure
 			const decodedPayload = decodeJwtToken(token, {
 				schema: z.object({ token: z.string() }),
 			});
@@ -649,7 +652,7 @@ const authRoutes = new Hono()
 						suspendedAt: null,
 					})
 					.where(eq(users.id, result.userId))
-					.returning({ id: users.id });
+					.returning();
 
 				await tx.delete(passwordResetTokens).where(eq(passwordResetTokens.id, result.tokenId));
 
@@ -663,9 +666,10 @@ const authRoutes = new Hono()
 				});
 			}
 
-			await removeFromCache(`user:${updatedUser.id}`);
-
-			// TODO - send password reset complete email
+			await Promise.all([
+				removeFromCache(`user:${updatedUser.id}`),
+				sendPasswordResetCompleteEmail({ email: updatedUser.email, firstName: updatedUser.firstName }),
+			]);
 
 			return AppJsonResponse(ctx, {
 				data: null,
