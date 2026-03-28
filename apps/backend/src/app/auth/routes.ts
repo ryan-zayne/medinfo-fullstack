@@ -22,7 +22,12 @@ import {
 	findOrCreateUserFromGoogle,
 	getUserDetailsFromGoogleAuthClaims,
 } from "./services/oauth";
-import { generateAccessToken, generateRefreshToken, getUpdatedTokenResultArray } from "./services/token";
+import {
+	decodeJwtToken,
+	generateAccessToken,
+	generateRefreshToken,
+	getUpdatedTokenResultArray,
+} from "./services/token";
 
 const authRoutes = new Hono()
 	.basePath("/auth")
@@ -105,13 +110,14 @@ const authRoutes = new Hono()
 				throw new AppError({ code: 500, message: "Failed to update user tokens" });
 			}
 
+			// Send verification email within transaction to ensure atomicity
+			await sendVerificationEmail(updatedUser, tx as unknown as typeof db);
+
 			return { newUser: updatedUser, newZayneRefreshTokenResult };
 		});
 
-		await Promise.all([
-			sendVerificationEmail(result.newUser, db),
-			setCache(`user:${result.newUser.id}`, result.newUser),
-		]);
+		// Cache user data after successful transaction
+		await setCache(`user:${result.newUser.id}`, result.newUser);
 
 		return AppJsonResponse(ctx, {
 			data: {
@@ -421,29 +427,20 @@ const authRoutes = new Hono()
 		async (ctx) => {
 			const { code, email } = ctx.req.valid("json");
 
-			const [existingUser] = await db
-				.select({ id: users.id })
-				.from(users)
-				.where(eq(users.email, email))
-				.limit(1);
-
-			if (!existingUser) {
-				throw new AppError({
-					cause: "No user found with provided email",
-					code: 400,
-					message: "Invalid or expired verification code",
-				});
-			}
-
 			const [result] = await db
-				.select({ code: emailVerificationCodes.code, expiresAt: emailVerificationCodes.expiresAt })
+				.select({
+					code: emailVerificationCodes.code,
+					expiresAt: emailVerificationCodes.expiresAt,
+					userId: users.id,
+				})
 				.from(emailVerificationCodes)
-				.where(eq(emailVerificationCodes.userId, existingUser.id))
+				.innerJoin(users, eq(emailVerificationCodes.userId, users.id))
+				.where(eq(users.email, email))
 				.limit(1);
 
 			if (!result) {
 				throw new AppError({
-					cause: "No verification code found for this user",
+					cause: "No user or verification code found",
 					code: 400,
 					message: "Invalid or expired verification code",
 				});
@@ -452,7 +449,7 @@ const authRoutes = new Hono()
 			if (isPast(result.expiresAt)) {
 				await db
 					.delete(emailVerificationCodes)
-					.where(eq(emailVerificationCodes.userId, existingUser.id));
+					.where(eq(emailVerificationCodes.userId, result.userId));
 
 				throw new AppError({
 					cause: "Verification code has expired",
@@ -484,7 +481,7 @@ const authRoutes = new Hono()
 				});
 			}
 
-			await db.delete(emailVerificationCodes).where(eq(emailVerificationCodes.userId, existingUser.id));
+			await db.delete(emailVerificationCodes).where(eq(emailVerificationCodes.userId, result.userId));
 
 			return AppJsonResponse(ctx, {
 				data: {
@@ -593,43 +590,30 @@ const authRoutes = new Hono()
 		"/reset-password",
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/auth/reset-password"].body),
 		async (ctx) => {
-			const { email, newPassword, token } = ctx.req.valid("json");
-
-			const [existingUser] = await db
-				.select({ id: users.id })
-				.from(users)
-				.where(eq(users.email, email))
-				.limit(1);
-
-			if (!existingUser) {
-				throw new AppError({
-					code: 400,
-					message: "Invalid or expired reset token",
-				});
-			}
+			const { newPassword, token } = ctx.req.valid("json");
 
 			const [result] = await db
 				.select({
-					expiresAt: passwordResetTokens.expiresAt,
-					id: passwordResetTokens.id,
-					token: passwordResetTokens.token,
+					tokenExpiresAt: passwordResetTokens.expiresAt,
+					tokenId: passwordResetTokens.id,
+					tokenValue: passwordResetTokens.token,
+					userId: users.id,
 				})
 				.from(passwordResetTokens)
-				.where(eq(passwordResetTokens.userId, existingUser.id))
+				.innerJoin(users, eq(passwordResetTokens.userId, users.id))
+				.where(eq(passwordResetTokens.token, token))
 				.limit(1);
 
 			if (!result) {
 				throw new AppError({
-					cause: "No reset token found for this user",
+					cause: "No user or reset token found",
 					code: 400,
 					message: "Invalid or expired reset token",
 				});
 			}
 
-			if (isPast(result.expiresAt)) {
-				await db
-					.delete(emailVerificationCodes)
-					.where(eq(emailVerificationCodes.userId, existingUser.id));
+			if (isPast(result.tokenExpiresAt)) {
+				await db.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, result.userId));
 
 				throw new AppError({
 					cause: "Reset token has expired",
@@ -638,11 +622,14 @@ const authRoutes = new Hono()
 				});
 			}
 
-			const isTokenValid = await verifyHashedValue(token, result.token);
+			// Decode and validate the JWT token structure
+			const decodedPayload = decodeJwtToken(token, {
+				schema: z.object({ token: z.string() }),
+			});
 
-			if (!isTokenValid) {
+			if (!decodedPayload.token) {
 				throw new AppError({
-					cause: "Invalid reset token",
+					cause: "Invalid reset token payload",
 					code: 400,
 					message: "Invalid or expired reset token",
 				});
@@ -651,7 +638,7 @@ const authRoutes = new Hono()
 			const newPasswordHash = await hashValue(newPassword);
 
 			const { updatedUser } = await db.transaction(async (tx) => {
-				const [updatedUserResult] = await tx
+				const [updatedResult] = await tx
 					.update(users)
 					.set({
 						passwordChangedAt: new Date(),
@@ -659,13 +646,14 @@ const authRoutes = new Hono()
 						passwordResetRetryCount: 0,
 						// Sign out from all devices
 						refreshTokenArray: [],
+						suspendedAt: null,
 					})
-					.where(eq(users.id, existingUser.id))
+					.where(eq(users.id, result.userId))
 					.returning({ id: users.id });
 
-				await tx.delete(passwordResetTokens).where(eq(passwordResetTokens.id, result.id));
+				await tx.delete(passwordResetTokens).where(eq(passwordResetTokens.id, result.tokenId));
 
-				return { updatedUser: updatedUserResult };
+				return { updatedUser: updatedResult };
 			});
 
 			if (!updatedUser) {
@@ -759,7 +747,7 @@ const authRoutes = new Hono()
 
 			const newPasswordHash = await hashValue(newPassword);
 
-			await db
+			const [updatedUser] = await db
 				.update(users)
 				.set({
 					passwordChangedAt: new Date(),
@@ -769,7 +757,17 @@ const authRoutes = new Hono()
 						(item) => item.token === zayneRefreshToken
 					),
 				})
-				.where(eq(users.id, currentUser.id));
+				.where(eq(users.id, currentUser.id))
+				.returning();
+
+			if (!updatedUser) {
+				throw new AppError({
+					code: 500,
+					message: "Password change failed",
+				});
+			}
+
+			await setCache(`user:${updatedUser.id}`, updatedUser);
 
 			return AppJsonResponse(ctx, {
 				data: null,

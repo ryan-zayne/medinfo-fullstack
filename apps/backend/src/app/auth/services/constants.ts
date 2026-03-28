@@ -10,4 +10,6 @@ export const necessaryUserDetails = defineEnum([
 	"role",
 	"medicalLicense",
 	"specialty",
+	"bio",
+	"city",
 ] satisfies Array<keyof SelectUserType>);

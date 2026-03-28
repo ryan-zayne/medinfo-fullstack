@@ -290,7 +290,6 @@ const authRoutes = () => {
 			body: z
 				.object({
 					confirmNewPassword: PasswordSchema,
-					email: z.email("Please enter a valid email"),
 					newPassword: PasswordSchema,
 					token: z.string().min(1, "Reset token is required"),
 				})

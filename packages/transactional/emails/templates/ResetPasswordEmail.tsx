@@ -4,15 +4,14 @@ import { FRONTEND_URL } from "../constants";
 import { BaseLayout } from "../layouts/BaseLayout";
 
 export type ResetPasswordEmailProps = {
-	email: string;
 	name: string;
 	token: string;
 };
 
 export function ResetPasswordEmail(props: ResetPasswordEmailProps) {
-	const { email, name, token } = props;
+	const { name, token } = props;
 
-	const resetURL = `${FRONTEND_URL}/auth/reset-password?${new URLSearchParams({ email, token }).toString()}`;
+	const resetURL = `${FRONTEND_URL}/auth/reset-password?${new URLSearchParams({ token }).toString()}`;
 
 	return (
 		<BaseLayout preview="Reset your MedInfo password">
@@ -50,7 +49,6 @@ export function ResetPasswordEmail(props: ResetPasswordEmailProps) {
 }
 
 ResetPasswordEmail.PreviewProps = {
-	email: "[EMAIL_ADDRESS]",
 	name: "Dr. Doe",
 	token: "abc123",
 } satisfies ResetPasswordEmailProps;

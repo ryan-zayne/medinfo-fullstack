@@ -2,17 +2,19 @@ import type { db } from "@medinfo/db";
 import { emailVerificationCodes, passwordResetTokens, type SelectUserType } from "@medinfo/db/schema/auth";
 import { add } from "date-fns";
 import { eq } from "drizzle-orm";
+import { z } from "zod";
 import { generateRandom6DigitCode, generateRandomBytes } from "@/lib/utils/random";
 import { addEmailToQueue } from "@/services/queues";
 import { hashValue } from "./hash";
+import { encodeJwtToken } from "./token";
 
 export const sendVerificationEmail = async (
 	user: Pick<SelectUserType, "email" | "firstName" | "id">,
 	dbClient: typeof db
 ) => {
-	const code = generateRandom6DigitCode();
+	const rawCode = generateRandom6DigitCode();
 
-	const hashedCode = await hashValue(code);
+	const hashedCode = await hashValue(rawCode);
 
 	const codeExpiry = add(new Date(), { minutes: 15 });
 
@@ -41,7 +43,7 @@ export const sendVerificationEmail = async (
 			email: user.email,
 			name: user.firstName,
 			to: user.email,
-			validationCode: code,
+			validationCode: rawCode,
 		},
 		onError: async () => {
 			await dbClient.delete(emailVerificationCodes).where(eq(emailVerificationCodes.userId, user.id));
@@ -61,7 +63,14 @@ export const sendPasswordResetEmail = async (
 	// Invalidate any existing tokens for this user before creating a new one
 	// await dbClient.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, user.id));
 
-	const hashedToken = await hashValue(rawToken);
+	const hashedToken = encodeJwtToken(
+		{ token: rawToken },
+		{
+			schema: z.object({
+				token: z.string(),
+			}),
+		}
+	);
 
 	await dbClient
 		.insert(passwordResetTokens)
@@ -82,7 +91,6 @@ export const sendPasswordResetEmail = async (
 
 	await addEmailToQueue({
 		data: {
-			email: user.email,
 			name: user.firstName,
 			priority: "high",
 			to: user.email,

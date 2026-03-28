@@ -39,6 +39,13 @@ const getAndVerifyUserFromToken = async (options: VerifyOptions) => {
 			decodeJwtToken(zayneAccessToken, { secretKey: ENVIRONMENT.ACCESS_SECRET })
 		:	decodeJwtToken(zayneRefreshToken, { secretKey: ENVIRONMENT.REFRESH_SECRET });
 
+	if (!decodedPayload.id) {
+		throw new AppError({
+			code: 401,
+			message: AUTH_ERROR_MESSAGES.SESSION_NOT_EXIST,
+		});
+	}
+
 	const currentUser = await getFromCache(`user:${decodedPayload.id}`, {
 		onCacheMiss: async () => {
 			const [user] = await db.select().from(users).where(eq(users.id, decodedPayload.id)).limit(1);

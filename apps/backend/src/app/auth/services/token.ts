@@ -1,5 +1,5 @@
 /* eslint-disable import/no-named-as-default-member */
-import { SelectUserSchema, type SelectUserType } from "@medinfo/db/schema/auth";
+import type { SelectUserType } from "@medinfo/db/schema/auth";
 import { pickKeys } from "@zayne-labs/toolkit-core";
 import { consola } from "consola";
 import { isPast } from "date-fns";
@@ -11,20 +11,26 @@ import { ENVIRONMENT } from "@/config/env";
 import { getValidatedValue } from "@/lib/utils";
 
 type JwtOptions<TExtraOptions> = TExtraOptions & {
-	secretKey: string;
+	secretKey?: string;
 };
 
-const DecodedAuthJwtPayloadSchema = SelectUserSchema.pick({ id: true });
+const DecodedAuthJwtPayloadSchema = z.object({
+	id: z.string(),
+});
 
 export const decodeJwtToken = <TSchema extends z.ZodType = typeof DecodedAuthJwtPayloadSchema>(
 	token: string,
-	options: JwtOptions<jwt.VerifyOptions> & { schema?: TSchema }
+	options?: JwtOptions<jwt.VerifyOptions> & { schema?: TSchema }
 ) => {
-	const { schema = DecodedAuthJwtPayloadSchema, secretKey, ...restOfOptions } = options;
+	const {
+		schema = DecodedAuthJwtPayloadSchema,
+		secretKey = ENVIRONMENT.ACCESS_SECRET,
+		...restOfOptions
+	} = options ?? {};
 
 	const decodedPayload = jwt.verify(token, secretKey, restOfOptions);
 
-	const validPayload = getValidatedValue(decodedPayload as z.infer<typeof schema>, schema);
+	const validPayload = getValidatedValue(decodedPayload as z.infer<TSchema>, schema as TSchema);
 
 	return validPayload;
 };
@@ -33,9 +39,13 @@ export const encodeJwtToken = <
 	TSchema extends z.ZodType<Record<string, unknown>> = typeof DecodedAuthJwtPayloadSchema,
 >(
 	payload: z.infer<TSchema>,
-	options: JwtOptions<jwt.SignOptions> & { schema?: TSchema }
+	options?: JwtOptions<jwt.SignOptions> & { schema?: TSchema }
 ) => {
-	const { schema = DecodedAuthJwtPayloadSchema, secretKey, ...restOfOptions } = options;
+	const {
+		schema = DecodedAuthJwtPayloadSchema,
+		secretKey = ENVIRONMENT.ACCESS_SECRET,
+		...restOfOptions
+	} = options ?? {};
 
 	const validPayload = getValidatedValue(payload, schema);
 
