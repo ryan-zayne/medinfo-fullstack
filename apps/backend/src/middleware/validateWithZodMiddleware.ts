@@ -11,7 +11,7 @@ export const validateWithZodMiddleware = <
 	schema: TSchema
 ) => {
 	return validator(target, (value) => {
-		const validatedValue = getValidatedValue(value, schema, target);
+		const validatedValue = getValidatedValue(value, schema, { schemaTarget: target });
 
 		return validatedValue;
 	});

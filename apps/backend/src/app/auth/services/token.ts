@@ -8,41 +8,27 @@ import jwt from "jsonwebtoken";
 /* eslint-enable import/default */
 import { z } from "zod";
 import { ENVIRONMENT } from "@/config/env";
-import { getValidatedValue } from "@/lib/utils";
+import { getValidatedValue, type GetValidatedValueExtraOptions } from "@/lib/utils";
 
 type JwtOptions<TExtraOptions> = TExtraOptions & {
+	expiresIn?: number;
 	secretKey?: string;
 };
 
-const DecodedAuthJwtPayloadSchema = z.object({
-	id: z.string(),
+const AuthJwtPayloadSchema = z.object({
+	id: z.string().min(1, "Id cannot be an empty string"),
 });
 
-export const decodeJwtToken = <TSchema extends z.ZodType = typeof DecodedAuthJwtPayloadSchema>(
-	token: string,
-	options?: JwtOptions<jwt.VerifyOptions> & { schema?: TSchema }
-) => {
-	const {
-		schema = DecodedAuthJwtPayloadSchema,
-		secretKey = ENVIRONMENT.ACCESS_SECRET,
-		...restOfOptions
-	} = options ?? {};
-
-	const decodedPayload = jwt.verify(token, secretKey, restOfOptions);
-
-	const validPayload = getValidatedValue(decodedPayload as z.infer<TSchema>, schema as TSchema);
-
-	return validPayload;
-};
+type EncodeJwtOptions = JwtOptions<jwt.SignOptions>;
 
 export const encodeJwtToken = <
-	TSchema extends z.ZodType<Record<string, unknown>> = typeof DecodedAuthJwtPayloadSchema,
+	TSchema extends z.ZodType<Record<string, unknown>> = typeof AuthJwtPayloadSchema,
 >(
 	payload: z.infer<TSchema>,
-	options?: JwtOptions<jwt.SignOptions> & { schema?: TSchema }
+	options?: EncodeJwtOptions & { schema?: TSchema }
 ) => {
 	const {
-		schema = DecodedAuthJwtPayloadSchema,
+		schema = AuthJwtPayloadSchema,
 		secretKey = ENVIRONMENT.ACCESS_SECRET,
 		...restOfOptions
 	} = options ?? {};
@@ -54,9 +40,36 @@ export const encodeJwtToken = <
 	return encodedToken;
 };
 
+type DecodeJwtOptions = JwtOptions<jwt.VerifyOptions>;
+
+export const decodeJwtToken = <
+	TSchema extends z.ZodType<Record<string, unknown>> = typeof AuthJwtPayloadSchema,
+>(
+	token: string,
+	options?: DecodeJwtOptions & {
+		onValidationError?: GetValidatedValueExtraOptions["onError"];
+		schema?: TSchema;
+	}
+) => {
+	const {
+		onValidationError,
+		schema = AuthJwtPayloadSchema,
+		secretKey = ENVIRONMENT.ACCESS_SECRET,
+		...restOfOptions
+	} = options ?? {};
+
+	const decodedPayload = jwt.verify(token, secretKey, restOfOptions);
+
+	const validPayload = getValidatedValue(decodedPayload as z.infer<TSchema>, schema as TSchema, {
+		onError: onValidationError,
+	});
+
+	return validPayload;
+};
+
 export const generateAccessToken = (
 	user: SelectUserType,
-	options?: { expiresIn?: number }
+	options?: Pick<EncodeJwtOptions, "expiresIn">
 ): SelectUserType["refreshTokenArray"][number] => {
 	const { expiresIn = ENVIRONMENT.ACCESS_JWT_EXPIRES_IN } = options ?? {};
 
@@ -71,7 +84,7 @@ export const generateAccessToken = (
 
 export const generateRefreshToken = (
 	user: SelectUserType,
-	options?: { expiresIn?: number }
+	options?: Pick<EncodeJwtOptions, "expiresIn">
 ): SelectUserType["refreshTokenArray"][number] => {
 	const { expiresIn = ENVIRONMENT.REFRESH_JWT_EXPIRES_IN } = options ?? {};
 

@@ -1,9 +1,9 @@
 import { db } from "@medinfo/db";
-import { emailVerificationCodes, passwordResetTokens, users } from "@medinfo/db/schema/auth";
+import { emailVerificationCodes, users } from "@medinfo/db/schema/auth";
 import { backendApiSchemaRoutes, SignUpSchema } from "@medinfo/shared/validation/backendApiSchema";
 import { pickKeys } from "@zayne-labs/toolkit-core";
 import { differenceInHours, isPast } from "date-fns";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { rateLimiter } from "hono-rate-limiter";
 import { z } from "zod";
@@ -19,6 +19,7 @@ import {
 	sendPasswordResetCompleteEmail,
 	sendPasswordResetEmail,
 	sendVerificationEmail,
+	TokenSchema,
 } from "./services/emails";
 import { hashValue, verifyHashedValue } from "./services/hash";
 import {
@@ -111,7 +112,10 @@ const authRoutes = new Hono()
 				.returning();
 
 			if (!updatedUser) {
-				throw new AppError({ code: 500, message: "Failed to update user tokens" });
+				throw new AppError({
+					code: 500,
+					message: "Failed to update user tokens",
+				});
 			}
 
 			// Send verification email within transaction to ensure atomicity
@@ -435,7 +439,7 @@ const authRoutes = new Hono()
 				.select({
 					code: emailVerificationCodes.code,
 					expiresAt: emailVerificationCodes.expiresAt,
-					userId: users.id,
+					userId: emailVerificationCodes.userId,
 				})
 				.from(emailVerificationCodes)
 				.innerJoin(users, eq(emailVerificationCodes.userId, users.id))
@@ -573,14 +577,20 @@ const authRoutes = new Hono()
 			}
 
 			await db.transaction(async (tx) => {
-				await tx
+				const [updatedUser] = await tx
 					.update(users)
-					.set({
-						passwordResetRetryCount: sql`${users.passwordResetRetryCount} + 1`,
-					})
-					.where(eq(users.id, existingUser.id));
+					.set({ passwordResetRetryCount: sql`${users.passwordResetRetryCount} + 1` })
+					.where(eq(users.id, existingUser.id))
+					.returning({ email: users.email, firstName: users.firstName, id: users.id });
 
-				await sendPasswordResetEmail(existingUser, tx as unknown as typeof db);
+				if (!updatedUser) {
+					throw new AppError({
+						code: 500,
+						message: "Failed to update user",
+					});
+				}
+
+				await sendPasswordResetEmail(updatedUser, tx as unknown as typeof db);
 			});
 
 			return AppJsonResponse(ctx, {
@@ -596,19 +606,30 @@ const authRoutes = new Hono()
 		async (ctx) => {
 			const { newPassword, token } = ctx.req.valid("json");
 
+			const decodedPayload = decodeJwtToken(token, {
+				onValidationError: (error) => {
+					throw new AppError({
+						cause: `Invalid reset token payload: ${error.message}`,
+						code: 400,
+						message: "Invalid or expired reset token",
+					});
+				},
+				schema: TokenSchema,
+			});
+
 			const [result] = await db
 				.select({
-					tokenExpiresAt: passwordResetTokens.expiresAt,
-					tokenId: passwordResetTokens.id,
-					tokenValue: passwordResetTokens.token,
-					userId: users.id,
+					email: users.email,
+					firstName: users.firstName,
+					id: users.id,
+					passwordResetToken: users.passwordResetToken,
+					passwordResetTokenExpiresAt: users.passwordResetTokenExpiresAt,
 				})
-				.from(passwordResetTokens)
-				.innerJoin(users, eq(passwordResetTokens.userId, users.id))
-				.where(eq(passwordResetTokens.token, token))
+				.from(users)
+				.where(and(eq(users.passwordResetToken, decodedPayload.token), isNull(users.suspendedAt)))
 				.limit(1);
 
-			if (!result) {
+			if (!result?.passwordResetToken || !result.passwordResetTokenExpiresAt) {
 				throw new AppError({
 					cause: "No user or reset token found",
 					code: 400,
@@ -616,8 +637,14 @@ const authRoutes = new Hono()
 				});
 			}
 
-			if (isPast(result.tokenExpiresAt)) {
-				await db.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, result.userId));
+			if (isPast(result.passwordResetTokenExpiresAt)) {
+				await db
+					.update(users)
+					.set({
+						passwordResetToken: null,
+						passwordResetTokenExpiresAt: null,
+					})
+					.where(eq(users.id, result.id));
 
 				throw new AppError({
 					cause: "Reset token has expired",
@@ -626,38 +653,22 @@ const authRoutes = new Hono()
 				});
 			}
 
-			const decodedPayload = decodeJwtToken(token, {
-				schema: z.object({ token: z.string() }),
-			});
-
-			if (!decodedPayload.token) {
-				throw new AppError({
-					cause: "Invalid reset token payload",
-					code: 400,
-					message: "Invalid or expired reset token",
-				});
-			}
-
 			const newPasswordHash = await hashValue(newPassword);
 
-			const { updatedUser } = await db.transaction(async (tx) => {
-				const [updatedResult] = await tx
-					.update(users)
-					.set({
-						passwordChangedAt: new Date(),
-						passwordHash: newPasswordHash,
-						passwordResetRetryCount: 0,
-						// Sign out from all devices
-						refreshTokenArray: [],
-						suspendedAt: null,
-					})
-					.where(eq(users.id, result.userId))
-					.returning();
-
-				await tx.delete(passwordResetTokens).where(eq(passwordResetTokens.id, result.tokenId));
-
-				return { updatedUser: updatedResult };
-			});
+			const [updatedUser] = await db
+				.update(users)
+				.set({
+					passwordChangedAt: new Date(),
+					passwordHash: newPasswordHash,
+					passwordResetRetryCount: 0,
+					passwordResetToken: null,
+					passwordResetTokenExpiresAt: null,
+					// Sign out from all devices
+					refreshTokenArray: [],
+					suspendedAt: null,
+				})
+				.where(eq(users.id, result.id))
+				.returning({ email: users.email, firstName: users.firstName, id: users.id });
 
 			if (!updatedUser) {
 				throw new AppError({
@@ -675,50 +686,6 @@ const authRoutes = new Hono()
 				data: null,
 				message: "Password reset successfully. Please sign in with your new password.",
 				schema: backendApiSchemaRoutes["@post/auth/reset-password"].data,
-			});
-		}
-	)
-	.patch(
-		"/update-profile",
-		authMiddleware,
-		validateWithZodMiddleware("json", backendApiSchemaRoutes["@patch/auth/update-profile"].body),
-		async (ctx) => {
-			const { bio, city, country, firstName, gender, lastName } = ctx.req.valid("json");
-
-			const currentUser = ctx.get("currentUser");
-
-			const fullName =
-				firstName || lastName ?
-					`${firstName ?? currentUser.firstName} ${lastName ?? currentUser.lastName}`
-				:	undefined;
-
-			const [updatedUser] = await db
-				.update(users)
-				.set({
-					...(bio && { bio }),
-					...(city && { city }),
-					...(country && { country }),
-					...(firstName && { firstName }),
-					...(fullName && { fullName }),
-					...(gender && { gender }),
-					...(lastName && { lastName }),
-				})
-				.where(eq(users.id, currentUser.id))
-				.returning();
-
-			if (!updatedUser) {
-				throw new AppError({
-					code: 500,
-					message: "Failed to update profile",
-				});
-			}
-
-			await setCache(`user:${updatedUser.id}`, updatedUser);
-
-			return AppJsonResponse(ctx, {
-				data: { user: getNecessaryUserDetails(updatedUser) },
-				message: "Profile updated successfully",
-				schema: backendApiSchemaRoutes["@patch/auth/update-profile"].data,
 			});
 		}
 	)
@@ -777,6 +744,49 @@ const authRoutes = new Hono()
 				data: null,
 				message: "Password changed successfully",
 				schema: backendApiSchemaRoutes["@patch/auth/change-password"].data,
+			});
+		}
+	)
+	.patch(
+		"/update-profile",
+		authMiddleware,
+		validateWithZodMiddleware("json", backendApiSchemaRoutes["@patch/auth/update-profile"].body),
+		async (ctx) => {
+			const { bio, city, country, firstName, gender, lastName } = ctx.req.valid("json");
+
+			const currentUser = ctx.get("currentUser");
+
+			const shouldUpdateFullName = Boolean(firstName) || Boolean(lastName);
+
+			const [updatedUser] = await db
+				.update(users)
+				.set({
+					...(bio && { bio }),
+					...(city && { city }),
+					...(country && { country }),
+					...(firstName && { firstName }),
+					...(shouldUpdateFullName && {
+						fullName: `${firstName ?? currentUser.firstName} ${lastName ?? currentUser.lastName}`,
+					}),
+					...(gender && { gender }),
+					...(lastName && { lastName }),
+				})
+				.where(eq(users.id, currentUser.id))
+				.returning();
+
+			if (!updatedUser) {
+				throw new AppError({
+					code: 500,
+					message: "Failed to update profile",
+				});
+			}
+
+			await setCache(`user:${updatedUser.id}`, updatedUser);
+
+			return AppJsonResponse(ctx, {
+				data: { user: getNecessaryUserDetails(updatedUser) },
+				message: "Profile updated successfully",
+				schema: backendApiSchemaRoutes["@patch/auth/update-profile"].data,
 			});
 		}
 	);

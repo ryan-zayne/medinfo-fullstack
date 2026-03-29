@@ -25,6 +25,8 @@ export const users = pg.pgTable(
 		passwordChangedAt: pg.timestamp({ withTimezone: true }),
 		passwordHash: pg.text(),
 		passwordResetRetryCount: pg.integer().notNull().default(0),
+		passwordResetToken: pg.text(),
+		passwordResetTokenExpiresAt: pg.timestamp({ withTimezone: true }),
 		refreshTokenArray: pg
 			.jsonb()
 			.notNull()
@@ -73,12 +75,10 @@ export type SelectUserType = typeof users.$inferSelect;
 export const emailVerificationCodes = pg.pgTable("email_verification_codes", {
 	code: pg.text().notNull().unique(),
 	createdAt: pg.timestamp({ withTimezone: true }).defaultNow().notNull(),
-	email: pg.text().unique().notNull(),
 	expiresAt: pg.timestamp({ withTimezone: true }).notNull(),
 	id: pg.uuid().defaultRandom().primaryKey(),
 	userId: pg
 		.uuid()
-		.unique()
 		.notNull()
 		.references(() => users.id, { onDelete: "cascade" }),
 });

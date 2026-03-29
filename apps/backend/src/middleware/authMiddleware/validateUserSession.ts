@@ -31,20 +31,26 @@ type VerifyOptions = UnionDiscriminator<
 	]
 >;
 
+const handleTokenValidationError = () => {
+	throw new AppError({
+		code: 401,
+		message: AUTH_ERROR_MESSAGES.SESSION_NOT_EXIST,
+	});
+};
+
 const getAndVerifyUserFromToken = async (options: VerifyOptions) => {
 	const { variant, zayneAccessToken, zayneRefreshToken } = options;
 
 	const decodedPayload =
 		variant === "accessToken" ?
-			decodeJwtToken(zayneAccessToken, { secretKey: ENVIRONMENT.ACCESS_SECRET })
-		:	decodeJwtToken(zayneRefreshToken, { secretKey: ENVIRONMENT.REFRESH_SECRET });
-
-	if (!decodedPayload.id) {
-		throw new AppError({
-			code: 401,
-			message: AUTH_ERROR_MESSAGES.SESSION_NOT_EXIST,
-		});
-	}
+			decodeJwtToken(zayneAccessToken, {
+				onValidationError: handleTokenValidationError,
+				secretKey: ENVIRONMENT.ACCESS_SECRET,
+			})
+		:	decodeJwtToken(zayneRefreshToken, {
+				onValidationError: handleTokenValidationError,
+				secretKey: ENVIRONMENT.REFRESH_SECRET,
+			});
 
 	const currentUser = await getFromCache(`user:${decodedPayload.id}`, {
 		onCacheMiss: async () => {

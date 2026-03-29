@@ -19,17 +19,20 @@ const AppJsonResponse = <
 ) => {
 	const { code: statusCode = 200, data, message, schema } = options;
 
-	const validatedData = getValidatedValue(data, schema.shape.data, "data") as z.infer<TDataSchema>;
+	const validatedData = getValidatedValue(data, schema.shape.data, {
+		schemaTarget: "data",
+	}) as z.infer<TDataSchema>;
 
-	/* eslint-disable perfectionist/sort-objects */
-	const jsonBody = {
-		status: "success",
-		message,
-		data: validatedData,
-	};
-	/* eslint-enable perfectionist/sort-objects */
-
-	return ctx.json(jsonBody, statusCode);
+	return ctx.json(
+		{
+			/* eslint-disable perfectionist/sort-objects */
+			status: "success",
+			message,
+			data: validatedData,
+			/* eslint-enable perfectionist/sort-objects */
+		},
+		statusCode
+	);
 };
 
 export { AppJsonResponse };

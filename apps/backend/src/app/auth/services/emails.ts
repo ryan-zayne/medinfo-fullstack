@@ -1,5 +1,5 @@
 import type { db } from "@medinfo/db";
-import { emailVerificationCodes, passwordResetTokens, type SelectUserType } from "@medinfo/db/schema/auth";
+import { emailVerificationCodes, users, type SelectUserType } from "@medinfo/db/schema/auth";
 import { add } from "date-fns";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
@@ -18,25 +18,13 @@ export const sendVerificationEmail = async (
 
 	const codeExpiry = add(new Date(), { minutes: 15 });
 
-	// Invalidate any existing codes for this user before creating a new one
-	// await dbClient.delete(emailVerificationCodes).where(eq(emailVerificationCodes.userId, user.id));
+	await dbClient.delete(emailVerificationCodes).where(eq(emailVerificationCodes.userId, user.id));
 
-	await dbClient
-		.insert(emailVerificationCodes)
-		.values({
-			code: hashedCode,
-			email: user.email,
-			expiresAt: codeExpiry,
-			userId: user.id,
-		})
-		.onConflictDoUpdate({
-			set: {
-				code: hashedCode,
-				email: user.email,
-				expiresAt: codeExpiry,
-			},
-			target: emailVerificationCodes.userId,
-		});
+	await dbClient.insert(emailVerificationCodes).values({
+		code: hashedCode,
+		expiresAt: codeExpiry,
+		userId: user.id,
+	});
 
 	await addEmailToQueue({
 		data: {
@@ -52,6 +40,10 @@ export const sendVerificationEmail = async (
 	});
 };
 
+export const TokenSchema = z.object({
+	token: z.string(),
+});
+
 export const sendPasswordResetEmail = async (
 	user: Pick<SelectUserType, "email" | "firstName" | "id">,
 	dbClient: typeof db
@@ -60,44 +52,25 @@ export const sendPasswordResetEmail = async (
 
 	const tokenExpiry = add(new Date(), { minutes: 20 });
 
-	// Invalidate any existing tokens for this user before creating a new one
-	// await dbClient.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, user.id));
-
-	const hashedToken = encodeJwtToken(
-		{ token: rawToken },
-		{
-			schema: z.object({
-				token: z.string(),
-			}),
-		}
-	);
+	const encodedToken = encodeJwtToken({ token: rawToken }, { schema: TokenSchema });
 
 	await dbClient
-		.insert(passwordResetTokens)
-		.values({
-			email: user.email,
-			expiresAt: tokenExpiry,
-			token: hashedToken,
-			userId: user.id,
-		})
-		.onConflictDoUpdate({
-			set: {
-				email: user.email,
-				expiresAt: tokenExpiry,
-				token: hashedToken,
-			},
-			target: passwordResetTokens.userId,
-		});
+		.update(users)
+		.set({ passwordResetToken: rawToken, passwordResetTokenExpiresAt: tokenExpiry })
+		.where(eq(users.id, user.id));
 
 	await addEmailToQueue({
 		data: {
 			name: user.firstName,
 			priority: "high",
 			to: user.email,
-			token: hashedToken,
+			token: encodedToken,
 		},
 		onError: async () => {
-			await dbClient.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, user.id));
+			await dbClient
+				.update(users)
+				.set({ passwordResetToken: null, passwordResetTokenExpiresAt: null })
+				.where(eq(users.id, user.id));
 		},
 		type: "resetPassword",
 	});
@@ -109,6 +82,7 @@ export const sendPasswordResetCompleteEmail = async (
 	await addEmailToQueue({
 		data: {
 			name: user.firstName,
+			priority: "high",
 			to: user.email,
 		},
 		type: "passwordResetComplete",
