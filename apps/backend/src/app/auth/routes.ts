@@ -16,8 +16,8 @@ import { uploadStreamToCloudinary } from "@/services/cloudinary";
 import { getNecessaryUserDetails } from "./services/common";
 import { deleteCookie, getCookie, setCookie } from "./services/cookie";
 import {
-	sendPasswordResetCompleteEmail,
 	sendPasswordResetEmail,
+	sendResetPasswordCompleteEmail,
 	sendVerificationEmail,
 	TokenSchema,
 } from "./services/emails";
@@ -679,7 +679,7 @@ const authRoutes = new Hono()
 
 			await Promise.all([
 				removeFromCache(`user:${updatedUser.id}`),
-				sendPasswordResetCompleteEmail({ email: updatedUser.email, firstName: updatedUser.firstName }),
+				sendResetPasswordCompleteEmail({ email: updatedUser.email, firstName: updatedUser.firstName }),
 			]);
 
 			return AppJsonResponse(ctx, {

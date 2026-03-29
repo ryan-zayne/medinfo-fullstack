@@ -76,7 +76,7 @@ export const sendPasswordResetEmail = async (
 	});
 };
 
-export const sendPasswordResetCompleteEmail = async (
+export const sendResetPasswordCompleteEmail = async (
 	user: Pick<SelectUserType, "email" | "firstName">
 ) => {
 	await addEmailToQueue({
@@ -85,6 +85,6 @@ export const sendPasswordResetCompleteEmail = async (
 			priority: "high",
 			to: user.email,
 		},
-		type: "passwordResetComplete",
+		type: "resetPasswordComplete",
 	});
 };

@@ -15,6 +15,7 @@
 		"db:studio": "turbo run --filter=@medinfo/db db:studio",
 		"dev:backend": "turbo run --filter=@medinfo/backend dev",
 		"dev:frontend": "turbo run --filter=@medinfo/frontend dev",
+		"dev:transactional": "turbo run --filter=@medinfo/transactional dev",
 		"inspect:eslint-config": "pnpx @eslint/config-inspector@latest",
 		"lint:eslint": "turbo run lint:eslint",
 		"lint:eslint:interactive": "pnpx eslint-interactive@latest . --max-warnings=0 --fix",
