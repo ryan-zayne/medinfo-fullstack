@@ -10,12 +10,8 @@ type TemplateType = Record<
 	}
 >;
 
-type Module = {
-	TemplateFn: AnyFunction<Promise<string>>;
-};
-
 const getTemplateFn =
-	<TModule extends Module>(funcPromise: Promise<TModule>) =>
+	<TModule extends { TemplateFn: AnyFunction<Promise<string>> }>(funcPromise: Promise<TModule>) =>
 	async (props: InferProps<TModule["TemplateFn"]>) => {
 		const func = await funcPromise;
 
@@ -47,3 +43,5 @@ export const TEMPLATE_LOOKUP = defineEnumDeep(
 	},
 	{ inferredUnionVariant: "none" }
 ) satisfies TemplateType;
+
+export type TemplateLookupType = typeof TEMPLATE_LOOKUP;

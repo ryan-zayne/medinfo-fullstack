@@ -28,7 +28,7 @@
 	"devDependencies": {
 		"@eslint-react/eslint-plugin": "3.0.0",
 		"@next/eslint-plugin-next": "16.2.1",
-		"@tanstack/eslint-plugin-query": "5.95.2",
+		"@tanstack/eslint-plugin-query": "5.96.0",
 		"@types/node": "25.5.0",
 		"@zayne-labs/eslint-config": "0.12.4",
 		"@zayne-labs/prettier-config": "0.12.4",
@@ -44,7 +44,7 @@
 		"prettier-plugin-merge": "0.10.1",
 		"prettier-plugin-tailwindcss": "0.7.2",
 		"tailwindcss": "4.2.2",
-		"turbo": "2.8.20",
+		"turbo": "2.9.2",
 		"typescript": "catalog:"
 	}
 }

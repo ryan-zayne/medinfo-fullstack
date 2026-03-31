@@ -26,8 +26,7 @@ export function DiseaseCard(props: DiseaseCardProps) {
 			as="li"
 			className={cnJoin(
 				type === "grid" && "relative h-full w-fit max-lg:max-h-[176px]",
-				type === "list"
-					&& "flex w-full gap-[44px] rounded-[16px] border-2 border-medinfo-primary-main p-6"
+				type === "list" && "flex w-full gap-11 rounded-[16px] border-2 border-medinfo-primary-main p-6"
 			)}
 		>
 			<Card.Header>
