@@ -1,6 +1,7 @@
 "use client";
 
 import { useToggle } from "@zayne-labs/toolkit-react";
+import type { AppRoutes } from "@/.next/dev/types/routes";
 import { Logo, NavLink } from "@/components/common";
 import { ForWithWrapper } from "@/components/common/for";
 import { HamburgerIcon, SearchIcon, XIcon } from "@/components/icons";

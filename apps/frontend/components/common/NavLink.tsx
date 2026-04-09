@@ -5,6 +5,7 @@ import type { InferProps } from "@zayne-labs/toolkit-react/utils";
 import { isString, type AnyString } from "@zayne-labs/toolkit-type-helpers";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { AppRoutes } from "@/.next/dev/types/routes";
 import { cnMerge } from "@/lib/utils/cn";
 
 export type MainAppRoutes<TAppRoutes extends AppRoutes = AppRoutes> =

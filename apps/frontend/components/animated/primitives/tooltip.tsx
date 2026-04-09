@@ -1,4 +1,4 @@
-/* eslint-disable react-x/set-state-in-effect */
+/* eslint-disable react/set-state-in-effect */
 "use client";
 
 import {
@@ -104,7 +104,7 @@ function TooltipProvider(props: TooltipProviderProps) {
 	const globalId = useId();
 	const [currentTooltip, setCurrentTooltip] = useState<TooltipData | null>(null);
 	const timeoutRef = useRef<number | null>(null);
-	const lastCloseTimeRef = useRef<number>(0);
+	const lastCloseTimeRef = useRef(0);
 	const referenceElRef = useRef<HTMLElement | null>(null);
 
 	const showTooltip = useCallback(

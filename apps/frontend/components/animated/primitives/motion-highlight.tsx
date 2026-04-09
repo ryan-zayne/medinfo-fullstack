@@ -1,6 +1,6 @@
-/* eslint-disable react-x/set-state-in-effect */
+/* eslint-disable react/set-state-in-effect */
 /* eslint-disable react-you-might-not-need-an-effect/no-derived-state */
-/* eslint-disable react-x/no-unstable-default-props */
+/* eslint-disable react/no-unstable-default-props */
 "use client";
 
 import { toArray } from "@zayne-labs/toolkit-core";
@@ -137,7 +137,7 @@ function MotionHighlightRoot<T extends React.ElementType = "div">(props: Highlig
 	const localRef = useRef<HTMLDivElement>(null);
 	useImperativeHandle(ref, () => localRef.current as HTMLDivElement);
 
-	const [activeValue, setActiveValue] = useState<string | null>(value ?? defaultValue ?? null);
+	const [activeValue, setActiveValue] = useState(value ?? defaultValue ?? null);
 
 	useEffect(() => {
 		if (value !== undefined) {
@@ -148,7 +148,7 @@ function MotionHighlightRoot<T extends React.ElementType = "div">(props: Highlig
 	}, [value, defaultValue]);
 
 	const [boundsState, setBoundsState] = useState<Bounds | null>(null);
-	const [activeClassNameState, setActiveClassNameState] = useState<string>("");
+	const [activeClassNameState, setActiveClassNameState] = useState("");
 
 	const safeSetActiveValue = useCallback(
 		(id: string | null) => {
@@ -311,7 +311,7 @@ function MotionHighlightRoot<T extends React.ElementType = "div">(props: Highlig
 					render(children)
 				:	render(
 						toArray(children).map((child, index) => (
-							// eslint-disable-next-line react-x/no-array-index-key, react-x/prefer-destructuring-assignment
+							// eslint-disable-next-line react/no-array-index-key, react/prefer-destructuring-assignment
 							<MotionHighlightItem key={index} className={props.itemsClassName}>
 								{child}
 							</MotionHighlightItem>

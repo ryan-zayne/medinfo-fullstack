@@ -46,7 +46,7 @@ async function TipExpandedPage({ params }: PageProps<"/daily-tips/[id]">) {
 							<div
 								className="prose max-w-[80ch] [&>h4]:text-[18px] [&>h4]:font-medium
 									[&>h4]:text-medinfo-primary-main [&>p]:text-pretty"
-								// eslint-disable-next-line react-dom/no-dangerously-set-innerhtml
+								// eslint-disable-next-line react/dom-no-dangerously-set-innerhtml
 								dangerouslySetInnerHTML={{ __html: item.content }}
 							/>
 						</li>

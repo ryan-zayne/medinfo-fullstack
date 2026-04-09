@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const nextConfig = {
+const config: NextConfig = {
 	devIndicators: {
 		position: "bottom-right",
 	},
@@ -40,9 +40,11 @@ const nextConfig = {
 		],
 	},
 
+	reactStrictMode: true,
+
 	typescript: {
 		ignoreBuildErrors: true,
 	},
-} satisfies NextConfig;
+};
 
-export default nextConfig;
+export default config;

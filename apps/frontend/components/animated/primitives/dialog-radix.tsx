@@ -1,4 +1,4 @@
-/* eslint-disable react-x/no-unstable-default-props */
+/* eslint-disable react/no-unstable-default-props */
 "use client";
 
 import { createCustomContext, useControllableState } from "@zayne-labs/toolkit-react";

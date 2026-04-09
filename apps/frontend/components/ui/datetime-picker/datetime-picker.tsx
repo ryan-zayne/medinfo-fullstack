@@ -104,14 +104,14 @@ export function DateTimePicker(props: DatePickerProps) {
 							...calenderClassNames,
 						}}
 						components={{
-							// eslint-disable-next-line react-x/component-hook-factories, react-x/no-nested-component-definitions
+							// eslint-disable-next-line react/component-hook-factories, react/no-nested-component-definitions
 							DayButton: (innerProps) => (
 								<CalendarDayButton
 									{...innerProps}
 									className={cnMerge(
 										`hover:bg-medinfo-primary-subtle hover:text-medinfo-body-color
 										data-[selected-single=true]:bg-medinfo-primary-main`,
-										// eslint-disable-next-line react-x/prefer-destructuring-assignment
+										// eslint-disable-next-line react/prefer-destructuring-assignment
 										innerProps.className
 									)}
 								/>
@@ -131,7 +131,7 @@ export function DateTimePicker(props: DatePickerProps) {
 
 				{showTimePicker && (
 					<TimePicker
-						// eslint-disable-next-line react-x/purity
+						// eslint-disable-next-line react/purity
 						dateValue={date ?? new Date()}
 						onDateStringChange={setDateString as typeof onDateStringChangeProp}
 						timeSettings={timeSettings}

@@ -1,8 +1,8 @@
-/* eslint-disable react-x/set-state-in-effect */
+/* eslint-disable react/set-state-in-effect */
 /* eslint-disable react-you-might-not-need-an-effect/no-derived-state */
 /* eslint-disable react-you-might-not-need-an-effect/no-chain-state-updates */
 /* eslint-disable react-hooks/preserve-manual-memoization */
-/* eslint-disable react-x/no-unstable-default-props */
+/* eslint-disable react/no-unstable-default-props */
 "use client";
 
 import { toArray } from "@zayne-labs/toolkit-core";
@@ -52,7 +52,7 @@ type TabsProps = ControlledTabsProps | UnControlledTabsProps;
 
 function TabsRoot(props: TabsProps) {
 	const { children, defaultValue, onValueChange, value, ...restOfProps } = props;
-	const [activeValue, setActiveValue] = useState<string | undefined>(defaultValue);
+	const [activeValue, setActiveValue] = useState(defaultValue);
 	const triggersRef = useRef(new Map<string, HTMLElement>());
 	const initialSetRef = useRef(false);
 	const isControlled = value !== undefined;
@@ -277,7 +277,7 @@ function TabsContentList(props: TabsContentsProps) {
 			>
 				{childrenArray.map((child, index) => (
 					<div
-						// eslint-disable-next-line react-x/no-array-index-key
+						// eslint-disable-next-line react/no-array-index-key
 						key={index}
 						ref={(el) => {
 							itemsRef.current[index] = el;

@@ -1,4 +1,4 @@
-/* eslint-disable react-x/purity */
+/* eslint-disable react/purity */
 import {
 	Body,
 	Container,

@@ -87,7 +87,7 @@ function AvatarGroupRoot(props: AvatarGroupProps) {
 			>
 				{childrenArray.map((child, index) => (
 					<AvatarContainer
-						// eslint-disable-next-line react-x/no-array-index-key
+						// eslint-disable-next-line react/no-array-index-key
 						key={index}
 						zIndex={invertOverlap ? childrenArray.length - index : index}
 						transition={transition ?? { damping: 17, stiffness: 300, type: "spring" }}

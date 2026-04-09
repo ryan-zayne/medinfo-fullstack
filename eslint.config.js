@@ -20,9 +20,7 @@ export default zayne(
 			},
 		},
 		tailwindcssBetter: {
-			settings: {
-				entryPoint: "apps/frontend/tailwind.css",
-			},
+			settings: { entryPoint: "apps/frontend/tailwind.css" },
 		},
 		tanstack: true,
 		typescript: {
@@ -38,11 +36,11 @@ export default zayne(
 		rules: { "unicorn/no-empty-file": "off" },
 	},
 	{
-		files: ["apps/backend/src/**"],
+		files: ["apps/backend/src/**/*"],
 		rules: { "security/detect-object-injection": "off" },
 	},
 	{
-		files: ["packages/db/src/migrations/**"],
+		files: ["packages/db/src/migrations/**/*"],
 		rules: { "unicorn/filename-case": "off" },
 	}
 ).overrides({

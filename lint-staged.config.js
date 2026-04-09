@@ -1,4 +1,4 @@
 export default {
-	"*.{js,ts,tsx,mjs}": () => "pnpm lint:eslint:root",
-	"*.{ts,tsx}": () => "pnpm lint:type-check",
+	"*.{ts,tsx,_parallel-1_}": () => ["pnpm lint:type-check"],
+	"*.{ts,tsx,_parallel-2_}": () => ["pnpm lint:eslint:root"],
 };

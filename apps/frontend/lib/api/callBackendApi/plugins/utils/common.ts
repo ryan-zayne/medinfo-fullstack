@@ -1,6 +1,7 @@
 import type { ResponseErrorContext } from "@zayne-labs/callapi";
 import { isHTTPError } from "@zayne-labs/callapi/utils";
 import { hardNavigate, isBrowser } from "@zayne-labs/toolkit-core";
+import type { AppRoutes } from "@/.next/dev/types/routes";
 
 export const isAuthError = (error: ResponseErrorContext["error"]) => {
 	return isHTTPError(error) && error.originalError.response.status === 401;
