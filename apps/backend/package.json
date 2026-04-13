@@ -7,9 +7,11 @@
 	],
 	"scripts": {
 		"build": "tsdown",
+		"build:nitro": "vite build",
 		"compile": "bun build --compile --minify --sourcemap --bytecode ./src/server.ts --outfile server",
 		"dev": "cross-env NODE_ENV=development pnpm dev:watch",
 		"dev:docker-db": "docker compose up medinfo-postgres-db medinfo-redis-cache medinfo-redis-queue",
+		"dev:nitro": "vite dev",
 		"dev:prod": "cross-env NODE_ENV=production pnpm dev:watch",
 		"dev:watch": "tsx watch src/server.ts --clear-screen=false",
 		"lint:eslint": "eslint . --max-warnings 0",
@@ -60,7 +62,9 @@
 		"@types/jsonwebtoken": "^9.0.10",
 		"@types/node": "25.6.0",
 		"@types/nodemailer": "^8.0.0",
+		"nitro": "3.0.260311-beta",
 		"tsdown": "catalog:",
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"vite": "^8.0.8"
 	}
 }

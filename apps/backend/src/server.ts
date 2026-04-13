@@ -64,3 +64,6 @@ process.on("unhandledRejection", (error) => {
 		process.exit(1);
 	});
 });
+
+// eslint-disable-next-line unicorn/prefer-export-from
+export default app;
