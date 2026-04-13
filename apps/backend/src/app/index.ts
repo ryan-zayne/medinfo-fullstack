@@ -1,5 +1,5 @@
+import { consola } from "consola";
 import { createHonoApp } from "@/lib/hono";
-import { createBullBoardSetup } from "@/services/queues/utils/bullBoard";
 import { appointmentsRoutes } from "./appointments/routes";
 import { authRoutes } from "./auth/routes";
 import { diseasesRoutes } from "./diseases/routes";
@@ -28,8 +28,12 @@ app.basePath("/api/v1")
 	.route("", authRoutes)
 	.route("", appointmentsRoutes);
 
-const bullBoardSetup = createBullBoardSetup();
-
-app.route(bullBoardSetup.baseQueuesPath, bullBoardSetup.queuesServerAdapter.registerPlugin());
+try {
+	const { createBullBoardSetup } = await import("@/services/queues/utils/bullBoard");
+	const bullBoardSetup = createBullBoardSetup();
+	app.route(bullBoardSetup.baseQueuesPath, bullBoardSetup.queuesServerAdapter.registerPlugin());
+} catch (error) {
+	consola.error(new Error(`Failed to load bullboard`, { cause: error }));
+}
 
 export { app };
