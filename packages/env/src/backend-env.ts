@@ -18,7 +18,10 @@ export const envSchema = z.object({
 	CLOUDINARY_CLOUD_NAME: z.string(),
 	DATABASE_URL: z.string(),
 	DATABASE_URL_DEV: z
-		.literal("postgresql://postgres:postgres@localhost:5432/medinfo")
+		.literal([
+			"postgresql://postgres:postgres@localhost:5432/medinfo",
+			"postgresql://postgres:postgres@medinfo-postgres-db:5432/medinfo",
+		])
 		.default("postgresql://postgres:postgres@localhost:5432/medinfo"),
 	DB_MIGRATING: stringBoolean.default(false),
 	DB_SEEDING: stringBoolean.default(false),

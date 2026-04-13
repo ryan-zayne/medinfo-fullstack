@@ -6,7 +6,7 @@ import type { ExtractUnion } from "@zayne-labs/toolkit-type-helpers";
 import { useEffect, useRef } from "react";
 import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker";
 import { cnMerge } from "@/lib/utils/cn";
-import { IconBox } from "../common";
+import { IconBox } from "../common/IconBox";
 import { shadcnButtonVariants, type ShadcnButtonProps } from "./constants";
 
 export function Calendar(

@@ -3,7 +3,7 @@
 import type { InferProps } from "@zayne-labs/toolkit-react/utils";
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
 import { cnMerge } from "@/lib/utils/cn";
-import { IconBox } from "../common";
+import { IconBox } from "../common/IconBox";
 
 function DropdownMenuRoot(props: InferProps<typeof DropdownMenuPrimitive.Root>) {
 	return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />;

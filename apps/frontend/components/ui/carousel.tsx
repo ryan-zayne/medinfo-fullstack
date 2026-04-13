@@ -7,7 +7,7 @@ import type { AnyFunction } from "@zayne-labs/toolkit-type-helpers";
 import useEmblaCarousel, { type UseEmblaCarouselType } from "embla-carousel-react";
 import { useEffect, useMemo, useState } from "react";
 import { cnMerge } from "@/lib/utils/cn";
-import { IconBox } from "../common";
+import { IconBox } from "../common/IconBox";
 import { Slot } from "../common/slot";
 import { shadcnButtonVariants, type ShadcnButtonProps } from "./constants";
 

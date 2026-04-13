@@ -28,7 +28,7 @@ services:
       restart: unless-stopped
       ports:
          - 6381:6379
-      command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+      command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy noeviction
       networks:
          - medinfo-network
       healthcheck:
@@ -44,7 +44,7 @@ services:
       restart: unless-stopped
       ports:
          - 6382:6379
-      command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+      command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy noeviction
       networks:
          - medinfo-network
       healthcheck:

@@ -5,7 +5,7 @@ import type { DiscriminatedRenderProps, InferProps } from "@zayne-labs/toolkit-r
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { useMemo } from "react";
 import { cnMerge } from "@/lib/utils/cn";
-import { IconBox } from "../common";
+import { IconBox } from "../common/IconBox";
 
 type ContextType = {
 	isOpen: boolean;
