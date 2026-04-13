@@ -6,6 +6,8 @@
 	"license": "MIT",
 	"scripts": {
 		"build": "turbo run build",
+		"build:backend": "turbo run --filter=@medinfo/backend build",
+		"build:backend:nitro": "turbo run --filter=@medinfo/backend build:nitro",
 		"build:frontend": "turbo run --filter=@medinfo/frontend build",
 		"build:transactional": "turbo run --filter=@medinfo/transactional build",
 		"db:generate": "turbo run --filter=@medinfo/db db:generate",
