@@ -11,7 +11,7 @@
 			"outputs": ["dist/**", ".next/**", "!.next/cache/**", "build", ".vercel", ".outputs/**"]
 		},
 		"build:nitro": {
-			"outputs": [".output/**"]
+			"outputs": [".vercel", ".outputs/**"]
 		},
 		"db:studio": {
 			"cache": false,
