@@ -9,18 +9,37 @@ export const redisCacheClient = createClient({
 		:	ENVIRONMENT.REDIS_CACHE_URL,
 });
 
-redisCacheClient.on("error", (error) => {
-	consola.error("Redis Client Error", error);
+redisCacheClient.on("error", (error: Error) => {
+	consola.error(`[Redis Cache Client] Error: ${error.message}`, error);
+});
+
+redisCacheClient.on("connect", () => {
+	consola.info("[Redis Cache Client] Status: connect");
+});
+
+redisCacheClient.on("ready", () => {
+	consola.success("[Redis Cache Client] Status: ready");
+});
+
+redisCacheClient.on("end", () => {
+	consola.warn("[Redis Cache Client] Status: end (Disconnected)");
+});
+
+redisCacheClient.on("reconnecting", () => {
+	consola.info("[Redis Cache Client] Status: reconnecting...");
 });
 
 export const initializeRedisCacheClient = async () => {
-	if (redisCacheClient.isOpen) return;
+	consola.info(`[Redis Cache Client] Initializing... Current state: isOpen=${redisCacheClient.isOpen}`);
+	if (redisCacheClient.isOpen) {
+		consola.info("[Redis Cache Client] Already open, skipping initialization.");
+		return;
+	}
 
 	try {
 		await redisCacheClient.connect();
-
-		consola.info("Connected to Redis Cache Client!");
+		consola.info("[Redis Cache Client] .connect() called successfully.");
 	} catch (error) {
-		consola.error("Failed to connect to Redis Cache Client", error);
+		consola.error("[Redis Cache Client] Failed to connect during initialization", error);
 	}
 };

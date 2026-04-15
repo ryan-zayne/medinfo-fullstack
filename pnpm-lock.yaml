@@ -10,8 +10,8 @@ catalogs:
       specifier: 1.61.0
       version: 1.61.0
     tsdown:
-      specifier: 0.21.7
-      version: 0.21.7
+      specifier: 0.21.8
+      version: 0.21.8
     typescript:
       specifier: 6.0.2
       version: 6.0.2
@@ -40,7 +40,7 @@ importers:
         version: 0.13.2(@eslint-react/eslint-plugin@4.2.3(eslint@10.2.0(jiti@2.6.1))(typescript@6.0.2))(@next/eslint-plugin-next@16.2.3)(@tanstack/eslint-plugin-query@5.99.0(eslint@10.2.0(jiti@2.6.1))(typescript@6.0.2))(@typescript-eslint/rule-tester@8.58.1(eslint@10.2.0(jiti@2.6.1))(typescript@6.0.2))(@typescript-eslint/typescript-estree@8.58.1(typescript@6.0.2))(@typescript-eslint/utils@8.58.1(eslint@10.2.0(jiti@2.6.1))(typescript@6.0.2))(eslint-plugin-better-tailwindcss@4.4.1(eslint@10.2.0(jiti@2.6.1))(tailwindcss@4.2.2)(typescript@6.0.2))(eslint-plugin-react-hooks@7.0.1(eslint@10.2.0(jiti@2.6.1)))(eslint-plugin-react-refresh@0.5.2(eslint@10.2.0(jiti@2.6.1)))(eslint-plugin-react-you-might-not-need-an-effect@0.9.3(eslint@10.2.0(jiti@2.6.1)))(eslint@10.2.0(jiti@2.6.1))(typescript@6.0.2)
       '@zayne-labs/prettier-config':
         specifier: 0.13.2
-        version: 0.13.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.2))(prettier-plugin-classnames@0.10.1(prettier@3.8.2))(prettier-plugin-merge@0.10.1(prettier@3.8.2))(prettier-plugin-tailwindcss@0.7.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.2))(prettier@3.8.2))(prettier@3.8.2)
+        version: 0.13.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.3))(prettier-plugin-classnames@0.10.1(prettier@3.8.3))(prettier-plugin-merge@0.10.1(prettier@3.8.3))(prettier-plugin-tailwindcss@0.7.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.3))(prettier@3.8.3))(prettier@3.8.3)
       eslint:
         specifier: 10.2.0
         version: 10.2.0(jiti@2.6.1)
@@ -63,17 +63,17 @@ importers:
         specifier: 16.4.0
         version: 16.4.0
       prettier:
-        specifier: 3.8.2
-        version: 3.8.2
+        specifier: 3.8.3
+        version: 3.8.3
       prettier-plugin-classnames:
         specifier: 0.10.1
-        version: 0.10.1(prettier@3.8.2)
+        version: 0.10.1(prettier@3.8.3)
       prettier-plugin-merge:
         specifier: 0.10.1
-        version: 0.10.1(prettier@3.8.2)
+        version: 0.10.1(prettier@3.8.3)
       prettier-plugin-tailwindcss:
         specifier: 0.7.2
-        version: 0.7.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.2))(prettier@3.8.2)
+        version: 0.7.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.3))(prettier@3.8.3)
       tailwindcss:
         specifier: 4.2.2
         version: 4.2.2
@@ -87,11 +87,11 @@ importers:
   apps/backend:
     dependencies:
       '@bull-board/api':
-        specifier: ^6.21.2
-        version: 6.21.2(@bull-board/ui@6.21.2)
+        specifier: ^7.0.0
+        version: 7.0.0(@bull-board/ui@7.0.0)
       '@bull-board/hono':
-        specifier: ^6.21.2
-        version: 6.21.2(hono@4.12.12)
+        specifier: ^7.0.0
+        version: 7.0.0(hono@4.12.14)
       '@colors/colors':
         specifier: ^1.6.0
         version: 1.6.0
@@ -100,13 +100,13 @@ importers:
         version: 1.61.0
       '@hono-storage/node-disk':
         specifier: ^0.0.17
-        version: 0.0.17(hono@4.12.12)
+        version: 0.0.17(hono@4.12.14)
       '@hono/node-server':
         specifier: 1.19.14
-        version: 1.19.14(hono@4.12.12)
+        version: 1.19.14(hono@4.12.14)
       '@huggingface/transformers':
-        specifier: ^4.0.1
-        version: 4.0.1
+        specifier: ^4.1.0
+        version: 4.1.0
       '@medinfo/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -126,11 +126,11 @@ importers:
         specifier: 1.12.4
         version: 1.12.4
       '@zayne-labs/toolkit-core':
-        specifier: 0.12.48
-        version: 0.12.48
+        specifier: 0.12.49
+        version: 0.12.49
       '@zayne-labs/toolkit-type-helpers':
-        specifier: 0.12.48
-        version: 0.12.48
+        specifier: 0.12.49
+        version: 0.12.49
       '@zayne-labs/tsconfig':
         specifier: ^0.13.2
         version: 0.13.2
@@ -138,8 +138,8 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0
       bullmq:
-        specifier: ^5.73.5
-        version: 5.73.5
+        specifier: ^5.74.1
+        version: 5.74.1
       cloudinary:
         specifier: ^2.9.0
         version: 2.9.0
@@ -156,14 +156,14 @@ importers:
         specifier: 0.45.2
         version: 0.45.2(@types/pg@8.20.0)(pg@8.20.0)
       hono:
-        specifier: 4.12.12
-        version: 4.12.12
+        specifier: 4.12.14
+        version: 4.12.14
       hono-pino:
         specifier: ^0.10.3
-        version: 0.10.3(hono@4.12.12)(pino@10.3.1)
+        version: 0.10.3(hono@4.12.14)(pino@10.3.1)
       hono-rate-limiter:
         specifier: ^0.5.3
-        version: 0.5.3(hono@4.12.12)
+        version: 0.5.3(hono@4.12.14)
       ioredis:
         specifier: ^5.10.1
         version: 5.10.1
@@ -180,8 +180,8 @@ importers:
         specifier: ^13.1.3
         version: 13.1.3
       redis:
-        specifier: ^5.11.0
-        version: 5.11.0
+        specifier: ^5.12.1
+        version: 5.12.1
       tsx:
         specifier: 4.21.0
         version: 4.21.0
@@ -202,11 +202,11 @@ importers:
         specifier: ^8.0.0
         version: 8.0.0
       nitro:
-        specifier: 3.0.260311-beta
-        version: 3.0.260311-beta(chokidar@4.0.3)(dotenv@17.4.1)(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.20.0))(ioredis@5.10.1)(jiti@2.6.1)(lru-cache@11.3.3)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+        specifier: 3.0.260415-beta
+        version: 3.0.260415-beta(chokidar@4.0.3)(dotenv@17.4.1)(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.20.0))(ioredis@5.10.1)(jiti@2.6.1)(lru-cache@11.3.3)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       tsdown:
         specifier: 'catalog:'
-        version: 0.21.7(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(synckit@0.11.12)(typescript@6.0.2)
+        version: 0.21.8(synckit@0.11.12)(typescript@6.0.2)
       typescript:
         specifier: 'catalog:'
         version: 6.0.2
@@ -251,19 +251,19 @@ importers:
         version: 1.12.4
       '@zayne-labs/callapi-plugins':
         specifier: ^5.0.4
-        version: 5.0.4(@zayne-labs/callapi@1.12.4)(@zayne-labs/toolkit-type-helpers@0.12.48)(consola@3.4.2)
+        version: 5.0.4(@zayne-labs/callapi@1.12.4)(@zayne-labs/toolkit-type-helpers@0.12.49)(consola@3.4.2)
       '@zayne-labs/toolkit-core':
-        specifier: 0.12.48
-        version: 0.12.48
+        specifier: 0.12.49
+        version: 0.12.49
       '@zayne-labs/toolkit-react':
-        specifier: 0.12.48
-        version: 0.12.48(react@19.2.5)(tailwind-merge@3.5.0)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5)))
+        specifier: 0.12.49
+        version: 0.12.49(react@19.2.5)(tailwind-merge@3.5.0)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5)))
       '@zayne-labs/toolkit-type-helpers':
-        specifier: 0.12.48
-        version: 0.12.48
+        specifier: 0.12.49
+        version: 0.12.49
       '@zayne-labs/ui-react':
-        specifier: 0.11.6
-        version: 0.11.6(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react-hook-form@7.72.1(react@19.2.5))(react@19.2.5)(tailwind-merge@3.5.0)(tailwindcss@4.2.2)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5)))
+        specifier: 0.11.7
+        version: 0.11.7(react-dom@19.2.5(react@19.2.5))(react-hook-form@7.72.1(react@19.2.5))(react@19.2.5)(tailwind-merge@3.5.0)(tailwindcss@4.2.2)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5)))
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -348,13 +348,13 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@zayne-labs/prettier-config':
         specifier: 0.13.2
-        version: 0.13.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.2))(prettier-plugin-classnames@0.10.1(prettier@3.8.2))(prettier-plugin-merge@0.10.1(prettier@3.8.2))(prettier-plugin-tailwindcss@0.7.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.2))(prettier@3.8.2))(prettier@3.8.2)
+        version: 0.13.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.3))(prettier-plugin-classnames@0.10.1(prettier@3.8.3))(prettier-plugin-merge@0.10.1(prettier@3.8.3))(prettier-plugin-tailwindcss@0.7.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.3))(prettier@3.8.3))(prettier@3.8.3)
       '@zayne-labs/tsconfig':
         specifier: ^0.13.2
         version: 0.13.2
       postcss:
-        specifier: 8.5.9
-        version: 8.5.9
+        specifier: 8.5.10
+        version: 8.5.10
       tailwindcss:
         specifier: 4.2.2
         version: 4.2.2
@@ -415,7 +415,7 @@ importers:
         version: 8.20.0
       tsdown:
         specifier: 'catalog:'
-        version: 0.21.7(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(synckit@0.11.12)(typescript@6.0.2)
+        version: 0.21.8(synckit@0.11.12)(typescript@6.0.2)
       typescript:
         specifier: 'catalog:'
         version: 6.0.2
@@ -440,7 +440,7 @@ importers:
         version: 0.13.2
       tsdown:
         specifier: 'catalog:'
-        version: 0.21.7(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(synckit@0.11.12)(typescript@6.0.2)
+        version: 0.21.8(synckit@0.11.12)(typescript@6.0.2)
       typescript:
         specifier: 'catalog:'
         version: 6.0.2
@@ -474,7 +474,7 @@ importers:
         version: 0.13.2
       tsdown:
         specifier: 'catalog:'
-        version: 0.21.7(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(synckit@0.11.12)(typescript@6.0.2)
+        version: 0.21.8(synckit@0.11.12)(typescript@6.0.2)
       typescript:
         specifier: 'catalog:'
         version: 6.0.2
@@ -488,11 +488,11 @@ importers:
         specifier: 1.0.12
         version: 1.0.12(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@zayne-labs/toolkit-react':
-        specifier: 0.12.48
-        version: 0.12.48(react@19.2.5)(tailwind-merge@3.5.0)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5)))
+        specifier: 0.12.49
+        version: 0.12.49(react@19.2.5)(tailwind-merge@3.5.0)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5)))
       '@zayne-labs/toolkit-type-helpers':
-        specifier: 0.12.48
-        version: 0.12.48
+        specifier: 0.12.49
+        version: 0.12.49
       react:
         specifier: 19.2.5
         version: 19.2.5
@@ -523,7 +523,7 @@ importers:
         version: 4.2.2
       tsdown:
         specifier: 'catalog:'
-        version: 0.21.7(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(synckit@0.11.12)(typescript@6.0.2)
+        version: 0.21.8(synckit@0.11.12)(typescript@6.0.2)
       typescript:
         specifier: 'catalog:'
         version: 6.0.2
@@ -656,18 +656,18 @@ packages:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
 
-  '@bull-board/api@6.21.2':
-    resolution: {integrity: sha512-QmwZ9rQp1EToWXtNmjdvA/0wjrzfslfJz9v8zBBn9LAi+4jO2qkljJMspHNj8Vo7ZlfNCbFhHkCLMPZjkNPCiA==}
+  '@bull-board/api@7.0.0':
+    resolution: {integrity: sha512-ISNspLHVmUWUSq/eLw+wd1FuBBUnqpLbYP2xUNmehpfKhS+NoZWMbBvqjUYVeE/HLfUkRcR1edzMKpl5n9zlSw==}
     peerDependencies:
-      '@bull-board/ui': 6.21.2
+      '@bull-board/ui': 7.0.0
 
-  '@bull-board/hono@6.21.2':
-    resolution: {integrity: sha512-nVAHvKHS6c9doQ9bV6MPyXRIqxBj9JyJSfuaLfHkrPbVm85q+nUHQjruQc9ztY/xdkEm/2/huVPE8lJQklAslA==}
+  '@bull-board/hono@7.0.0':
+    resolution: {integrity: sha512-olpxmQX06Bf0XEgbH5z2a800woXmB4uiLGM1noMdORBg3GvdImevw/nfxV9XxAPBN4dcnQ99VVAEqOvwrMObvQ==}
     peerDependencies:
       hono: ^4
 
-  '@bull-board/ui@6.21.2':
-    resolution: {integrity: sha512-QNzJmyRiCAr8proFwLV2oAFZIBFVofzPgpUm4W9YA4RX7DhwjqwVV8CP6+BDGLvHyApAN30YacEe40+FFaV0ZA==}
+  '@bull-board/ui@7.0.0':
+    resolution: {integrity: sha512-AnKeklpDn0iMFgu4ukDU6uTNmw4oudl07G4k2Fh95SknKDrXSiWRV0N1TGUawMqyfG1Yi5P/W/8d7raBq/Uw6w==}
 
   '@clack/core@1.2.0':
     resolution: {integrity: sha512-qfxof/3T3t9DPU/Rj3OmcFyZInceqj/NVtO9rwIuJqCUgh32gwPjpFQQp/ben07qKlhpwq7GzfWpST4qdJ5Drg==}
@@ -1495,8 +1495,8 @@ packages:
   '@huggingface/tokenizers@0.1.3':
     resolution: {integrity: sha512-8rF/RRT10u+kn7YuUbUg0OF30K8rjTc78aHpxT+qJ1uWSqxT1MHi8+9ltwYfkFYJzT/oS+qw3JVfHtNMGAdqyA==}
 
-  '@huggingface/transformers@4.0.1':
-    resolution: {integrity: sha512-tAQYEy+cnW0ku/NxBSjFXCymi+DZa1/JkoGf4McxjzO36CZZIL/J4TF6X7i/tzs75yTjshUDgsvSz03s2xym2A==}
+  '@huggingface/transformers@4.1.0':
+    resolution: {integrity: sha512-WiMf9eyvF6V2pj4gs12A7GQV3svyFIBtB/W+Hn5lT5E5DyqWUno1ZrWoAfJv69X1RNv/0GoOo6DFmL6NOYd+rg==}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -2011,9 +2011,6 @@ packages:
   '@ota-meshi/ast-token-store@0.3.0':
     resolution: {integrity: sha512-XRO0zi2NIUKq2lUk3T1ecFSld1fMWRKE6naRFGkgkdeosx7IslyUKNv5Dcb5PJTja9tHJoFu0v/7yEpAkrkrTg==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
-
-  '@oxc-project/types@0.122.0':
-    resolution: {integrity: sha512-oLAl5kBpV4w69UtFZ9xqcmTi+GENWOcPF7FCrczTiBbmC0ibXxCwyvZGbO39rCVEuLGAZM84DH0pUIyyv/YJzA==}
 
   '@oxc-project/types@0.124.0':
     resolution: {integrity: sha512-VBFWMTBvHxS11Z5Lvlr3IWgrwhMTXV+Md+EQF0Xf60+wAdsGFTBx7X7K/hP4pi8N7dcm1RvcHwDxZ16Qx8keUg==}
@@ -2913,44 +2910,41 @@ packages:
     peerDependencies:
       react: ^18.0 || ^19.0 || ^19.0.0-rc
 
-  '@redis/bloom@5.11.0':
-    resolution: {integrity: sha512-KYiVilAhAFN3057afUb/tfYJpsEyTkQB+tQcn5gVVA7DgcNOAj8lLxe4j8ov8BF6I9C1Fe/kwlbuAICcTMX8Lw==}
-    engines: {node: '>= 18'}
+  '@redis/bloom@5.12.1':
+    resolution: {integrity: sha512-PUUfv+ms7jgPSBVoo/DN4AkPHj4D5TZSd6SbJX7egzBplkYUcKmHRE8RKia7UtZ8bSQbLguLvxVO+asKtQfZWA==}
+    engines: {node: '>= 18.19.0'}
     peerDependencies:
-      '@redis/client': ^5.11.0
+      '@redis/client': ^5.12.1
 
-  '@redis/client@5.11.0':
-    resolution: {integrity: sha512-GHoprlNQD51Xq2Ztd94HHV94MdFZQ3CVrpA04Fz8MVoHM0B7SlbmPEVIjwTbcv58z8QyjnrOuikS0rWF03k5dQ==}
-    engines: {node: '>= 18'}
+  '@redis/client@5.12.1':
+    resolution: {integrity: sha512-7aPGWeqA3uFm43o19umzdl16CEjK/JQGtSXVPevplTaOU3VJA/rseBC1QvYUz9lLDIMBimc4SW/zrW4S89BaCA==}
+    engines: {node: '>= 18.19.0'}
     peerDependencies:
       '@node-rs/xxhash': ^1.1.0
+      '@opentelemetry/api': '>=1 <2'
     peerDependenciesMeta:
       '@node-rs/xxhash':
         optional: true
+      '@opentelemetry/api':
+        optional: true
 
-  '@redis/json@5.11.0':
-    resolution: {integrity: sha512-1iAy9kAtcD0quB21RbPTbUqqy+T2Uu2JxucwE+B4A+VaDbIRvpZR6DMqV8Iqaws2YxJYB3GC5JVNzPYio2ErUg==}
-    engines: {node: '>= 18'}
+  '@redis/json@5.12.1':
+    resolution: {integrity: sha512-eOze75esLve4vfqDel7aMX08CNaiLLQS2fV8mpRN9NxPe1rVR4vQyYiW/OgtGUysF6QOr9ANhfxABKNOJfXdKg==}
+    engines: {node: '>= 18.19.0'}
     peerDependencies:
-      '@redis/client': ^5.11.0
+      '@redis/client': ^5.12.1
 
-  '@redis/search@5.11.0':
-    resolution: {integrity: sha512-g1l7f3Rnyk/xI99oGHIgWHSKFl45Re5YTIcO8j/JE8olz389yUFyz2+A6nqVy/Zi031VgPDWscbbgOk8hlhZ3g==}
-    engines: {node: '>= 18'}
+  '@redis/search@5.12.1':
+    resolution: {integrity: sha512-ItlxbxC9cKI6IU1TLWoczwJCRb6TdmkEpWv05UrPawqaAnWGRu3rcIqsc5vN483T2fSociuyV1UkWIL5I4//2w==}
+    engines: {node: '>= 18.19.0'}
     peerDependencies:
-      '@redis/client': ^5.11.0
+      '@redis/client': ^5.12.1
 
-  '@redis/time-series@5.11.0':
-    resolution: {integrity: sha512-TWFeOcU4xkj0DkndnOyhtxvX1KWD+78UHT3XX3x3XRBUGWeQrKo3jqzDsZwxbggUgf9yLJr/akFHXru66X5UQA==}
-    engines: {node: '>= 18'}
+  '@redis/time-series@5.12.1':
+    resolution: {integrity: sha512-c6JL6E3EcZJuNqKFz+KM+l9l5mpcQiKvTwgA3blt5glWJ8hjDk0yeHN3beE/MpqYIQ8UEX44ItQzgkE/gCBELQ==}
+    engines: {node: '>= 18.19.0'}
     peerDependencies:
-      '@redis/client': ^5.11.0
-
-  '@rolldown/binding-android-arm64@1.0.0-rc.12':
-    resolution: {integrity: sha512-pv1y2Fv0JybcykuiiD3qBOBdz6RteYojRFY1d+b95WVuzx211CRh+ytI/+9iVyWQ6koTh5dawe4S/yRfOFjgaA==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [arm64]
-    os: [android]
+      '@redis/client': ^5.12.1
 
   '@rolldown/binding-android-arm64@1.0.0-rc.15':
     resolution: {integrity: sha512-YYe6aWruPZDtHNpwu7+qAHEMbQ/yRl6atqb/AhznLTnD3UY99Q1jE7ihLSahNWkF4EqRPVC4SiR4O0UkLK02tA==}
@@ -2958,22 +2952,10 @@ packages:
     cpu: [arm64]
     os: [android]
 
-  '@rolldown/binding-darwin-arm64@1.0.0-rc.12':
-    resolution: {integrity: sha512-cFYr6zTG/3PXXF3pUO+umXxt1wkRK/0AYT8lDwuqvRC+LuKYWSAQAQZjCWDQpAH172ZV6ieYrNnFzVVcnSflAg==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [arm64]
-    os: [darwin]
-
   '@rolldown/binding-darwin-arm64@1.0.0-rc.15':
     resolution: {integrity: sha512-oArR/ig8wNTPYsXL+Mzhs0oxhxfuHRfG7Ikw7jXsw8mYOtk71W0OkF2VEVh699pdmzjPQsTjlD1JIOoHkLP1Fg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
-    os: [darwin]
-
-  '@rolldown/binding-darwin-x64@1.0.0-rc.12':
-    resolution: {integrity: sha512-ZCsYknnHzeXYps0lGBz8JrF37GpE9bFVefrlmDrAQhOEi4IOIlcoU1+FwHEtyXGx2VkYAvhu7dyBf75EJQffBw==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [x64]
     os: [darwin]
 
   '@rolldown/binding-darwin-x64@1.0.0-rc.15':
@@ -2982,36 +2964,17 @@ packages:
     cpu: [x64]
     os: [darwin]
 
-  '@rolldown/binding-freebsd-x64@1.0.0-rc.12':
-    resolution: {integrity: sha512-dMLeprcVsyJsKolRXyoTH3NL6qtsT0Y2xeuEA8WQJquWFXkEC4bcu1rLZZSnZRMtAqwtrF/Ib9Ddtpa/Gkge9Q==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [x64]
-    os: [freebsd]
-
   '@rolldown/binding-freebsd-x64@1.0.0-rc.15':
     resolution: {integrity: sha512-9Erhx956jeQ0nNTyif1+QWAXDRD38ZNjr//bSHrt6wDwB+QkAfl2q6Mn1k6OBPerznjRmbM10lgRb1Pli4xZPw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [freebsd]
 
-  '@rolldown/binding-linux-arm-gnueabihf@1.0.0-rc.12':
-    resolution: {integrity: sha512-YqWjAgGC/9M1lz3GR1r1rP79nMgo3mQiiA+Hfo+pvKFK1fAJ1bCi0ZQVh8noOqNacuY1qIcfyVfP6HoyBRZ85Q==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [arm]
-    os: [linux]
-
   '@rolldown/binding-linux-arm-gnueabihf@1.0.0-rc.15':
     resolution: {integrity: sha512-cVwk0w8QbZJGTnP/AHQBs5yNwmpgGYStL88t4UIaqcvYJWBfS0s3oqVLZPwsPU6M0zlW4GqjP0Zq5MnAGwFeGA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm]
     os: [linux]
-
-  '@rolldown/binding-linux-arm64-gnu@1.0.0-rc.12':
-    resolution: {integrity: sha512-/I5AS4cIroLpslsmzXfwbe5OmWvSsrFuEw3mwvbQ1kDxJ822hFHIx+vsN/TAzNVyepI/j/GSzrtCIwQPeKCLIg==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [arm64]
-    os: [linux]
-    libc: [glibc]
 
   '@rolldown/binding-linux-arm64-gnu@1.0.0-rc.15':
     resolution: {integrity: sha512-eBZ/u8iAK9SoHGanqe/jrPnY0JvBN6iXbVOsbO38mbz+ZJsaobExAm1Iu+rxa4S1l2FjG0qEZn4Rc6X8n+9M+w==}
@@ -3020,13 +2983,6 @@ packages:
     os: [linux]
     libc: [glibc]
 
-  '@rolldown/binding-linux-arm64-musl@1.0.0-rc.12':
-    resolution: {integrity: sha512-V6/wZztnBqlx5hJQqNWwFdxIKN0m38p8Jas+VoSfgH54HSj9tKTt1dZvG6JRHcjh6D7TvrJPWFGaY9UBVOaWPw==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [arm64]
-    os: [linux]
-    libc: [musl]
-
   '@rolldown/binding-linux-arm64-musl@1.0.0-rc.15':
     resolution: {integrity: sha512-ZvRYMGrAklV9PEkgt4LQM6MjQX2P58HPAuecwYObY2DhS2t35R0I810bKi0wmaYORt6m/2Sm+Z+nFgb0WhXNcQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -3034,24 +2990,10 @@ packages:
     os: [linux]
     libc: [musl]
 
-  '@rolldown/binding-linux-ppc64-gnu@1.0.0-rc.12':
-    resolution: {integrity: sha512-AP3E9BpcUYliZCxa3w5Kwj9OtEVDYK6sVoUzy4vTOJsjPOgdaJZKFmN4oOlX0Wp0RPV2ETfmIra9x1xuayFB7g==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [ppc64]
-    os: [linux]
-    libc: [glibc]
-
   '@rolldown/binding-linux-ppc64-gnu@1.0.0-rc.15':
     resolution: {integrity: sha512-VDpgGBzgfg5hLg+uBpCLoFG5kVvEyafmfxGUV0UHLcL5irxAK7PKNeC2MwClgk6ZAiNhmo9FLhRYgvMmedLtnQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [ppc64]
-    os: [linux]
-    libc: [glibc]
-
-  '@rolldown/binding-linux-s390x-gnu@1.0.0-rc.12':
-    resolution: {integrity: sha512-nWwpvUSPkoFmZo0kQazZYOrT7J5DGOJ/+QHHzjvNlooDZED8oH82Yg67HvehPPLAg5fUff7TfWFHQS8IV1n3og==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [s390x]
     os: [linux]
     libc: [glibc]
 
@@ -3062,26 +3004,12 @@ packages:
     os: [linux]
     libc: [glibc]
 
-  '@rolldown/binding-linux-x64-gnu@1.0.0-rc.12':
-    resolution: {integrity: sha512-RNrafz5bcwRy+O9e6P8Z/OCAJW/A+qtBczIqVYwTs14pf4iV1/+eKEjdOUta93q2TsT/FI0XYDP3TCky38LMAg==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [x64]
-    os: [linux]
-    libc: [glibc]
-
   '@rolldown/binding-linux-x64-gnu@1.0.0-rc.15':
     resolution: {integrity: sha512-023bTPBod7J3Y/4fzAN6QtpkSABR0rigtrwaP+qSEabUh5zf6ELr9Nc7GujaROuPY3uwdSIXWrvhn1KxOvurWA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
-
-  '@rolldown/binding-linux-x64-musl@1.0.0-rc.12':
-    resolution: {integrity: sha512-Jpw/0iwoKWx3LJ2rc1yjFrj+T7iHZn2JDg1Yny1ma0luviFS4mhAIcd1LFNxK3EYu3DHWCps0ydXQ5i/rrJ2ig==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [x64]
-    os: [linux]
-    libc: [musl]
 
   '@rolldown/binding-linux-x64-musl@1.0.0-rc.15':
     resolution: {integrity: sha512-witB2O0/hU4CgfOOKUoeFgQ4GktPi1eEbAhaLAIpgD6+ZnhcPkUtPsoKKHRzmOoWPZue46IThdSgdo4XneOLYw==}
@@ -3090,33 +3018,16 @@ packages:
     os: [linux]
     libc: [musl]
 
-  '@rolldown/binding-openharmony-arm64@1.0.0-rc.12':
-    resolution: {integrity: sha512-vRugONE4yMfVn0+7lUKdKvN4D5YusEiPilaoO2sgUWpCvrncvWgPMzK00ZFFJuiPgLwgFNP5eSiUlv2tfc+lpA==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [arm64]
-    os: [openharmony]
-
   '@rolldown/binding-openharmony-arm64@1.0.0-rc.15':
     resolution: {integrity: sha512-UCL68NJ0Ud5zRipXZE9dF5PmirzJE4E4BCIOOssEnM7wLDsxjc6Qb0sGDxTNRTP53I6MZpygyCpY8Aa8sPfKPg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [openharmony]
 
-  '@rolldown/binding-wasm32-wasi@1.0.0-rc.12':
-    resolution: {integrity: sha512-ykGiLr/6kkiHc0XnBfmFJuCjr5ZYKKofkx+chJWDjitX+KsJuAmrzWhwyOMSHzPhzOHOy7u9HlFoa5MoAOJ/Zg==}
-    engines: {node: '>=14.0.0'}
-    cpu: [wasm32]
-
   '@rolldown/binding-wasm32-wasi@1.0.0-rc.15':
     resolution: {integrity: sha512-ApLruZq/ig+nhaE7OJm4lDjayUnOHVUa77zGeqnqZ9pn0ovdVbbNPerVibLXDmWeUZXjIYIT8V3xkT58Rm9u5Q==}
     engines: {node: '>=14.0.0'}
     cpu: [wasm32]
-
-  '@rolldown/binding-win32-arm64-msvc@1.0.0-rc.12':
-    resolution: {integrity: sha512-5eOND4duWkwx1AzCxadcOrNeighiLwMInEADT0YM7xeEOOFcovWZCq8dadXgcRHSf3Ulh1kFo/qvzoFiCLOL1Q==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [arm64]
-    os: [win32]
 
   '@rolldown/binding-win32-arm64-msvc@1.0.0-rc.15':
     resolution: {integrity: sha512-KmoUoU7HnN+Si5YWJigfTws1jz1bKBYDQKdbLspz0UaqjjFkddHsqorgiW1mxcAj88lYUE6NC/zJNwT+SloqtA==}
@@ -3124,20 +3035,11 @@ packages:
     cpu: [arm64]
     os: [win32]
 
-  '@rolldown/binding-win32-x64-msvc@1.0.0-rc.12':
-    resolution: {integrity: sha512-PyqoipaswDLAZtot351MLhrlrh6lcZPo2LSYE+VDxbVk24LVKAGOuE4hb8xZQmrPAuEtTZW8E6D2zc5EUZX4Lw==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [x64]
-    os: [win32]
-
   '@rolldown/binding-win32-x64-msvc@1.0.0-rc.15':
     resolution: {integrity: sha512-3P2A8L+x75qavWLe/Dll3EYBJLQmtkJN8rfh+U/eR3MqMgL/h98PhYI+JFfXuDPgPeCB7iZAKiqii5vqOvnA0g==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [win32]
-
-  '@rolldown/pluginutils@1.0.0-rc.12':
-    resolution: {integrity: sha512-HHMwmarRKvoFsJorqYlFeFRzXZqCt2ETQlEDOb9aqssrnVBB1/+xgTGtuTrIk5vzLNX1MjMtTf7W9z3tsSbrxw==}
 
   '@rolldown/pluginutils@1.0.0-rc.15':
     resolution: {integrity: sha512-UromN0peaE53IaBRe9W7CjrZgXl90fqGpK+mIZbA3qSTeYqg3pqpROBdIPvOG3F5ereDHNwoHBI2e50n1BDr1g==}
@@ -3963,32 +3865,16 @@ packages:
       prettier-plugin-tailwindcss:
         optional: true
 
-  '@zayne-labs/toolkit-core@0.12.47':
-    resolution: {integrity: sha512-ULIGUOp5nz9pFrZj5QChxQdg+NAn4xrMmOISKATJVcpoROVlTN5HvoXlm/S9RHzSA16y/cTdVjKdPZeE3+t0Rw==}
-    engines: {node: '>=18.x'}
-
   '@zayne-labs/toolkit-core@0.12.48':
     resolution: {integrity: sha512-yGiiHfFgcCwuac7ySZ8IK8yWJ3FAm0K3+Fg+1afAm56+2HGljgG9/TwwE5XIZRQsELeOMD2PEceiivc1+QxLhg==}
     engines: {node: '>=18.x'}
 
-  '@zayne-labs/toolkit-react@0.12.47':
-    resolution: {integrity: sha512-XFbINfGfHH9g3E7hnhVGYNdDN2HPPxq12gIbsodOJ4F3DAy6Ax7Ede0194pmKLKiZbswbW3nrTPtuvf1PJipGA==}
+  '@zayne-labs/toolkit-core@0.12.49':
+    resolution: {integrity: sha512-NC7FQ4bkzXkfsUVhcCJP38r6V4jrkdk0l6JHm0smn6lwT5xMllgy9xxqqYia/dBajOs4wFjVtQFgO4GeaiFhFg==}
     engines: {node: '>=18.x'}
-    peerDependencies:
-      '@types/react': '>=19.0.0'
-      react: '>=19.0.0'
-      tailwind-merge: ^2.5.0 || ^3.0.0
-      zustand: 5.x.x
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      react:
-        optional: true
-      zustand:
-        optional: true
 
-  '@zayne-labs/toolkit-react@0.12.48':
-    resolution: {integrity: sha512-6bI4XzkwKkUIHeH6lXnfuViiXE6tf6Iba2MIDcY3RHFB3Lhr8JEAz9yUOil4o+0A4m/cd9Er+UiQuUA3V2hJzw==}
+  '@zayne-labs/toolkit-react@0.12.49':
+    resolution: {integrity: sha512-PkzmKeMVlxSH0ry0nuNPQ4OgoOmly0ZUHaMB0NWWhAE0q2N/3U+dDDMk6hv3ueQMTysPPCafN61ZTHxZWBFjZg==}
     engines: {node: '>=18.x'}
     peerDependencies:
       react: ^19.2.5
@@ -4000,19 +3886,19 @@ packages:
       zustand:
         optional: true
 
-  '@zayne-labs/toolkit-type-helpers@0.12.47':
-    resolution: {integrity: sha512-9CQBL22QOp+9pF9f8fA9QgS3ttLVkDRSjdYWj4SGDDO3x7h3SzUXWYykNOy2APIBlng+mi07LFSpKn9h+9S8PA==}
-    engines: {node: '>=18.x'}
-
   '@zayne-labs/toolkit-type-helpers@0.12.48':
     resolution: {integrity: sha512-p5SFM67s4wzDGHLK+dWJGp53HmsE6E4ngZojkR+0NK3CEIV8LrNhJCUI2lBay3PtYnFZQGNu/Uu9mBgpCSueJQ==}
+    engines: {node: '>=18.x'}
+
+  '@zayne-labs/toolkit-type-helpers@0.12.49':
+    resolution: {integrity: sha512-KyRx7L2yqZ5ryVmC/FQht0u/OeqMHELRTArme0WF4yCaTzkuiDTaCxCMjTp/cB9Vi1Mh54SmF1QpgJzkcCLvIQ==}
     engines: {node: '>=18.x'}
 
   '@zayne-labs/tsconfig@0.13.2':
     resolution: {integrity: sha512-twNSBdaHAEwa30GReuk1X0dBrJqjhdhV3Q1vbXW/0mHdMFbWuH9AVobss+3LA3oFdhzjzse0oArAk1iXoxMImQ==}
 
-  '@zayne-labs/ui-react@0.11.6':
-    resolution: {integrity: sha512-R/xr2ZPsmTlB367HyNka0pcL67K+XcWk6Fyjw/YKR1LCn6Z9Nu2m+5fVRrAmn4JCczBp2iPJPxPQ+rmcCcajKA==}
+  '@zayne-labs/ui-react@0.11.7':
+    resolution: {integrity: sha512-MyZ6vygF/kknvKtRJ4bhzCc+Oq0gkas039xyoLmdSjy5leucWIs717mXTT9GuCk2JofgxFX85q+q+5Sbr42UdA==}
     engines: {node: '>=18.x'}
     peerDependencies:
       react: ^19.2.5
@@ -4153,8 +4039,8 @@ packages:
     resolution: {integrity: sha512-c5JxaDrzwRjq3WyJkI1AGR5xy6Gr6udlt7sQPbl09+3ckB+Zo2qqQ2KhCTBr7Q8dHB43bENGYEk4xddrFH/b7A==}
     engines: {node: '>=18.20'}
 
-  bullmq@5.73.5:
-    resolution: {integrity: sha512-bZu3t1c/1smbA8Jk46OrLA4JRHPTv4uLbqUP0uaviV7S4c/rSl/qKmg3twgKKz+3aB4E0NL0jcjQW5eHwGyQOw==}
+  bullmq@5.74.1:
+    resolution: {integrity: sha512-GfJEos2zoOGM9xqkB7VZouwwFuejKFqm667cBcmbBekJXKqqXWk4QYP3Uy2pzgUwCbg1cR7GgGmGczM7fnhWSA==}
 
   cac@7.0.0:
     resolution: {integrity: sha512-tixWYgm5ZoOD+3g6UTea91eow5z6AAHaho3g0V9CNSNb45gM8SmflpAc+GRd1InC4AqN/07Unrgp56Y94N9hJQ==}
@@ -5086,6 +4972,9 @@ packages:
   get-tsconfig@4.13.7:
     resolution: {integrity: sha512-7tN6rFgBlMgpBML5j8typ92BKFi2sFQvIdpAqLA2beia5avZDrMs0FLZiM5etShWq5irVyGcGMEA1jcDaK7A/Q==}
 
+  get-tsconfig@4.14.0:
+    resolution: {integrity: sha512-yTb+8DXzDREzgvYmh6s9vHsSVCHeC0G3PI5bEXNBHtmshPnO+S5O7qgLEOn0I5QvMy6kpZN8K1NKGyilLb93wA==}
+
   github-slugger@2.0.0:
     resolution: {integrity: sha512-IaOQ9puYtjrkq7Y0Ygl9KDZnrf/aiUJYUpVf89y8kyaxbRG7Y1SrX/jaumrv81vc61+kiMempujsM3Yw7w5qcw==}
 
@@ -5192,12 +5081,12 @@ packages:
       unstorage:
         optional: true
 
-  hono@4.12.12:
-    resolution: {integrity: sha512-p1JfQMKaceuCbpJKAPKVqyqviZdS0eUxH9v82oWo1kb9xjQ5wA6iP3FNVAPDFlz5/p7d45lO+BpSk1tuSZMF4Q==}
+  hono@4.12.14:
+    resolution: {integrity: sha512-am5zfg3yu6sqn5yjKBNqhnTX7Cv+m00ox+7jbaKkrLMRJ4rAdldd1xPd/JzbBWspqaQv6RSTrgFN95EsfhC+7w==}
     engines: {node: '>=16.9.0'}
 
-  hookable@6.1.0:
-    resolution: {integrity: sha512-ZoKZSJgu8voGK2geJS+6YtYjvIzu9AOM/KZXsBxr83uhLL++e9pEv/dlgwgy3dvHg06kTz6JOh1hk3C8Ceiymw==}
+  hookable@6.1.1:
+    resolution: {integrity: sha512-U9LYDy1CwhMCnprUfeAZWZGByVbhd54hwepegYTK7Pi5NvqEj63ifz5z+xukznehT7i6NIZRu89Ay1AZmRsLEQ==}
 
   html-entities@2.6.0:
     resolution: {integrity: sha512-kig+rMn/QOVRvr7c86gQ8lWXq+Hkv6CbAH1hLu+RG338StTpE8Z0b44SDVaqVu7HGKf27frdmUYEs9hTUX/cLQ==}
@@ -5855,19 +5744,22 @@ packages:
   nf3@0.3.16:
     resolution: {integrity: sha512-Gs0xRPpUm2nDkqbi40NJ9g7qDIcjcJzgExiydnq6LAyqhI2jfno8wG3NKTL+IiJsx799UHOb1CnSd4Wg4SG4Pw==}
 
-  nitro@3.0.260311-beta:
-    resolution: {integrity: sha512-0o0fJ9LUh4WKUqJNX012jyieUOtMCnadkNDWr0mHzdraoHpJP/1CGNefjRyZyMXSpoJfwoWdNEZu2iGf35TUvQ==}
+  nitro@3.0.260415-beta:
+    resolution: {integrity: sha512-J0ntJERWtIdvweZdmkCiF8eOFvP9fIAJR2gpeIDrHbAlYavK41WQfADo/YoZ/LF7RMTZBiPaH/pt2s/nPru9Iw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
+      '@vercel/queue': ^0.1.4
       dotenv: '*'
       giget: '*'
       jiti: ^2.6.1
-      rollup: ^4.59.0
-      vite: ^7 || ^8 || >=8.0.0-0
+      rollup: ^4.60.1
+      vite: ^7 || ^8
       xml2js: ^0.6.2
-      zephyr-agent: ^0.1.15
+      zephyr-agent: ^0.2.0
     peerDependenciesMeta:
+      '@vercel/queue':
+        optional: true
       dotenv:
         optional: true
       giget:
@@ -5983,8 +5875,8 @@ packages:
     resolution: {integrity: sha512-JH7+czbc8ALA819vlTgcV+Q214/+VjGeBHDjX81+ZCD0PCVCIFGFNtT0V4sXG/1JXypKPgScQcB3ij/hk3YnTg==}
     os: [win32, darwin, linux]
 
-  onnxruntime-web@1.25.0-dev.20260327-722743c0e2:
-    resolution: {integrity: sha512-8PXdZy4Ekhg10CLg+cFFt39b4tFDGMRJB6lGjnQL6eA+2boUQYDymZ0gtxiS+H6oIWoCjQp/ziyirvFbaFKfiw==}
+  onnxruntime-web@1.26.0-dev.20260410-5e55544225:
+    resolution: {integrity: sha512-hHd9n8DzIfGSAjM4Dvslesc8i6h9HEEcl8qt7X3LfhUxMgls6FBJ32j2xrDtJjKJFEehFeJmyB/pvad1I8KS8w==}
 
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
@@ -6126,6 +6018,10 @@ packages:
     resolution: {integrity: sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==}
     engines: {node: ^10 || ^12 || >=14}
 
+  postcss@8.5.10:
+    resolution: {integrity: sha512-pMMHxBOZKFU6HgAZ4eyGnwXF/EvPGGqUr0MnZ5+99485wwW41kW91A4LOGxSHhgugZmSChL5AlElNdwlNgcnLQ==}
+    engines: {node: ^10 || ^12 || >=14}
+
   postcss@8.5.9:
     resolution: {integrity: sha512-7a70Nsot+EMX9fFU3064K/kdHWZqGVY+BADLyXc8Dfv+mTLLVl6JzJpPaCZ2kQL9gIJvKXSLMHhqdRRjwQeFtw==}
     engines: {node: ^10 || ^12 || >=14}
@@ -6227,8 +6123,8 @@ packages:
       prettier-plugin-svelte:
         optional: true
 
-  prettier@3.8.2:
-    resolution: {integrity: sha512-8c3mgTe0ASwWAJK+78dpviD+A8EqhndQPUBpNUIPt6+xWlIigCwfN01lWr9MAede4uqXGTEKeQWTvzb3vjia0Q==}
+  prettier@3.8.3:
+    resolution: {integrity: sha512-7igPTM53cGHMW8xWuVTydi2KO233VFiTNyF5hLJqpilHfmn8C8gPf+PS7dUT64YcXFbiMGZxS9pCSxL/Dxm/Jw==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -6243,8 +6139,8 @@ packages:
     resolution: {integrity: sha512-NxNv/kLguCA7p3jE8oL2aEBsrJWgAakBpgmgK6lpPWV+WuOmY6r2/zbAVnP+T8bQlA0nzHXSJSJW0Hq7ylaD2Q==}
     engines: {node: '>= 6'}
 
-  protobufjs@7.5.4:
-    resolution: {integrity: sha512-CvexbZtbov6jW2eXAvLukXjXUW1TzFaivC46BpWc/3BpcCysb5Vffu+B3XHMm8lVEuy2Mm4XGex8hBSg1yapPg==}
+  protobufjs@7.5.5:
+    resolution: {integrity: sha512-3wY1AxV+VBNW8Yypfd1yQY9pXnqTAN+KwQxL8iYm3/BjKYMNg4i0owhEe26PWDOMaIrzeeF98Lqd5NGz4omiIg==}
     engines: {node: '>=12.0.0'}
 
   proxy-compare@3.0.1:
@@ -6360,9 +6256,9 @@ packages:
     resolution: {integrity: sha512-DJnGAeenTdpMEH6uAJRK/uiyEIH9WVsUmoLwzudwGJUwZPp80PDBWPHXSAGNPwNvIXAbe7MSUB1zQFugFml66A==}
     engines: {node: '>=4'}
 
-  redis@5.11.0:
-    resolution: {integrity: sha512-YwXjATVDT+AuxcyfOwZn046aml9jMlQPvU1VXIlLDVAExe0u93aTfPYSeRgG4p9Q/Jlkj+LXJ1XEoFV+j2JKcQ==}
-    engines: {node: '>= 18'}
+  redis@5.12.1:
+    resolution: {integrity: sha512-LDsoVvb/CpoV9EN3FXvgvSHNJWuCIzl9MiO3ppOevuGLpSGJhwfQjpEwfFJcQvNSddHADDdZaWx0HnmMxRXG7g==}
+    engines: {node: '>= 18.19.0'}
 
   regexp-tree@0.1.27:
     resolution: {integrity: sha512-iETxpjK6YoRWJG5o6hXLwvjYAoW+FEZn9os0PD/b6AP6xQwsa/Y7lCVgIixBbUPMfhu+i2LtdeAqVTgGlQarfA==}
@@ -6416,11 +6312,6 @@ packages:
         optional: true
       vue-tsc:
         optional: true
-
-  rolldown@1.0.0-rc.12:
-    resolution: {integrity: sha512-yP4USLIMYrwpPHEFB5JGH1uxhcslv6/hL0OyvTuY+3qlOSJvZ7ntYnoWpehBxufkgN0cvXxppuTu5hHa/zPh+A==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    hasBin: true
 
   rolldown@1.0.0-rc.15:
     resolution: {integrity: sha512-Ff31guA5zT6WjnGp0SXw76X6hzGRk/OQq2hE+1lcDe+lJdHSgnSX6nK3erbONHyCbpSj9a9E+uX/OvytZoWp2g==}
@@ -6717,14 +6608,14 @@ packages:
     resolution: {integrity: sha512-NoZ4roiN7LnbKn9QqE1amc9DJfzvZXxF4xDavcOWt1BPkdx+m+0gJuPM+S0vCe7zTJMYUP0R8pO2XMr+Y8oLIg==}
     engines: {node: '>=6'}
 
-  tsdown@0.21.7:
-    resolution: {integrity: sha512-ukKIxKQzngkWvOYJAyptudclkm4VQqbjq+9HF5K5qDO8GJsYtMh8gIRwicbnZEnvFPr6mquFwYAVZ8JKt3rY2g==}
+  tsdown@0.21.8:
+    resolution: {integrity: sha512-rHDIER4JU5owYTWptvyDk6pwfA5lCft1P+11HLGeF0uj0CB7vopFvr/E8QOaRmegeyHIEsu4+03j7ysvdgBAVA==}
     engines: {node: '>=20.19.0'}
     hasBin: true
     peerDependencies:
       '@arethetypeswrong/core': ^0.18.1
-      '@tsdown/css': 0.21.7
-      '@tsdown/exe': 0.21.7
+      '@tsdown/css': 0.21.8
+      '@tsdown/exe': 0.21.8
       '@vitejs/devtools': '*'
       publint: ^0.3.0
       typescript: ^5.0.0 || ^6.0.0
@@ -6818,8 +6709,8 @@ packages:
   unrs-resolver@1.11.1:
     resolution: {integrity: sha512-bSjt9pjaEBnNiGgc9rUiHGKv5l4/TGzDmYw3RhnkJGtLhbnnA/5qJj7x3dNDCRx/PJxu774LlH8lCOlB4hEfKg==}
 
-  unrun@0.2.34:
-    resolution: {integrity: sha512-LyaghRBR++r7svhDK6tnDz2XaYHWdneBOA0jbS8wnRsHerI9MFljX4fIiTgbbNbEVzZ0C9P1OjWLLe1OqoaaEw==}
+  unrun@0.2.35:
+    resolution: {integrity: sha512-nDP7mA4Fu5owDarQtLiiN3lq7tJZHFEAVIchnwP8U3wMeEkLoUNT37Hva85H05Rdw8CArpGmtY+lBjpk9fruVQ==}
     engines: {node: '>=20.19.0'}
     hasBin: true
     peerDependencies:
@@ -7353,21 +7244,21 @@ snapshots:
       react: 19.2.5
       react-dom: 19.2.5(react@19.2.5)
 
-  '@bull-board/api@6.21.2(@bull-board/ui@6.21.2)':
+  '@bull-board/api@7.0.0(@bull-board/ui@7.0.0)':
     dependencies:
-      '@bull-board/ui': 6.21.2
+      '@bull-board/ui': 7.0.0
       redis-info: 3.1.0
 
-  '@bull-board/hono@6.21.2(hono@4.12.12)':
+  '@bull-board/hono@7.0.0(hono@4.12.14)':
     dependencies:
-      '@bull-board/api': 6.21.2(@bull-board/ui@6.21.2)
-      '@bull-board/ui': 6.21.2
+      '@bull-board/api': 7.0.0(@bull-board/ui@7.0.0)
+      '@bull-board/ui': 7.0.0
       ejs: 5.0.2
-      hono: 4.12.12
+      hono: 4.12.14
 
-  '@bull-board/ui@6.21.2':
+  '@bull-board/ui@7.0.0':
     dependencies:
-      '@bull-board/api': 6.21.2(@bull-board/ui@6.21.2)
+      '@bull-board/api': 7.0.0(@bull-board/ui@7.0.0)
 
   '@clack/core@1.2.0':
     dependencies:
@@ -7942,19 +7833,19 @@ snapshots:
 
   '@floating-ui/utils@0.2.11': {}
 
-  '@hono-storage/core@0.0.14(hono@4.12.12)':
+  '@hono-storage/core@0.0.14(hono@4.12.14)':
     dependencies:
-      hono: 4.12.12
+      hono: 4.12.14
 
-  '@hono-storage/node-disk@0.0.17(hono@4.12.12)':
+  '@hono-storage/node-disk@0.0.17(hono@4.12.14)':
     dependencies:
-      '@hono-storage/core': 0.0.14(hono@4.12.12)
+      '@hono-storage/core': 0.0.14(hono@4.12.14)
       '@web-std/file': 3.0.3
-      hono: 4.12.12
+      hono: 4.12.14
 
-  '@hono/node-server@1.19.14(hono@4.12.12)':
+  '@hono/node-server@1.19.14(hono@4.12.14)':
     dependencies:
-      hono: 4.12.12
+      hono: 4.12.14
 
   '@hookform/resolvers@5.2.2(react-hook-form@7.72.1(react@19.2.5))':
     dependencies:
@@ -7965,12 +7856,12 @@ snapshots:
 
   '@huggingface/tokenizers@0.1.3': {}
 
-  '@huggingface/transformers@4.0.1':
+  '@huggingface/transformers@4.1.0':
     dependencies:
       '@huggingface/jinja': 0.5.6
       '@huggingface/tokenizers': 0.1.3
       onnxruntime-node: 1.24.3
-      onnxruntime-web: 1.25.0-dev.20260327-722743c0e2
+      onnxruntime-web: 1.26.0-dev.20260410-5e55544225
       sharp: 0.34.5
 
   '@humanfs/core@0.19.1': {}
@@ -7984,13 +7875,13 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.2)':
+  '@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.3)':
     dependencies:
       '@babel/generator': 7.29.1
       '@babel/parser': 7.29.2
       '@babel/traverse': 7.29.0
       '@babel/types': 7.29.0
-      prettier: 3.8.2
+      prettier: 3.8.3
       semver: 7.7.4
     transitivePeerDependencies:
       - supports-color
@@ -8321,8 +8212,6 @@ snapshots:
       '@oslojs/encoding': 0.4.1
 
   '@ota-meshi/ast-token-store@0.3.0': {}
-
-  '@oxc-project/types@0.122.0': {}
 
   '@oxc-project/types@0.124.0': {}
 
@@ -9211,7 +9100,7 @@ snapshots:
   '@react-email/render@2.0.6(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
       html-to-text: 9.0.5
-      prettier: 3.8.2
+      prettier: 3.8.3
       react: 19.2.5
       react-dom: 19.2.5(react@19.2.5)
 
@@ -9244,104 +9133,60 @@ snapshots:
     dependencies:
       react: 19.2.5
 
-  '@redis/bloom@5.11.0(@redis/client@5.11.0)':
+  '@redis/bloom@5.12.1(@redis/client@5.12.1)':
     dependencies:
-      '@redis/client': 5.11.0
+      '@redis/client': 5.12.1
 
-  '@redis/client@5.11.0':
+  '@redis/client@5.12.1':
     dependencies:
       cluster-key-slot: 1.1.2
 
-  '@redis/json@5.11.0(@redis/client@5.11.0)':
+  '@redis/json@5.12.1(@redis/client@5.12.1)':
     dependencies:
-      '@redis/client': 5.11.0
+      '@redis/client': 5.12.1
 
-  '@redis/search@5.11.0(@redis/client@5.11.0)':
+  '@redis/search@5.12.1(@redis/client@5.12.1)':
     dependencies:
-      '@redis/client': 5.11.0
+      '@redis/client': 5.12.1
 
-  '@redis/time-series@5.11.0(@redis/client@5.11.0)':
+  '@redis/time-series@5.12.1(@redis/client@5.12.1)':
     dependencies:
-      '@redis/client': 5.11.0
-
-  '@rolldown/binding-android-arm64@1.0.0-rc.12':
-    optional: true
+      '@redis/client': 5.12.1
 
   '@rolldown/binding-android-arm64@1.0.0-rc.15':
-    optional: true
-
-  '@rolldown/binding-darwin-arm64@1.0.0-rc.12':
     optional: true
 
   '@rolldown/binding-darwin-arm64@1.0.0-rc.15':
     optional: true
 
-  '@rolldown/binding-darwin-x64@1.0.0-rc.12':
-    optional: true
-
   '@rolldown/binding-darwin-x64@1.0.0-rc.15':
-    optional: true
-
-  '@rolldown/binding-freebsd-x64@1.0.0-rc.12':
     optional: true
 
   '@rolldown/binding-freebsd-x64@1.0.0-rc.15':
     optional: true
 
-  '@rolldown/binding-linux-arm-gnueabihf@1.0.0-rc.12':
-    optional: true
-
   '@rolldown/binding-linux-arm-gnueabihf@1.0.0-rc.15':
-    optional: true
-
-  '@rolldown/binding-linux-arm64-gnu@1.0.0-rc.12':
     optional: true
 
   '@rolldown/binding-linux-arm64-gnu@1.0.0-rc.15':
     optional: true
 
-  '@rolldown/binding-linux-arm64-musl@1.0.0-rc.12':
-    optional: true
-
   '@rolldown/binding-linux-arm64-musl@1.0.0-rc.15':
-    optional: true
-
-  '@rolldown/binding-linux-ppc64-gnu@1.0.0-rc.12':
     optional: true
 
   '@rolldown/binding-linux-ppc64-gnu@1.0.0-rc.15':
     optional: true
 
-  '@rolldown/binding-linux-s390x-gnu@1.0.0-rc.12':
-    optional: true
-
   '@rolldown/binding-linux-s390x-gnu@1.0.0-rc.15':
-    optional: true
-
-  '@rolldown/binding-linux-x64-gnu@1.0.0-rc.12':
     optional: true
 
   '@rolldown/binding-linux-x64-gnu@1.0.0-rc.15':
     optional: true
 
-  '@rolldown/binding-linux-x64-musl@1.0.0-rc.12':
-    optional: true
-
   '@rolldown/binding-linux-x64-musl@1.0.0-rc.15':
     optional: true
 
-  '@rolldown/binding-openharmony-arm64@1.0.0-rc.12':
-    optional: true
-
   '@rolldown/binding-openharmony-arm64@1.0.0-rc.15':
-    optional: true
-
-  '@rolldown/binding-wasm32-wasi@1.0.0-rc.12(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)':
-    dependencies:
-      '@napi-rs/wasm-runtime': 1.1.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
-    transitivePeerDependencies:
-      - '@emnapi/core'
-      - '@emnapi/runtime'
     optional: true
 
   '@rolldown/binding-wasm32-wasi@1.0.0-rc.15':
@@ -9351,19 +9196,11 @@ snapshots:
       '@napi-rs/wasm-runtime': 1.1.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
     optional: true
 
-  '@rolldown/binding-win32-arm64-msvc@1.0.0-rc.12':
-    optional: true
-
   '@rolldown/binding-win32-arm64-msvc@1.0.0-rc.15':
-    optional: true
-
-  '@rolldown/binding-win32-x64-msvc@1.0.0-rc.12':
     optional: true
 
   '@rolldown/binding-win32-x64-msvc@1.0.0-rc.15':
     optional: true
-
-  '@rolldown/pluginutils@1.0.0-rc.12': {}
 
   '@rolldown/pluginutils@1.0.0-rc.15': {}
 
@@ -9466,7 +9303,7 @@ snapshots:
       '@alloc/quick-lru': 5.2.0
       '@tailwindcss/node': 4.2.2
       '@tailwindcss/oxide': 4.2.2
-      postcss: 8.5.9
+      postcss: 8.5.10
       tailwindcss: 4.2.2
 
   '@tailwindcss/typography@0.5.19(tailwindcss@4.2.2)':
@@ -10342,10 +10179,10 @@ snapshots:
 
   '@zag-js/utils@1.39.1': {}
 
-  '@zayne-labs/callapi-plugins@5.0.4(@zayne-labs/callapi@1.12.4)(@zayne-labs/toolkit-type-helpers@0.12.48)(consola@3.4.2)':
+  '@zayne-labs/callapi-plugins@5.0.4(@zayne-labs/callapi@1.12.4)(@zayne-labs/toolkit-type-helpers@0.12.49)(consola@3.4.2)':
     dependencies:
       '@zayne-labs/callapi': 1.12.4
-      '@zayne-labs/toolkit-type-helpers': 0.12.48
+      '@zayne-labs/toolkit-type-helpers': 0.12.49
       consola: 3.4.2
 
   '@zayne-labs/callapi@1.12.4': {}
@@ -10406,57 +10243,47 @@ snapshots:
       - supports-color
       - typescript
 
-  '@zayne-labs/prettier-config@0.13.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.2))(prettier-plugin-classnames@0.10.1(prettier@3.8.2))(prettier-plugin-merge@0.10.1(prettier@3.8.2))(prettier-plugin-tailwindcss@0.7.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.2))(prettier@3.8.2))(prettier@3.8.2)':
+  '@zayne-labs/prettier-config@0.13.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.3))(prettier-plugin-classnames@0.10.1(prettier@3.8.3))(prettier-plugin-merge@0.10.1(prettier@3.8.3))(prettier-plugin-tailwindcss@0.7.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.3))(prettier@3.8.3))(prettier@3.8.3)':
     dependencies:
       '@antfu/install-pkg': 1.1.0
       '@clack/prompts': 1.2.0
-      '@ianvs/prettier-plugin-sort-imports': 4.7.1(prettier@3.8.2)
+      '@ianvs/prettier-plugin-sort-imports': 4.7.1(prettier@3.8.3)
       '@zayne-labs/toolkit-type-helpers': 0.12.48
       local-pkg: 1.1.2
-      prettier: 3.8.2
+      prettier: 3.8.3
     optionalDependencies:
-      prettier-plugin-classnames: 0.10.1(prettier@3.8.2)
-      prettier-plugin-merge: 0.10.1(prettier@3.8.2)
-      prettier-plugin-tailwindcss: 0.7.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.2))(prettier@3.8.2)
-
-  '@zayne-labs/toolkit-core@0.12.47':
-    dependencies:
-      '@zayne-labs/toolkit-type-helpers': 0.12.47
+      prettier-plugin-classnames: 0.10.1(prettier@3.8.3)
+      prettier-plugin-merge: 0.10.1(prettier@3.8.3)
+      prettier-plugin-tailwindcss: 0.7.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.3))(prettier@3.8.3)
 
   '@zayne-labs/toolkit-core@0.12.48':
     dependencies:
       '@zayne-labs/toolkit-type-helpers': 0.12.48
 
-  '@zayne-labs/toolkit-react@0.12.47(@types/react@19.2.14)(react@19.2.5)(tailwind-merge@3.5.0)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5)))':
+  '@zayne-labs/toolkit-core@0.12.49':
     dependencies:
-      '@zayne-labs/toolkit-core': 0.12.47
-      '@zayne-labs/toolkit-type-helpers': 0.12.47
-      tailwind-merge: 3.5.0
-    optionalDependencies:
-      '@types/react': 19.2.14
-      react: 19.2.5
-      zustand: 5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5))
+      '@zayne-labs/toolkit-type-helpers': 0.12.49
 
-  '@zayne-labs/toolkit-react@0.12.48(react@19.2.5)(tailwind-merge@3.5.0)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5)))':
+  '@zayne-labs/toolkit-react@0.12.49(react@19.2.5)(tailwind-merge@3.5.0)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5)))':
     dependencies:
-      '@zayne-labs/toolkit-core': 0.12.48
-      '@zayne-labs/toolkit-type-helpers': 0.12.48
+      '@zayne-labs/toolkit-core': 0.12.49
+      '@zayne-labs/toolkit-type-helpers': 0.12.49
       tailwind-merge: 3.5.0
     optionalDependencies:
       react: 19.2.5
       zustand: 5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5))
-
-  '@zayne-labs/toolkit-type-helpers@0.12.47': {}
 
   '@zayne-labs/toolkit-type-helpers@0.12.48': {}
 
+  '@zayne-labs/toolkit-type-helpers@0.12.49': {}
+
   '@zayne-labs/tsconfig@0.13.2': {}
 
-  '@zayne-labs/ui-react@0.11.6(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react-hook-form@7.72.1(react@19.2.5))(react@19.2.5)(tailwind-merge@3.5.0)(tailwindcss@4.2.2)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5)))':
+  '@zayne-labs/ui-react@0.11.7(react-dom@19.2.5(react@19.2.5))(react-hook-form@7.72.1(react@19.2.5))(react@19.2.5)(tailwind-merge@3.5.0)(tailwindcss@4.2.2)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5)))':
     dependencies:
-      '@zayne-labs/toolkit-core': 0.12.47
-      '@zayne-labs/toolkit-react': 0.12.47(@types/react@19.2.14)(react@19.2.5)(tailwind-merge@3.5.0)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5)))
-      '@zayne-labs/toolkit-type-helpers': 0.12.47
+      '@zayne-labs/toolkit-core': 0.12.49
+      '@zayne-labs/toolkit-react': 0.12.49(react@19.2.5)(tailwind-merge@3.5.0)(zustand@5.0.12(@types/react@19.2.14)(react@19.2.5)(use-sync-external-store@1.6.0(react@19.2.5)))
+      '@zayne-labs/toolkit-type-helpers': 0.12.49
       react: 19.2.5
       react-dom: 19.2.5(react@19.2.5)
       tailwind-merge: 3.5.0
@@ -10464,7 +10291,6 @@ snapshots:
       react-hook-form: 7.72.1(react@19.2.5)
       tailwindcss: 4.2.2
     transitivePeerDependencies:
-      - '@types/react'
       - zustand
 
   '@zxing/text-encoding@0.9.0':
@@ -10578,7 +10404,7 @@ snapshots:
 
   builtin-modules@5.1.0: {}
 
-  bullmq@5.73.5:
+  bullmq@5.74.1:
     dependencies:
       cron-parser: 4.9.0
       ioredis: 5.10.1
@@ -11597,6 +11423,10 @@ snapshots:
     dependencies:
       resolve-pkg-maps: 1.0.0
 
+  get-tsconfig@4.14.0:
+    dependencies:
+      resolve-pkg-maps: 1.0.0
+
   github-slugger@2.0.0: {}
 
   glob-parent@5.1.2:
@@ -11674,19 +11504,19 @@ snapshots:
     dependencies:
       hermes-estree: 0.25.1
 
-  hono-pino@0.10.3(hono@4.12.12)(pino@10.3.1):
+  hono-pino@0.10.3(hono@4.12.14)(pino@10.3.1):
     dependencies:
       defu: 6.1.7
-      hono: 4.12.12
+      hono: 4.12.14
       pino: 10.3.1
 
-  hono-rate-limiter@0.5.3(hono@4.12.12):
+  hono-rate-limiter@0.5.3(hono@4.12.14):
     dependencies:
-      hono: 4.12.12
+      hono: 4.12.14
 
-  hono@4.12.12: {}
+  hono@4.12.14: {}
 
-  hookable@6.1.0: {}
+  hookable@6.1.1: {}
 
   html-entities@2.6.0: {}
 
@@ -12489,14 +12319,14 @@ snapshots:
 
   nf3@0.3.16: {}
 
-  nitro@3.0.260311-beta(chokidar@4.0.3)(dotenv@17.4.1)(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.20.0))(ioredis@5.10.1)(jiti@2.6.1)(lru-cache@11.3.3)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)):
+  nitro@3.0.260415-beta(chokidar@4.0.3)(dotenv@17.4.1)(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.20.0))(ioredis@5.10.1)(jiti@2.6.1)(lru-cache@11.3.3)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)):
     dependencies:
       consola: 3.4.2
       crossws: 0.4.5(srvx@0.11.15)
       db0: 0.3.4(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.20.0))
       env-runner: 0.1.7
       h3: 2.0.1-rc.20(crossws@0.4.5(srvx@0.11.15))
-      hookable: 6.1.0
+      hookable: 6.1.1
       nf3: 0.3.16
       ocache: 0.1.4
       ofetch: 2.0.0-alpha.3
@@ -12614,14 +12444,14 @@ snapshots:
       global-agent: 3.0.0
       onnxruntime-common: 1.24.3
 
-  onnxruntime-web@1.25.0-dev.20260327-722743c0e2:
+  onnxruntime-web@1.26.0-dev.20260410-5e55544225:
     dependencies:
       flatbuffers: 25.9.23
       guid-typescript: 1.0.9
       long: 5.3.2
       onnxruntime-common: 1.24.0-dev.20251116-b39e144322
       platform: 1.3.6
-      protobufjs: 7.5.4
+      protobufjs: 7.5.5
 
   optionator@0.9.4:
     dependencies:
@@ -12792,6 +12622,12 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
+  postcss@8.5.10:
+    dependencies:
+      nanoid: 3.3.11
+      picocolors: 1.1.1
+      source-map-js: 1.2.1
+
   postcss@8.5.9:
     dependencies:
       nanoid: 3.3.11
@@ -12810,23 +12646,23 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-classnames@0.10.1(prettier@3.8.2):
+  prettier-plugin-classnames@0.10.1(prettier@3.8.3):
     dependencies:
-      prettier: 3.8.2
+      prettier: 3.8.3
       zod: 3.22.4
 
-  prettier-plugin-merge@0.10.1(prettier@3.8.2):
+  prettier-plugin-merge@0.10.1(prettier@3.8.3):
     dependencies:
       diff: 5.2.2
-      prettier: 3.8.2
+      prettier: 3.8.3
 
-  prettier-plugin-tailwindcss@0.7.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.2))(prettier@3.8.2):
+  prettier-plugin-tailwindcss@0.7.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.3))(prettier@3.8.3):
     dependencies:
-      prettier: 3.8.2
+      prettier: 3.8.3
     optionalDependencies:
-      '@ianvs/prettier-plugin-sort-imports': 4.7.1(prettier@3.8.2)
+      '@ianvs/prettier-plugin-sort-imports': 4.7.1(prettier@3.8.3)
 
-  prettier@3.8.2: {}
+  prettier@3.8.3: {}
 
   prismjs@1.30.0: {}
 
@@ -12837,7 +12673,7 @@ snapshots:
       kleur: 3.0.3
       sisteransi: 1.0.5
 
-  protobufjs@7.5.4:
+  protobufjs@7.5.5:
     dependencies:
       '@protobufjs/aspromise': 1.1.2
       '@protobufjs/base64': 1.1.2
@@ -13020,15 +12856,16 @@ snapshots:
     dependencies:
       redis-errors: 1.2.0
 
-  redis@5.11.0:
+  redis@5.12.1:
     dependencies:
-      '@redis/bloom': 5.11.0(@redis/client@5.11.0)
-      '@redis/client': 5.11.0
-      '@redis/json': 5.11.0(@redis/client@5.11.0)
-      '@redis/search': 5.11.0(@redis/client@5.11.0)
-      '@redis/time-series': 5.11.0(@redis/client@5.11.0)
+      '@redis/bloom': 5.12.1(@redis/client@5.12.1)
+      '@redis/client': 5.12.1
+      '@redis/json': 5.12.1(@redis/client@5.12.1)
+      '@redis/search': 5.12.1(@redis/client@5.12.1)
+      '@redis/time-series': 5.12.1(@redis/client@5.12.1)
     transitivePeerDependencies:
       - '@node-rs/xxhash'
+      - '@opentelemetry/api'
 
   regexp-tree@0.1.27: {}
 
@@ -13060,7 +12897,7 @@ snapshots:
       semver-compare: 1.0.0
       sprintf-js: 1.1.3
 
-  rolldown-plugin-dts@0.23.2(rolldown@1.0.0-rc.12(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2))(typescript@6.0.2):
+  rolldown-plugin-dts@0.23.2(rolldown@1.0.0-rc.15)(typescript@6.0.2):
     dependencies:
       '@babel/generator': 8.0.0-rc.3
       '@babel/helper-validator-identifier': 8.0.0-rc.3
@@ -13069,38 +12906,14 @@ snapshots:
       ast-kit: 3.0.0-beta.1
       birpc: 4.0.0
       dts-resolver: 2.1.3
-      get-tsconfig: 4.13.7
+      get-tsconfig: 4.14.0
       obug: 2.1.1
       picomatch: 4.0.4
-      rolldown: 1.0.0-rc.12(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
+      rolldown: 1.0.0-rc.15
     optionalDependencies:
       typescript: 6.0.2
     transitivePeerDependencies:
       - oxc-resolver
-
-  rolldown@1.0.0-rc.12(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2):
-    dependencies:
-      '@oxc-project/types': 0.122.0
-      '@rolldown/pluginutils': 1.0.0-rc.12
-    optionalDependencies:
-      '@rolldown/binding-android-arm64': 1.0.0-rc.12
-      '@rolldown/binding-darwin-arm64': 1.0.0-rc.12
-      '@rolldown/binding-darwin-x64': 1.0.0-rc.12
-      '@rolldown/binding-freebsd-x64': 1.0.0-rc.12
-      '@rolldown/binding-linux-arm-gnueabihf': 1.0.0-rc.12
-      '@rolldown/binding-linux-arm64-gnu': 1.0.0-rc.12
-      '@rolldown/binding-linux-arm64-musl': 1.0.0-rc.12
-      '@rolldown/binding-linux-ppc64-gnu': 1.0.0-rc.12
-      '@rolldown/binding-linux-s390x-gnu': 1.0.0-rc.12
-      '@rolldown/binding-linux-x64-gnu': 1.0.0-rc.12
-      '@rolldown/binding-linux-x64-musl': 1.0.0-rc.12
-      '@rolldown/binding-openharmony-arm64': 1.0.0-rc.12
-      '@rolldown/binding-wasm32-wasi': 1.0.0-rc.12(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
-      '@rolldown/binding-win32-arm64-msvc': 1.0.0-rc.12
-      '@rolldown/binding-win32-x64-msvc': 1.0.0-rc.12
-    transitivePeerDependencies:
-      - '@emnapi/core'
-      - '@emnapi/runtime'
 
   rolldown@1.0.0-rc.15:
     dependencies:
@@ -13408,29 +13221,27 @@ snapshots:
       minimist: 1.2.8
       strip-bom: 3.0.0
 
-  tsdown@0.21.7(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(synckit@0.11.12)(typescript@6.0.2):
+  tsdown@0.21.8(synckit@0.11.12)(typescript@6.0.2):
     dependencies:
       ansis: 4.2.0
       cac: 7.0.0
       defu: 6.1.7
       empathic: 2.0.0
-      hookable: 6.1.0
+      hookable: 6.1.1
       import-without-cache: 0.2.5
       obug: 2.1.1
       picomatch: 4.0.4
-      rolldown: 1.0.0-rc.12(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
-      rolldown-plugin-dts: 0.23.2(rolldown@1.0.0-rc.12(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2))(typescript@6.0.2)
+      rolldown: 1.0.0-rc.15
+      rolldown-plugin-dts: 0.23.2(rolldown@1.0.0-rc.15)(typescript@6.0.2)
       semver: 7.7.4
       tinyexec: 1.1.1
       tinyglobby: 0.2.16
       tree-kill: 1.2.2
       unconfig-core: 7.5.0
-      unrun: 0.2.34(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(synckit@0.11.12)
+      unrun: 0.2.35(synckit@0.11.12)
     optionalDependencies:
       typescript: 6.0.2
     transitivePeerDependencies:
-      - '@emnapi/core'
-      - '@emnapi/runtime'
       - '@ts-macro/tsc'
       - '@typescript/native-preview'
       - oxc-resolver
@@ -13543,14 +13354,11 @@ snapshots:
       '@unrs/resolver-binding-win32-ia32-msvc': 1.11.1
       '@unrs/resolver-binding-win32-x64-msvc': 1.11.1
 
-  unrun@0.2.34(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(synckit@0.11.12):
+  unrun@0.2.35(synckit@0.11.12):
     dependencies:
-      rolldown: 1.0.0-rc.12(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
+      rolldown: 1.0.0-rc.15
     optionalDependencies:
       synckit: 0.11.12
-    transitivePeerDependencies:
-      - '@emnapi/core'
-      - '@emnapi/runtime'
 
   unstorage@2.0.0-alpha.7(chokidar@4.0.3)(db0@0.3.4(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.20.0)))(ioredis@5.10.1)(lru-cache@11.3.3)(ofetch@2.0.0-alpha.3):
     optionalDependencies:

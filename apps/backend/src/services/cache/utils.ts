@@ -1,7 +1,7 @@
 import { isObject, type Awaitable, type UnmaskType } from "@zayne-labs/toolkit-type-helpers";
 import { consola } from "consola";
 import { differenceInSeconds } from "date-fns";
-import { redisCacheClient } from "./cacheClient";
+import { initializeRedisCacheClient, redisCacheClient } from "./cacheClient";
 
 type CacheKeyType = UnmaskType<
 	| `doctor-vectors:${string}`
@@ -30,6 +30,10 @@ export const setCache = async (
 
 	const ttl = expiry instanceof Date ? differenceInSeconds(expiry, new Date()) : expiry;
 
+	if (!redisCacheClient.isOpen) {
+		await initializeRedisCacheClient();
+	}
+
 	await redisCacheClient.set(key, resolvedValue, {
 		...(ttl && { expiration: { type: "EX", value: ttl } }),
 	});
@@ -49,30 +53,46 @@ export const getFromCache = async <TCacheResult>(
 ): Promise<TCacheResult> => {
 	const { onCacheMiss, onCacheMissExpiry } = options ?? {};
 
-	const rawCachedData = await redisCacheClient.get(key);
+	if (!redisCacheClient.isOpen) {
+		await initializeRedisCacheClient();
+	}
 
-	if (!rawCachedData) {
+	try {
+		const rawCachedData = await redisCacheClient.get(key);
+
+		if (rawCachedData) {
+			const parsedCachedData = JSON.parse(rawCachedData);
+
+			consola.info(`[CACHE HIT] for key ${key}`);
+
+			return parsedCachedData as TCacheResult;
+		}
+
 		consola.info(`[CACHE MISS] for key ${key}`);
 
 		const freshData = await onCacheMiss?.(key);
 
-		if (freshData) {
-			await setCache(key, freshData, { expiry: onCacheMissExpiry });
-
-			return freshData;
+		if (!freshData) {
+			return null as never;
 		}
 
-		return null as never;
+		await setCache(key, freshData, { expiry: onCacheMissExpiry });
+
+		return freshData;
+	} catch (error) {
+		consola.error(
+			`[CACHE ERROR] for key ${key}. Client Status: isOpen=${redisCacheClient.isOpen}, isReady=${redisCacheClient.isReady}`,
+			error
+		);
+		throw error;
 	}
-
-	const parsedCachedData = JSON.parse(rawCachedData);
-
-	consola.info(`[CACHE HIT] for key ${key}`);
-
-	return parsedCachedData as TCacheResult;
 };
 
 export const removeFromCache = async (key: CacheKeyType) => {
+	if (!redisCacheClient.isOpen) {
+		await initializeRedisCacheClient();
+	}
+
 	const isDeleted = Boolean(await redisCacheClient.del(key));
 
 	if (!isDeleted) {

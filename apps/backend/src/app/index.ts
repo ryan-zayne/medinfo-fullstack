@@ -12,7 +12,7 @@ const app = createHonoApp();
 /**
  *  == Health Check Route
  */
-app.get("/", (c) => {
+app.on("GET", ["/", "/health"], (c) => {
 	/* eslint-disable perfectionist/sort-objects */
 	return c.json({
 		status: "success",

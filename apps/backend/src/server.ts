@@ -17,9 +17,17 @@ const server = serve(
 
 		consola.info(`Server is running on ${message}`.yellow.italic);
 
-		void Promise.all([initializeRedisCacheClient(), startAllQueuesAndWorkers()]).then(() => {
-			consola.success("All services initialized successfully!".green.italic);
-		});
+		void Promise.all([initializeRedisCacheClient(), startAllQueuesAndWorkers()])
+			.then(() => {
+				consola.success("All services initialized successfully!".green.italic);
+			})
+			.catch((error) => {
+				consola.error("Failed to start server due to service initialization failure", error);
+				server.close(() => {
+					// eslint-disable-next-line node/no-process-exit, unicorn/no-process-exit
+					process.exit(1);
+				});
+			});
 	}
 );
 

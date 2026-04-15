@@ -5,6 +5,8 @@ export const necessaryUserDetails = defineEnum([
 	"firstName",
 	"lastName",
 	"fullName",
+	"gender",
+	"country",
 	"email",
 	"avatar",
 	"role",

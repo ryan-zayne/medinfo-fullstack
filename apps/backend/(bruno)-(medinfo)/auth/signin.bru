@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{baseURL-dev}}/auth/signin
+  url: {{baseURL}}/auth/signin
   body: json
   auth: inherit
 }
@@ -24,16 +24,16 @@ settings {
 
 docs {
   # Sign In
-  
+
   Authenticates a user and returns access/refresh tokens via cookies.
-  
+
   ## Request Body
-  
+
   - `email` (string, required): User's email address
   - `password` (string, required): User's password (minimum 8 characters)
-  
+
   ## Success Response (200 OK)
-  
+
   ```json
   {
     "status": "success",
@@ -51,56 +51,56 @@ docs {
     }
   }
   ```
-  
+
   **Note**:
   - Sets `zayneAccessToken` and `zayneRefreshToken` cookies
   - Resets login retry count to 0
   - Updates `lastLoginAt` timestamp
   - Adds new refresh token to user's token array
-  
+
   ## Error Response (401 Unauthorized)
-  
+
   If email or password is incorrect:
-  
+
   ```json
   {
     "status": "error",
     "message": "Email or password is incorrect"
   }
   ```
-  
+
   **Note**: Each failed login attempt increments the retry count.
-  
+
   ## Error Response (401 Unauthorized - Account Suspended)
-  
+
   If account is suspended:
-  
+
   ```json
   {
     "status": "error",
     "message": "Your account is currently suspended"
   }
   ```
-  
+
   ## Error Response (401 Unauthorized - Login Retries Exceeded)
-  
+
   If user has failed login 3+ times within 12 hours:
-  
+
   ```json
   {
     "status": "error",
     "message": "Login retries exceeded"
   }
   ```
-  
+
   **Note**:
   - Login retry count resets after 12 hours from last login attempt
   - Password reset email will be sent (TODO)
-  
+
   ## Error Response (422 Validation Error)
-  
+
   If email or password is missing:
-  
+
   ```json
   {
     "status": "error",
@@ -111,9 +111,9 @@ docs {
     }
   }
   ```
-  
+
   ## Security Features
-  
+
   - **Login retry limit**: Max 3 failed attempts within 12 hours
   - **Account suspension**: Suspended accounts cannot sign in
   - **Email verification**: Unverified emails receive verification prompt (TODO)

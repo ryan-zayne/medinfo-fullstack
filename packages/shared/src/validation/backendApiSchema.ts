@@ -191,9 +191,13 @@ export const SignUpSchema = InsertUserSchema.pick({
 const authRoutes = () => {
 	const PatientSchema = SelectUserSchema.pick({
 		avatar: true,
+		bio: true,
+		city: true,
+		country: true,
 		email: true,
 		firstName: true,
 		fullName: true,
+		gender: true,
 		lastName: true,
 		role: true,
 	});
@@ -261,16 +265,15 @@ const authRoutes = () => {
 		},
 
 		"@patch/auth/update-profile": {
-			body: z
-				.object({
-					bio: z.string().max(500, "Bio must be under 500 characters").optional(),
-					city: z.string().optional(),
-					country: z.string().optional(),
-					firstName: z.string().min(1).optional(),
-					gender: z.enum(["male", "female"]).optional(),
-					lastName: z.string().min(1).optional(),
-				})
-				.partial(),
+			body: PatientSchema.pick({
+				bio: true,
+				city: true,
+				country: true,
+				email: true,
+				firstName: true,
+				gender: true,
+				lastName: true,
+			}).partial(),
 			data: withBaseSuccessResponse(z.object({ user: UserDataSchema })),
 		},
 

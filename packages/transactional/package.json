@@ -16,8 +16,8 @@
 	"dependencies": {
 		"@medinfo/shared": "workspace:*",
 		"@react-email/components": "1.0.12",
-		"@zayne-labs/toolkit-react": "0.12.48",
-		"@zayne-labs/toolkit-type-helpers": "0.12.48",
+		"@zayne-labs/toolkit-react": "0.12.49",
+		"@zayne-labs/toolkit-type-helpers": "0.12.49",
 		"react": "19.2.5",
 		"react-dom": "19.2.5"
 	},
