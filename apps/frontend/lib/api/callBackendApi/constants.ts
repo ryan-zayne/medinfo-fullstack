@@ -1,7 +1,8 @@
-const REMOTE_BACKEND_HOST = "https://api-medical-info.onrender.com";
+import { ENVIRONMENT } from "@/lib/config/env";
 
-const LOCAL_BACKEND_HOST = "http://localhost:8000";
-
-const BACKEND_HOST = process.env.NODE_ENV === "development" ? LOCAL_BACKEND_HOST : REMOTE_BACKEND_HOST;
+const BACKEND_HOST =
+	process.env.NODE_ENV === "development" ?
+		ENVIRONMENT.BASE_BACKEND_HOST_DEV
+	:	ENVIRONMENT.BASE_BACKEND_HOST;
 
 export const BASE_API_URL = `${BACKEND_HOST}/api/v1`;

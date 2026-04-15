@@ -3,7 +3,8 @@
 	"type": "module",
 	"private": true,
 	"exports": {
-		"./backend": "./src/backend-env.ts"
+		"./backend": "./src/backend-env.ts",
+		"./frontend": "./src/frontend-env.ts"
 	},
 	"scripts": {
 		"build": "tsdown",

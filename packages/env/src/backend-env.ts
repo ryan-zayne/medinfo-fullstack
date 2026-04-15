@@ -1,18 +1,16 @@
 import * as dotenvx from "@dotenvx/dotenvx";
 import { consola } from "consola";
 import { z } from "zod";
+import { sharedEnvSchema } from "./shared-env";
 import { evaluateString } from "./utils/common";
 import { resolvePathToCwd } from "./utils/url";
 
 const stringBoolean = z.stringbool({ falsy: ["false"], truthy: ["true"] });
 
-export const envSchema = z.object({
+export const backendEnvSchema = z.object({
+	...sharedEnvSchema.shape,
 	ACCESS_JWT_EXPIRES_IN: z.string().transform((value) => evaluateString<number>(value)),
 	ACCESS_SECRET: z.string(),
-	BASE_BACKEND_HOST: z.url(),
-	BASE_BACKEND_HOST_DEV: z.literal("http://localhost:8000").default("http://localhost:8000"),
-	BASE_FRONTEND_HOST: z.url(),
-	BASE_FRONTEND_HOST_DEV: z.literal("http://localhost:3000").default("http://localhost:3000"),
 	CLOUDINARY_API_KEY: z.string(),
 	CLOUDINARY_API_SECRET: z.string(),
 	CLOUDINARY_CLOUD_NAME: z.string(),
@@ -57,7 +55,7 @@ dotenvx.config({
 
 export const getBackendEnv = () => {
 	// eslint-disable-next-line node/no-process-env
-	const result = envSchema.safeParse(process.env);
+	const result = backendEnvSchema.safeParse(process.env);
 
 	if (!result.success) {
 		const missingKeys = Object.keys(z.flattenError(result.error).fieldErrors);

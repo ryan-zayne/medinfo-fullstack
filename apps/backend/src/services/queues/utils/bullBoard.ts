@@ -1,10 +1,13 @@
-import { createBullBoard } from "@bull-board/api";
-import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
-import { HonoAdapter } from "@bull-board/hono";
-import { serveStatic } from "@hono/node-server/serve-static";
 import { emailQueue } from "../emailQueue";
 
-export const createBullBoardSetup = () => {
+export const createBullBoardSetup = async () => {
+	const [{ createBullBoard }, { BullMQAdapter }, { HonoAdapter }, { serveStatic }] = await Promise.all([
+		import("@bull-board/api"),
+		import("@bull-board/api/bullMQAdapter"),
+		import("@bull-board/hono"),
+		import("@hono/node-server/serve-static"),
+	]);
+
 	const baseQueuesPath = "/api/v1/queues" as const;
 
 	const queuesServerAdapter = new HonoAdapter(serveStatic).setBasePath(baseQueuesPath);

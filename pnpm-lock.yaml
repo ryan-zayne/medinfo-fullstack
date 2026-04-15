@@ -203,7 +203,7 @@ importers:
         version: 8.0.0
       nitro:
         specifier: 3.0.260311-beta
-        version: 3.0.260311-beta(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(chokidar@4.0.3)(dotenv@17.4.1)(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.20.0))(ioredis@5.10.1)(jiti@2.6.1)(lru-cache@11.3.3)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 3.0.260311-beta(chokidar@4.0.3)(dotenv@17.4.1)(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.20.0))(ioredis@5.10.1)(jiti@2.6.1)(lru-cache@11.3.3)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       tsdown:
         specifier: 'catalog:'
         version: 0.21.7(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(synckit@0.11.12)(typescript@6.0.2)
@@ -231,6 +231,9 @@ importers:
       '@iconify/react':
         specifier: 6.0.2
         version: 6.0.2(react@19.2.5)
+      '@medinfo/env':
+        specifier: workspace:*
+        version: link:../../packages/env
       '@medinfo/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -7304,7 +7307,7 @@ snapshots:
     dependencies:
       '@babel/code-frame': 7.29.0
       '@babel/generator': 7.29.1
-      '@babel/parser': 7.27.0
+      '@babel/parser': 7.29.2
       '@babel/template': 7.28.6
       '@babel/types': 7.29.0
       debug: 4.4.3
@@ -12486,7 +12489,7 @@ snapshots:
 
   nf3@0.3.16: {}
 
-  nitro@3.0.260311-beta(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(chokidar@4.0.3)(dotenv@17.4.1)(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.20.0))(ioredis@5.10.1)(jiti@2.6.1)(lru-cache@11.3.3)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)):
+  nitro@3.0.260311-beta(chokidar@4.0.3)(dotenv@17.4.1)(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.20.0))(ioredis@5.10.1)(jiti@2.6.1)(lru-cache@11.3.3)(vite@8.0.8(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)):
     dependencies:
       consola: 3.4.2
       crossws: 0.4.5(srvx@0.11.15)
@@ -12498,7 +12501,7 @@ snapshots:
       ocache: 0.1.4
       ofetch: 2.0.0-alpha.3
       ohash: 2.0.11
-      rolldown: 1.0.0-rc.12(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
+      rolldown: 1.0.0-rc.15
       srvx: 0.11.15
       unenv: 2.0.0-rc.24
       unstorage: 2.0.0-alpha.7(chokidar@4.0.3)(db0@0.3.4(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.20.0)))(ioredis@5.10.1)(lru-cache@11.3.3)(ofetch@2.0.0-alpha.3)
@@ -12516,8 +12519,6 @@ snapshots:
       - '@capacitor/preferences'
       - '@deno/kv'
       - '@electric-sql/pglite'
-      - '@emnapi/core'
-      - '@emnapi/runtime'
       - '@libsql/client'
       - '@netlify/blobs'
       - '@netlify/runtime'
