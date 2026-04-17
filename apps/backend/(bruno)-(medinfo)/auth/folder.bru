@@ -6,3 +6,14 @@ meta {
 auth {
   mode: inherit
 }
+
+docs {
+  Endpoints for handling the user lifecycle: registration, login, and profile updates.
+
+  Everything here uses cookie-based auth. Once signed in, the browser handles the `zayneAccessToken` and `zayneRefreshToken` automatically.
+
+  - **Signup/Signin**: Standard email/password flow. Patients can also use Google OAuth.
+  - **Verification**: Email verification is required before accessing most other modules.
+  - **Password**: Full flow for forgot/reset/change password. Resetting triggers a global sign-out.
+  - **Profile**: Patch endpoints for identity and location data. Changing names updates the `fullName` field automatically.
+}
