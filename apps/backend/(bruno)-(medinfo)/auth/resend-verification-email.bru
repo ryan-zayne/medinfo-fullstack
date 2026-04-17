@@ -1,0 +1,59 @@
+meta {
+  name: resend-verification-email
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{baseURL}}/auth/resend-verification-email
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "doctor@example.com"
+  }
+}
+
+docs {
+  # Resend Verification Email
+
+  Resends the verification code to the user's email if they haven't verified their account yet.
+
+  ## Request Body
+
+  - `email` (string, required): The email address of the account to verify.
+
+  ## Success Response (200 OK)
+
+  ```json
+  {
+    "status": "success",
+    "message": "Verification email sent successfully",
+    "data": null
+  }
+  ```
+
+  ## Error Response (404 Not Found)
+
+  If no account is found with the email:
+
+  ```json
+  {
+    "status": "error",
+    "message": "No account found with this email address"
+  }
+  ```
+
+  ## Error Response (400 Bad Request)
+
+  If the email is already verified:
+
+  ```json
+  {
+    "status": "error",
+    "message": "Email is already verified"
+  }
+  ```
+}

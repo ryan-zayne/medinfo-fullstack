@@ -1,0 +1,61 @@
+docs {
+  # MedInfo API Documentation
+
+  MedInfo is a comprehensive healthcare platform connecting patients with doctors, providing disease information, and health tips.
+
+  ## Base URL
+
+  The base URL for all API requests is defined in the environment variables (e.g., `{{baseURL}}`).
+
+  ## Authentication
+
+  MedInfo uses a cookie-based authentication system with Access and Refresh tokens.
+
+  - **Access Token**: Short-lived JWT stored in the `zayneAccessToken` cookie.
+  - **Refresh Token**: Long-lived JWT stored in the `zayneRefreshToken` cookie, used to generate new access tokens.
+
+  ### Authentication Flow
+
+  1. **Signup**: Register a new account. Doctors require medical license upload (Cloudinary).
+  2. **Verify Email**: A 6-digit code is sent to the registered email.
+  3. **Signin**: Authenticate with email/password. Returns tokens via cookies.
+  4. **OAuth**: Support for Google Sign-in for Patients.
+  5. **Session**: Retrieve current user details from the session.
+
+  ## Security Features
+
+  - **Rate Limiting**: Authentication routes are rate-limited to prevent brute-force attacks.
+  - **Account Suspension**: Accounts are suspended after 3 failed password reset attempts or other security triggers.
+  - **Token Rotation**: Refresh tokens are rotated on each use to prevent session hijacking.
+  - **Input Validation**: All requests are validated using Zod schemas on both frontend and backend.
+
+  ## Error Handling
+
+  The API returns a consistent error structure:
+
+  ```json
+  {
+    "status": "error",
+    "message": "Human-readable error message",
+    "errors": {
+      "field": ["specific error detail"]
+    }
+  }
+  ```
+
+  ### Common Status Codes
+
+  - `200 OK`: Request successful.
+  - `400 Bad Request`: Invalid input or state (e.g., expired token).
+  - `401 Unauthorized`: Authentication required or invalid credentials.
+  - `404 Not Found`: Requested resource doesn't exist.
+  - `429 Too Many Requests`: Rate limit exceeded.
+  - `500 Internal Server Error`: Unexpected server error.
+
+  ## Core Modules
+
+  - **Auth**: Signup, Signin, Password Management, and Profile updates.
+  - **Appointments**: Managing doctor-patient interactions (In progress).
+  - **Diseases**: Accessing the disease knowledge base.
+  - **Health Tips**: Personalized and generic health recommendations.
+}

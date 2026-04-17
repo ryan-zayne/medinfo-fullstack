@@ -1,0 +1,65 @@
+meta {
+  name: update-profile
+  type: http
+  seq: 11
+}
+
+patch {
+  url: {{baseURL}}/auth/update-profile
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "firstName": "John",
+    "lastName": "Doe",
+    "gender": "male",
+    "bio": "Experienced healthcare professional.",
+    "country": "Nigeria",
+    "city": "Lagos"
+  }
+}
+
+docs {
+  # Update Profile
+
+  Updates the profile information for the currently authenticated user.
+
+  ## Request Body (Optional Fields)
+
+  - `firstName` (string)
+  - `lastName` (string)
+  - `gender` (enum: "male", "female")
+  - `bio` (string, max 500 chars)
+  - `country` (string)
+  - `city` (string)
+
+  ## Success Response (200 OK)
+
+  ```json
+  {
+    "status": "success",
+    "message": "Profile updated successfully",
+    "data": {
+      "user": {
+        "firstName": "John",
+        "lastName": "Doe",
+        "fullName": "John Doe",
+        "email": "doctor@example.com",
+        "avatar": "...",
+        "role": "doctor",
+        "bio": "...",
+        "gender": "...",
+        "city": "...",
+        "country": "..."
+      }
+    }
+  }
+  ```
+
+  **Note**:
+  - Requires valid authentication
+  - Automatically updates `fullName` if `firstName` or `lastName` is provided
+  - Updates the user cache
+}

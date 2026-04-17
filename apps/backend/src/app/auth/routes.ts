@@ -756,20 +756,18 @@ const authRoutes = new Hono()
 
 			const currentUser = ctx.get("currentUser");
 
-			const shouldUpdateFullName = Boolean(firstName) || Boolean(lastName);
-
 			const [updatedUser] = await db
 				.update(users)
 				.set({
 					...(bio && { bio }),
 					...(city && { city }),
 					...(country && { country }),
+					...(gender && { gender }),
 					...(firstName && { firstName }),
-					...(shouldUpdateFullName && {
+					...(lastName && { lastName }),
+					...((Boolean(firstName) || Boolean(lastName)) && {
 						fullName: `${firstName ?? currentUser.firstName} ${lastName ?? currentUser.lastName}`,
 					}),
-					...(gender && { gender }),
-					...(lastName && { lastName }),
 				})
 				.where(eq(users.id, currentUser.id))
 				.returning();
