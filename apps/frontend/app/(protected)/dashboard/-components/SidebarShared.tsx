@@ -120,9 +120,7 @@ export function SidebarShared(props: SidebarProps) {
 												/>
 											</CollapsibleAnimated.Trigger>
 
-											<CollapsibleAnimated.Content
-												className="flex flex-col gap-3 px-3 *:first:mt-3"
-											>
+											<CollapsibleAnimated.Content className="flex flex-col gap-3 px-3 *:first:mt-3">
 												<For
 													each={item.children}
 													renderItem={(childItem) => (

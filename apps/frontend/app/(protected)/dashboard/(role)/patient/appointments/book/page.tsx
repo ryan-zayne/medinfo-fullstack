@@ -577,9 +577,7 @@ function AppointmentDialog(props: DialogMainContentProps) {
 
 						<DialogAnimated.Header className="items-center gap-8">
 							<GreenSpinnerIcon className="animate-spin md:size-[100px]" />
-							<DialogAnimated.Title
-								className="text-center text-base font-normal text-medinfo-dark-4 md:px-4"
-							>
+							<DialogAnimated.Title className="text-center text-base font-normal text-medinfo-dark-4 md:px-4">
 								Matching you to a doctor, please hold on.
 							</DialogAnimated.Title>
 						</DialogAnimated.Header>

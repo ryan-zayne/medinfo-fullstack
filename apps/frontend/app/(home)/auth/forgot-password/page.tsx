@@ -82,9 +82,7 @@ function ForgotPasswordPage() {
 							<Form.Watch
 								render={(resetMode) =>
 									resetMode === "email" && (
-										<Form.InputRightItem
-											className="ml-auto size-6 rounded-full bg-medinfo-primary-main"
-										>
+										<Form.InputRightItem className="ml-auto size-6 rounded-full bg-medinfo-primary-main">
 											<IconBox icon="mdi:check-bold" className="size-3 text-white" />
 										</Form.InputRightItem>
 									)
@@ -127,9 +125,7 @@ function ForgotPasswordPage() {
 							<Form.Watch
 								render={(resetMode) =>
 									resetMode === "sms" && (
-										<Form.InputRightItem
-											className="ml-auto size-6 rounded-full bg-medinfo-primary-main"
-										>
+										<Form.InputRightItem className="ml-auto size-6 rounded-full bg-medinfo-primary-main">
 											<IconBox icon="mdi:check-bold" className="size-3 text-white" />
 										</Form.InputRightItem>
 									)

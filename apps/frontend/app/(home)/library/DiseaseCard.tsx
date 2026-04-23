@@ -136,12 +136,8 @@ export function DiseaseCardSkeleton(props: DiseaseCardSkeletonProps) {
 
 					{type === "list" && (
 						<div className="flex flex-col gap-2">
-							<Skeleton
-								className="h-3 w-full max-w-[400px] bg-medinfo-light-1 lg:h-4 lg:max-w-[500px]"
-							/>
-							<Skeleton
-								className="h-3 w-4/5 max-w-[320px] bg-medinfo-light-1 lg:h-4 lg:max-w-[400px]"
-							/>
+							<Skeleton className="h-3 w-full max-w-[400px] bg-medinfo-light-1 lg:h-4 lg:max-w-[500px]" />
+							<Skeleton className="h-3 w-4/5 max-w-[320px] bg-medinfo-light-1 lg:h-4 lg:max-w-[400px]" />
 							<Skeleton className="hidden h-4 w-3/5 max-w-[300px] bg-medinfo-light-1 lg:block" />
 						</div>
 					)}
