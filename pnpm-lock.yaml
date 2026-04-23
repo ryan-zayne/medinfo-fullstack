@@ -512,9 +512,24 @@ importers:
       '@types/react-dom':
         specifier: 19.2.3
         version: 19.2.3(@types/react@19.2.14)
+      '@zayne-labs/prettier-config':
+        specifier: 0.13.2
+        version: 0.13.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.3))(prettier-plugin-classnames@0.10.1(prettier@3.8.3))(prettier-plugin-merge@0.10.1(prettier@3.8.3))(prettier-plugin-tailwindcss@0.7.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.3))(prettier@3.8.3))(prettier@3.8.3)
       '@zayne-labs/tsconfig':
         specifier: 0.13.2
         version: 0.13.2
+      prettier:
+        specifier: 3.8.3
+        version: 3.8.3
+      prettier-plugin-classnames:
+        specifier: 0.10.1
+        version: 0.10.1(prettier@3.8.3)
+      prettier-plugin-merge:
+        specifier: 0.10.1
+        version: 0.10.1(prettier@3.8.3)
+      prettier-plugin-tailwindcss:
+        specifier: 0.7.2
+        version: 0.7.2(@ianvs/prettier-plugin-sort-imports@4.7.1(prettier@3.8.3))(prettier@3.8.3)
       react-email:
         specifier: 5.2.10
         version: 5.2.10
