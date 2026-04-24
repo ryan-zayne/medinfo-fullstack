@@ -1,4 +1,5 @@
 /* eslint-disable react/purity */
+import * as React from "react";
 import {
 	Body,
 	Container,
@@ -11,8 +12,7 @@ import {
 	Section,
 	Tailwind,
 	Text,
-} from "@react-email/components";
-import * as React from "react";
+} from "react-email";
 import { FRONTEND_URL } from "../constants";
 
 type EmailLayoutProps = {

@@ -1,4 +1,4 @@
-import { Button, Heading, render, Section, Text } from "@react-email/components";
+import { Button, Heading, render, Section, Text } from "react-email";
 import * as React from "react";
 import { FRONTEND_URL } from "../constants";
 import { BaseLayout } from "../layouts/BaseLayout";

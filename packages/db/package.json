@@ -19,11 +19,11 @@
 		"lint:type-check": "tsc --pretty -p tsconfig.json"
 	},
 	"dependencies": {
-		"@dotenvx/dotenvx": "catalog:",
+		"@dotenvx/dotenvx": "1.62.0",
 		"@faker-js/faker": "^10.4.0",
 		"@medinfo/env": "workspace:*",
 		"@node-rs/argon2": "^2.0.2",
-		"@zayne-labs/tsconfig": "0.13.2",
+		"@zayne-labs/tsconfig": "0.13.4",
 		"consola": "3.4.2",
 		"cross-env": "^10.1.0",
 		"drizzle-kit": "0.31.10",
@@ -31,12 +31,12 @@
 		"drizzle-zod": "0.8.3",
 		"pg": "8.20.0",
 		"tsx": "4.21.0",
-		"zod": "catalog:"
+		"zod": "4.3.6"
 	},
 	"devDependencies": {
 		"@total-typescript/ts-reset": "0.6.1",
 		"@types/pg": "8.20.0",
-		"tsdown": "catalog:",
-		"typescript": "catalog:"
+		"tsdown": "0.21.10",
+		"typescript": "6.0.3"
 	}
 }
