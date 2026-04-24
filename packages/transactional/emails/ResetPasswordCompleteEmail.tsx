@@ -1,6 +1,6 @@
 import { Button, Heading, Hr, Link, render, Section, Text } from "react-email";
-import { FRONTEND_URL } from "../constants";
-import { BaseLayout } from "../layouts/BaseLayout";
+import { FRONTEND_URL } from "../src/constants";
+import { BaseLayout } from "../src/layouts/BaseLayout";
 
 export type ResetPasswordCompleteEmailProps = {
 	name: string;

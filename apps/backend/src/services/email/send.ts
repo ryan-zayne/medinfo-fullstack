@@ -1,4 +1,4 @@
-import { TEMPLATE_LOOKUP, type EmailJobOptions } from "@medinfo/transactional/emails/templates";
+import { TEMPLATE_LOOKUP, type EmailJobOptions } from "@medinfo/transactional/emails";
 import type { CallbackFn } from "@zayne-labs/toolkit-type-helpers";
 import { consola } from "consola";
 import * as nodemailer from "nodemailer";

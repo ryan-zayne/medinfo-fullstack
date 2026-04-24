@@ -49,9 +49,11 @@ export function DiseaseCard(props: DiseaseCardProps) {
 				className={cnJoin(
 					"flex flex-col justify-between",
 					type === "grid"
-						&& `absolute right-0 -bottom-[calc(95px/2)] h-[95px] max-w-fit rounded-[16px] border-2
-						border-medinfo-primary-main bg-white p-2 lg:-right-[calc(3/5*229px)]
-						lg:bottom-[calc((400px-182px)/2)] lg:h-[182px] lg:max-w-[229px] lg:p-6`
+						&& `absolute right-0 -bottom-(--card-height-half) h-(--card-height) w-fit rounded-[16px]
+						border-2 border-medinfo-primary-main bg-white p-2
+						[--card-height-half:calc(var(--card-height)/2)] [--card-height:95px]
+						lg:-right-[calc(3/5*var(--card-width))] lg:bottom-[calc(400px-var(--card-height-half))]
+						lg:max-w-(--card-width) lg:p-6 lg:[--card-height:182px] lg:[--card-width:229px]`
 				)}
 			>
 				<div className={cnJoin(type === "list" && "flex flex-col gap-4")}>
@@ -119,9 +121,9 @@ export function DiseaseCardSkeleton(props: DiseaseCardSkeletonProps) {
 				className={cnJoin(
 					"flex flex-col justify-between",
 					type === "grid"
-						&& `absolute right-0 -bottom-[calc(95px/2)] h-[95px] min-w-[120px] rounded-2xl border-2
-						border-medinfo-primary-main bg-white p-2 lg:-right-[calc(3/5*229px)]
-						lg:bottom-[calc((400px-182px)/2)] lg:h-[182px] lg:max-w-[229px] lg:min-w-[200px] lg:p-6`,
+						&& `absolute right-0 bottom-[-47.5px] h-[95px] min-w-[120px] rounded-2xl border-2
+						border-medinfo-primary-main bg-white p-2 lg:-right-[calc(3/5*229px)] lg:bottom-[109px]
+						lg:h-[182px] lg:max-w-[229px] lg:min-w-[200px] lg:p-6`,
 					type === "list" && "grow gap-2 lg:gap-4"
 				)}
 			>
@@ -136,8 +138,12 @@ export function DiseaseCardSkeleton(props: DiseaseCardSkeletonProps) {
 
 					{type === "list" && (
 						<div className="flex flex-col gap-2">
-							<Skeleton className="h-3 w-full max-w-[400px] bg-medinfo-light-1 lg:h-4 lg:max-w-[500px]" />
-							<Skeleton className="h-3 w-4/5 max-w-[320px] bg-medinfo-light-1 lg:h-4 lg:max-w-[400px]" />
+							<Skeleton
+								className="h-3 w-full max-w-[400px] bg-medinfo-light-1 lg:h-4 lg:max-w-[500px]"
+							/>
+							<Skeleton
+								className="h-3 w-4/5 max-w-[320px] bg-medinfo-light-1 lg:h-4 lg:max-w-[400px]"
+							/>
 							<Skeleton className="hidden h-4 w-3/5 max-w-[300px] bg-medinfo-light-1 lg:block" />
 						</div>
 					)}

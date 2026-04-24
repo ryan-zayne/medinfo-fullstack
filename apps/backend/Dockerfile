@@ -5,12 +5,13 @@ FROM node:24.14.0-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
-WORKDIR /app
 
 # ================================================================
 # Stage 2: Dependencies
 # ================================================================
 FROM base AS deps
+
+WORKDIR /app
 
 # Copy workspace configuration first (best for layer caching)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
@@ -34,9 +35,8 @@ FROM deps AS builder
 COPY apps/backend ./apps/backend
 COPY packages ./packages
 
-WORKDIR /app/apps/backend
-
 # Build if needed (uncomment if your app requires compilation)
+# WORKDIR /app/apps/backend
 # RUN pnpm run build
 
 # ================================================================
@@ -45,9 +45,7 @@ WORKDIR /app/apps/backend
 FROM base AS runner
 
 # Copy workspace root files needed for pnpm filters and tsx path resolution
-COPY --from=deps /app/package.json ./
-COPY --from=deps /app/pnpm-workspace.yaml ./
-COPY --from=deps /app/tsconfig.base.json ./
+COPY --from=deps /app/{package.json,pnpm-lock.yaml,pnpm-workspace.yaml,tsconfig.base.json} ./
 
 # Copy node_modules from deps stage, source files from builder stage
 COPY --from=deps /app/node_modules ./node_modules
@@ -55,7 +53,7 @@ COPY --from=builder /app/apps/backend ./apps/backend
 COPY --from=builder /app/packages ./packages
 
 # Install curl for healthcheck (not included in slim)
-RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache curl
 
 WORKDIR /app/apps/backend
 

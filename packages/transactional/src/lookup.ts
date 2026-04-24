@@ -23,22 +23,22 @@ export const TEMPLATE_LOOKUP = defineEnumDeep(
 		resetPassword: {
 			from: "MedInfo <donotreply@medical-info.com>",
 			subject: "Reset your password",
-			template: getTemplateFn(import("./ResetPasswordEmail")),
+			template: getTemplateFn(import("../emails/ResetPasswordEmail")),
 		},
 		resetPasswordComplete: {
 			from: "MedInfo <donotreply@medical-info.com>",
 			subject: "Password Reset Successful",
-			template: getTemplateFn(import("./ResetPasswordCompleteEmail")),
+			template: getTemplateFn(import("../emails/ResetPasswordCompleteEmail")),
 		},
 		verifyEmail: {
 			from: "MedInfo <donotreply@medical-info.com>",
 			subject: "Verify your email address",
-			template: getTemplateFn(import("./VerifyEmail")),
+			template: getTemplateFn(import("../emails/VerifyEmail")),
 		},
 		welcomeEmail: {
 			from: "MedInfo <donotreply@medical-info.com>",
 			subject: "Welcome to MedInfo",
-			template: getTemplateFn(import("./WelcomeEmail")),
+			template: getTemplateFn(import("../emails/WelcomeEmail")),
 		},
 	},
 	{ inferredUnionVariant: "none" }

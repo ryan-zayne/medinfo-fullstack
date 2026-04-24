@@ -1,7 +1,7 @@
-import { Button, Heading, render, Section, Text } from "react-email";
 import * as React from "react";
-import { FRONTEND_URL } from "../constants";
-import { BaseLayout } from "../layouts/BaseLayout";
+import { Button, Heading, render, Section, Text } from "react-email";
+import { FRONTEND_URL } from "../src/constants";
+import { BaseLayout } from "../src/layouts/BaseLayout";
 
 export type VerifyEmailProps = {
 	email: string;

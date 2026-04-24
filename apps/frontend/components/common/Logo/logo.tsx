@@ -9,7 +9,6 @@ const Logo = (
 ) => {
 	const { href = "/", variant = "header", ...restOfProps } = props;
 
-	// eslint-disable-next-line react-hooks/todo
 	const { [variant]: LogoType } = LOGO_TYPE_LOOKUP;
 
 	return (

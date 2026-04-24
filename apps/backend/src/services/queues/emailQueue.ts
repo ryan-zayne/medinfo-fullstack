@@ -1,4 +1,4 @@
-import type { EmailJobOptions } from "@medinfo/transactional/emails/templates";
+import type { EmailJobOptions } from "@medinfo/transactional/emails";
 import { Queue, QueueEvents, Worker } from "bullmq";
 import { consola } from "consola";
 import { sendEmail } from "../email/send";
