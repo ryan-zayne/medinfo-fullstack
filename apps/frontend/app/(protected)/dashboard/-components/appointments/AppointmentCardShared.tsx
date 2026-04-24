@@ -37,7 +37,9 @@ export function AppointmentCardShared(props: AppointmentCardSharedProps) {
 				<AvatarGroupAnimated.Root className="space-x-0" translate="5%">
 					<Avatar.Root className="size-14 rounded-full border border-medinfo-light-2">
 						<Avatar.Image src={otherPartyDetails.avatar} alt={otherPartyFullName} />
-						<Avatar.Fallback className="bg-medinfo-secondary-main text-lg font-bold text-medinfo-primary-darker">
+						<Avatar.Fallback
+							className="bg-medinfo-secondary-main text-lg font-bold text-medinfo-primary-darker"
+						>
 							{otherPartyDetails.firstName[0]}
 							{otherPartyDetails.lastName[0]}
 						</Avatar.Fallback>

@@ -66,7 +66,9 @@ function AccordionFaqs() {
 							</span>
 						</Accordion.Trigger>
 
-						<Accordion.Content className="flex flex-col gap-4 border-medinfo-primary-darker px-6 pb-[15px] md:pb-6">
+						<Accordion.Content
+							className="flex flex-col gap-4 border-medinfo-primary-darker px-6 pb-[15px] md:pb-6"
+						>
 							<hr className="h-0.5 border-none bg-medinfo-secondary-main" />
 
 							<p>{FAQ.answer}</p>

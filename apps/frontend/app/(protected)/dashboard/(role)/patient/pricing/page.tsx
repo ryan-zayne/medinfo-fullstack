@@ -88,8 +88,8 @@ function PricingCard(props: PricingCardProps) {
 			{banner && (
 				<span
 					className={cnJoin(
-						`absolute -top-(--half-banner-height) inline-block w-fit self-center
-						rounded-[32px] px-3 py-1 text-[14px] text-medinfo-primary-main`,
+						`absolute -top-(--half-banner-height) inline-block w-fit self-center rounded-[32px] px-3
+						py-1 text-[14px] text-medinfo-primary-main`,
 						banner.className
 					)}
 				>

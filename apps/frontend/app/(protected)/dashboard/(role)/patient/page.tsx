@@ -120,7 +120,9 @@ function PatientDashboardPage() {
 				className="flex flex-col gap-6 rounded-[16px] bg-white p-6
 					shadow-[0_4px_8px_theme(--color-medinfo-primary-main/0.25)] md:p-8"
 			>
-				<header className="flex flex-col items-start gap-6 lg:flex-row lg:items-center lg:justify-between">
+				<header
+					className="flex flex-col items-start gap-6 lg:flex-row lg:items-center lg:justify-between"
+				>
 					<h2 className="text-[22px] font-medium text-medinfo-primary-main md:text-[24px]">
 						Upcoming Appointments
 					</h2>

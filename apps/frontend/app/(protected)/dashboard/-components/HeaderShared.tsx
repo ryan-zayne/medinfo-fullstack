@@ -210,7 +210,9 @@ function MobileHeader(props: MobileHeaderProps) {
 										className="group/collapsible"
 										defaultOpen={item.children.some((child) => child.href === pathname)}
 									>
-										<CollapsibleAnimated.Trigger className="flex w-full items-center justify-between gap-1 py-2 text-left">
+										<CollapsibleAnimated.Trigger
+											className="flex w-full items-center justify-between gap-1 py-2 text-left"
+										>
 											<div className="flex items-center gap-4">
 												{item.icon}
 												{item.title}
