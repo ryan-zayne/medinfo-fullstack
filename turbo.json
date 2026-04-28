@@ -8,7 +8,7 @@
 		},
 		"build": {
 			"dependsOn": ["^build"],
-			"outputs": ["dist/**", ".next/**", "!.next/cache/**", "build", ".vercel", ".outputs/**"]
+			"outputs": ["dist/**", ".next/**", "!.next/cache/**", ".vercel", ".outputs/**"]
 		},
 		"build:nitro": {
 			"outputs": [".vercel", ".outputs/**"]

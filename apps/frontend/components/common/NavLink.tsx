@@ -31,7 +31,7 @@ function NavLink(
 			href={href}
 			data-active={isActive}
 			className={cnMerge(
-				transitionType !== "no-transition" && "nav-link-transition relative",
+				transitionType !== "no-transition" && "nav-link-transition",
 				// eslint-disable-next-line tailwindcss-better/no-unknown-classes
 				transitionType === "navbar" && "nav-mobile",
 				className

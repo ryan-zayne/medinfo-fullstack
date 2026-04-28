@@ -15,23 +15,23 @@
 	},
 	"dependencies": {
 		"@medinfo/shared": "workspace:*",
-		"@react-email/ui": "6.0.0",
+		"@react-email/ui": "6.0.1",
 		"@zayne-labs/toolkit-react": "0.12.49",
 		"@zayne-labs/toolkit-type-helpers": "0.12.49",
 		"react": "19.2.5",
 		"react-dom": "19.2.5",
-		"react-email": "6.0.0"
+		"react-email": "6.0.1"
 	},
 	"devDependencies": {
 		"@total-typescript/ts-reset": "0.6.1",
 		"@types/react": "19.2.14",
 		"@types/react-dom": "19.2.3",
-		"@zayne-labs/prettier-config": "0.13.4",
-		"@zayne-labs/tsconfig": "0.13.4",
+		"@zayne-labs/prettier-config": "0.13.6",
+		"@zayne-labs/tsconfig": "0.13.6",
 		"prettier": "3.8.3",
 		"prettier-plugin-classnames": "0.10.1",
 		"prettier-plugin-merge": "0.10.1",
-		"prettier-plugin-tailwindcss": "0.7.2",
+		"prettier-plugin-tailwindcss": "0.8.0",
 		"tailwindcss": "4.2.4",
 		"tsdown": "0.21.10",
 		"typescript": "6.0.3"

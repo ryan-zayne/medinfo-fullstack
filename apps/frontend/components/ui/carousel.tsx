@@ -7,7 +7,6 @@ import useEmblaCarousel, { type UseEmblaCarouselType } from "embla-carousel-reac
 import { useEffect, useMemo, useState } from "react";
 import { cnMerge } from "@/lib/utils/cn";
 import { IconBox } from "../common/IconBox";
-import { Slot } from "../common/slot";
 import { shadcnButtonVariants, type ShadcnButtonProps } from "./constants";
 
 type CarouselApi = UseEmblaCarouselType[1];
@@ -59,14 +58,6 @@ function CarouselRoot(props: CarouselProps & InferProps<"div">) {
 	const [canScrollNext, setCanScrollNext] = useState(false);
 	const [selectedIndex, setSelectedIndex] = useState(options?.startIndex ?? 0);
 
-	const onSelect = useCallbackRef((api: CarouselApi) => {
-		if (!api) return;
-
-		setCanScrollPrev(api.canScrollPrev());
-		setCanScrollNext(api.canScrollNext());
-		setSelectedIndex(api.selectedScrollSnap());
-	});
-
 	const scrollPrev = useCallbackRef(() => carouselApi?.scrollPrev());
 
 	const scrollNext = useCallbackRef(() => carouselApi?.scrollNext());
@@ -101,7 +92,15 @@ function CarouselRoot(props: CarouselProps & InferProps<"div">) {
 	useEffect(() => {
 		if (!carouselApi) return;
 
-		onSelect(carouselApi);
+		const onSelect = () => {
+			/* eslint-disable react/set-state-in-effect */
+			setCanScrollPrev(carouselApi.canScrollPrev());
+			setCanScrollNext(carouselApi.canScrollNext());
+			setSelectedIndex(carouselApi.selectedScrollSnap());
+			/* eslint-enable react/set-state-in-effect */
+		};
+
+		onSelect();
 
 		carouselApi.on("reInit", onSelect);
 		carouselApi.on("select", onSelect);
@@ -109,7 +108,7 @@ function CarouselRoot(props: CarouselProps & InferProps<"div">) {
 		return () => {
 			carouselApi.off("select", onSelect);
 		};
-	}, [carouselApi, onSelect]);
+	}, [carouselApi]);
 
 	const contextValue = useMemo(
 		() =>
@@ -178,15 +177,13 @@ function CarouselContent(props: InferProps<"div">) {
 	);
 }
 
-function CarouselItem(props: InferProps<"div"> & { asChild?: boolean }) {
-	const { asChild, className, ...restOfProps } = props;
-
-	const Component = asChild ? Slot.Root : "div";
+function CarouselItem(props: InferProps<"div">) {
+	const { className, ...restOfProps } = props;
 
 	// const { orientation } = useCarouselContext();
 
 	return (
-		<Component
+		<div
 			role="group"
 			aria-roledescription="slide"
 			data-slot="carousel-item"

@@ -19,9 +19,19 @@ export type ButtonProps = InferProps<"button">
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const buttonVariants = tv({
-	base: "flex items-center justify-center rounded-[8px]",
+	base: "flex items-center justify-center gap-2 rounded-[8px]",
 
 	compoundVariants: [
+		{
+			className: "grid justify-items-center",
+			isLoading: true,
+			loadingStyle: "replace-content",
+		},
+		{
+			className: "gap-1.5",
+			isLoading: true,
+			loadingStyle: "side-by-side",
+		},
 		{
 			className: "hover:rounded-[16px]",
 			size: "medium",
@@ -68,7 +78,12 @@ export const buttonVariants = tv({
 		},
 
 		isLoading: {
-			true: "grid content-center",
+			true: "",
+		},
+
+		loadingStyle: {
+			"replace-content": "",
+			"side-by-side": "",
 		},
 
 		size: {
@@ -124,6 +139,7 @@ function Button<TElement extends React.ElementType>(props: PolymorphicProps<TEle
 				disabled,
 				isDisabled,
 				isLoading,
+				loadingStyle,
 				size,
 				theme,
 				withInteractions,
@@ -138,12 +154,7 @@ function Button<TElement extends React.ElementType>(props: PolymorphicProps<TEle
 				:	children}
 			</Slot.Slottable>
 
-			<span
-				className={cnJoin(
-					"flex justify-center",
-					loadingStyle === "replace-content" && "[grid-area:1/1]"
-				)}
-			>
+			<span className={cnJoin(loadingStyle === "replace-content" && "[grid-area:1/1]")}>
 				<WhiteSpinnerIcon />
 			</span>
 		</>
