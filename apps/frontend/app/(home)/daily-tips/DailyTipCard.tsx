@@ -4,8 +4,10 @@ import type { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendA
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { z } from "zod";
-import { IconBox, NavLink, Switch } from "@/components/common";
 import { For } from "@/components/common/for";
+import { IconBox } from "@/components/common/IconBox";
+import { NavLink } from "@/components/common/NavLink";
+import { Switch } from "@/components/common/switch";
 import { Card, Carousel, Skeleton } from "@/components/ui";
 import { healthTipsQuery } from "@/lib/react-query/queryOptions";
 import { cnMerge } from "@/lib/utils/cn";

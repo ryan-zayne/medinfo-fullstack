@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { For } from "@/components/common";
+import { For } from "@/components/common/for";
 import { Form } from "@/components/ui";
 import { Main } from "./Main";
 

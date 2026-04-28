@@ -8,7 +8,7 @@ import {
 	type AppointmentCardSharedProps,
 } from "@/app/(protected)/dashboard/-components/appointments/AppointmentCardShared";
 import { DialogAnimated } from "@/components/animated/ui";
-import { IconBox } from "@/components/common";
+import { IconBox } from "@/components/common/IconBox";
 import { Button } from "@/components/ui";
 import { cancelAppointmentMutation } from "@/lib/react-query/mutationOptions";
 import {

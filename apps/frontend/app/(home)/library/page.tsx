@@ -1,5 +1,5 @@
 import { Main } from "../-components";
-import LibraryFilter from "./LibraryFilter";
+import { LibraryFilter } from "./LibraryFilter";
 
 function LibraryPage() {
 	return (

@@ -1,4 +1,4 @@
-import { Logo } from "@/components/common";
+import { Logo } from "@/components/common/Logo";
 import { GreenSpinnerIcon } from "@/components/icons/SpinnerIcon";
 
 export function LoadingScreen() {

@@ -2,7 +2,9 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { ForWithWrapper, IconBox, NavLink } from "@/components/common";
+import { ForWithWrapper } from "@/components/common/for";
+import { IconBox } from "@/components/common/IconBox";
+import { NavLink } from "@/components/common/NavLink";
 import CalendarIcon from "@/components/icons/CalendarIcon";
 import DollarSignIcon from "@/components/icons/DollarSignIcon";
 import NextIcon from "@/components/icons/NextIcon";

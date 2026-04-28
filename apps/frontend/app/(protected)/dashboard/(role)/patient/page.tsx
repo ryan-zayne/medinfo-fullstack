@@ -1,7 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { ForWithWrapper, NavLink, Show } from "@/components/common";
+import { ForWithWrapper } from "@/components/common/for";
+import { NavLink } from "@/components/common/NavLink";
+import { Show } from "@/components/common/show";
 import NextIcon from "@/components/icons/NextIcon";
 import { Skeleton } from "@/components/ui";
 import { patientAppointmentsQuery } from "@/lib/react-query/queryOptions";

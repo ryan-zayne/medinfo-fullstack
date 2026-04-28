@@ -2,17 +2,17 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
-import { Suspense } from "react";
-import { IconBox, NavLink, Switch } from "@/components/common";
 import { For } from "@/components/common/for";
+import { IconBox } from "@/components/common/IconBox";
+import { NavLink } from "@/components/common/NavLink";
+import { Switch } from "@/components/common/switch";
 import { SearchIcon } from "@/components/icons";
 import { DropdownMenu } from "@/components/ui";
 import { allDiseasesQuery } from "@/lib/react-query/queryOptions";
 import { cnJoin } from "@/lib/utils/cn";
 import { DiseaseCard, DiseaseCardSkeleton } from "./DiseaseCard";
 
-// eslint-disable-next-line react-refresh/only-export-components
-function LibraryFilter() {
+export function LibraryFilter() {
 	const allDiseasesQueryResult = useQuery(allDiseasesQuery());
 
 	const [view, setView] = useQueryState(
@@ -123,10 +123,3 @@ function LibraryFilter() {
 		</>
 	);
 }
-
-// eslint-disable-next-line react-refresh/only-export-components, unicorn/no-anonymous-default-export
-export default () => (
-	<Suspense>
-		<LibraryFilter />
-	</Suspense>
-);

@@ -1,7 +1,7 @@
 "use client";
 
-import { IconBox } from "@/components/common";
 import { For, ForWithWrapper } from "@/components/common/for";
+import { IconBox } from "@/components/common/IconBox";
 import { Button, Card } from "@/components/ui";
 import { cnJoin, tw } from "@/lib/utils/cn";
 import { Main } from "../../../-components/Main";

@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import type { InferProps } from "@zayne-labs/toolkit-react/utils";
-import { NavLink } from "@/components/common";
+import { NavLink } from "@/components/common/NavLink";
 import { Button } from "@/components/ui/button";
 import { sessionQuery } from "@/lib/react-query/queryOptions";
 

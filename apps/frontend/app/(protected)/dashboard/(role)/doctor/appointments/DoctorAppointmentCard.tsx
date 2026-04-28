@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { AppointmentCardShared } from "@/app/(protected)/dashboard/-components/appointments/AppointmentCardShared";
 import { DialogAnimated } from "@/components/animated/ui";
-import { IconBox } from "@/components/common";
+import { IconBox } from "@/components/common/IconBox";
 import { Button } from "@/components/ui";
 import { updateAppointmentStatusMutation } from "@/lib/react-query/mutationOptions";
 import {

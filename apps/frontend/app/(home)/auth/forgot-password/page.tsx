@@ -3,7 +3,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { IconBox, NavLink, Switch } from "@/components/common";
+import { IconBox } from "@/components/common/IconBox";
+import { NavLink } from "@/components/common/NavLink";
+import { Switch } from "@/components/common/switch";
 import { Button, Form } from "@/components/ui";
 import { callBackendApiForQuery } from "@/lib/api/callBackendApi";
 import { backendApiSchemaRoutes } from "@/lib/api/callBackendApi/apiSchema";

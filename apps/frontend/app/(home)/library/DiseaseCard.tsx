@@ -3,8 +3,9 @@
 import type { backendApiSchemaRoutes } from "@medinfo/shared/validation/backendApiSchema";
 import Image from "next/image";
 import type { z } from "zod";
-import { IconBox, NavLink } from "@/components/common";
 import { For } from "@/components/common/for";
+import { IconBox } from "@/components/common/IconBox";
+import { NavLink } from "@/components/common/NavLink";
 import { Button, Card, Carousel, Skeleton } from "@/components/ui";
 import { cnJoin } from "@/lib/utils/cn";
 import { tipPlaceHolder } from "@/public/assets/images/landing-page";

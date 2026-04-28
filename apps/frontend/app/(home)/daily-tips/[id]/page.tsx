@@ -8,9 +8,7 @@ import { HealthFinderDetails } from "../HealthFinderLogo";
 async function TipExpandedPage({ params }: PageProps<"/daily-tips/[id]">) {
 	const { id: tipId } = await params;
 
-	const result = await callBackendApi("@get/health-tips/one/:id", {
-		params: { id: tipId },
-	});
+	const result = await callBackendApi("@get/health-tips/one/:id", { params: { id: tipId } });
 
 	if (result.error) {
 		return null;

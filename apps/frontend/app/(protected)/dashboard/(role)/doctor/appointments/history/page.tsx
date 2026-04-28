@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { AppointmentPageShared } from "@/app/(protected)/dashboard/-components/appointments/AppointmentPageShared";
-import { ForWithWrapper } from "@/components/common";
+import { ForWithWrapper } from "@/components/common/for";
 import { doctorAppointmentsQuery } from "@/lib/react-query/queryOptions";
 import { DoctorAppointmentCard } from "../DoctorAppointmentCard";
 

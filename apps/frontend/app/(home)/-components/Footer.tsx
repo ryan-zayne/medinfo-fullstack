@@ -1,4 +1,5 @@
-import { IconBox, Logo } from "@/components/common";
+import { IconBox } from "@/components/common/IconBox";
+import { Logo } from "@/components/common/Logo";
 import { CopyrightIcon } from "@/components/icons";
 
 function Footer() {
