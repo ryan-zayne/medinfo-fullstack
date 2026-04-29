@@ -4,10 +4,7 @@ function Main(props: React.ComponentProps<"main">) {
 	const { children, className, ...restOfProps } = props;
 
 	return (
-		<main
-			className={cnMerge("flex grow flex-col px-6 py-14 md:px-[100px] md:py-[92px]", className)}
-			{...restOfProps}
-		>
+		<main className={cnMerge("flex grow flex-col px-6 py-14", className)} {...restOfProps}>
 			{children}
 		</main>
 	);

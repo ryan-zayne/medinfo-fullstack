@@ -7,6 +7,6 @@
 		}
 	},
 
-	"include": ["**/*.ts", "content/**/*.mdx", "**/*.tsx", ".next/dev/types/**/*.ts"],
+	"include": ["**/*.ts", "**/*.tsx", ".next/dev/types/**/*.ts"],
 	"exclude": ["node_modules"]
 }

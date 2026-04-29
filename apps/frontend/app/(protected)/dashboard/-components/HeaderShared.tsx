@@ -6,10 +6,10 @@ import { isString, type UnionDiscriminator } from "@zayne-labs/toolkit-type-help
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Fragment } from "react";
+import { Logo } from "@/app/-components/Logo";
 import { AvatarGroupAnimated, CollapsibleAnimated } from "@/components/animated/ui";
 import { For, ForWithWrapper } from "@/components/common/for";
 import { IconBox } from "@/components/common/IconBox";
-import { Logo } from "@/components/common/Logo";
 import { NavLink, type MainAppRoutes } from "@/components/common/NavLink";
 import { HamburgerIcon, NotificationIcon, SearchIcon, XIcon } from "@/components/icons";
 import { Avatar, Button, Form } from "@/components/ui";
