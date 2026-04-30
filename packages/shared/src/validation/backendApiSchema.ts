@@ -258,7 +258,7 @@ const authRoutes = () => {
 					newPassword: PasswordSchema,
 				})
 				.refine((data) => data.newPassword === data.confirmNewPassword, {
-					message: "New passwords do not match",
+					message: "Passwords do not match",
 					path: ["confirmNewPassword"],
 				}),
 			data: withBaseSuccessResponse(z.null()),

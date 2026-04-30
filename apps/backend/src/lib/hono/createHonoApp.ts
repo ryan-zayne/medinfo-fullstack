@@ -20,10 +20,19 @@ const createHonoApp = () => {
 	app.use(cors(corsOptions));
 
 	/**
+	 *  == Middleware - Request ID
+	 */
+	app.use(requestId());
+
+	/**
 	 *  == Middleware - Logger
 	 */
-	// app.use(logger((...args) => consola.log(...args)));
-	app.use(requestId(), pinoLoggerMiddleware());
+	app.use(
+		// structuredLogger({
+		// 	createLogger: (c) => pinoLogger.child({ requestId: c.var.requestId }),
+		// })
+		pinoLoggerMiddleware()
+	);
 
 	/**
 	 *  == Notfound Route handler

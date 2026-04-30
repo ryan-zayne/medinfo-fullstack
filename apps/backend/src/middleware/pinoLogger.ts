@@ -10,7 +10,11 @@ export const pinoLogger = pino(
 	},
 	pretty({
 		colorize: true,
-		messageFormat: "'{req.method}' request to url:'{req.url}' completed in {responseTime}ms",
+		// eslint-disable-next-line ts-eslint/no-explicit-any
+		messageFormat: (log: any) => {
+			// eslint-disable-next-line ts-eslint/restrict-template-expressions, ts-eslint/no-unsafe-member-access
+			return `'${log.req.method}' request to url:'${log.req.url}' completed in ${log.responseTime}ms with message:'${log.msg}'`;
+		},
 		singleLine: true,
 	})
 );
