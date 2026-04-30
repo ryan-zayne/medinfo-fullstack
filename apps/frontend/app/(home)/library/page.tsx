@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Main } from "../-components";
 import { LibraryFilter } from "./LibraryFilter";
 
@@ -15,7 +16,9 @@ function LibraryPage() {
 				</p>
 			</section>
 
-			<LibraryFilter />
+			<Suspense>
+				<LibraryFilter />
+			</Suspense>
 		</Main>
 	);
 }
