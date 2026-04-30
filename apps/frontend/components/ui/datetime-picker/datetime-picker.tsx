@@ -105,14 +105,13 @@ export function DateTimePicker(props: DatePickerProps) {
 							...calenderClassNames,
 						}}
 						components={{
-							// eslint-disable-next-line react/component-hook-factories, react/no-nested-component-definitions
+							// eslint-disable-next-line react/no-nested-component-definitions
 							DayButton: (innerProps) => (
 								<CalendarDayButton
 									{...innerProps}
 									className={cnMerge(
 										`hover:bg-medinfo-primary-subtle hover:text-medinfo-body-color
 										data-[selected-single=true]:bg-medinfo-primary-main`,
-										// eslint-disable-next-line react/prefer-destructuring-assignment
 										innerProps.className
 									)}
 								/>

@@ -11,7 +11,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 import { DialogAnimated } from "@/components/animated/ui";
-import { getElementList } from "@/components/common/for";
+import { ForWithWrapper } from "@/components/common/for";
 import { IconBox } from "@/components/common/IconBox";
 import { NavLink } from "@/components/common/NavLink";
 import { Show } from "@/components/common/show";
@@ -594,11 +594,10 @@ function AppointmentDialog(props: DialogMainContentProps) {
 
 function StepperList(props: { className?: string }) {
 	const { className } = props;
-	const [For] = getElementList();
 
 	return (
 		<Steps.List className={cnMerge("flex justify-center", className)} asChild={true}>
-			<For
+			<ForWithWrapper
 				each={stepperItems}
 				renderItem={(item, index) => (
 					<Steps.Item key={index} index={index} className="flex items-center">
