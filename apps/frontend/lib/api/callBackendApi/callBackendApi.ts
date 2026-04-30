@@ -20,6 +20,10 @@ export const sharedBaseConfig = defineBaseConfig({
 	dedupeCacheScope: "global",
 	dedupeCacheScopeKey: (ctx) => ctx.options.baseURL,
 
+	extraFetchOptions: {
+		next: { revalidate: 60 },
+	},
+
 	plugins: [
 		// nextjsForwardCookiesPlugin(),
 		authErrorRedirectPlugin({

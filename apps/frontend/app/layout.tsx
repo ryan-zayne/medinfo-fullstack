@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 function RootLayout({ children }: LayoutProps<"/">) {
 	return (
-		<html lang="en" data-theme="light">
+		<html lang="en" data-scroll-behavior="smooth">
 			<body className={cnJoin(roboto.variable, workSans.variable)}>
 				<Providers>{children}</Providers>
 

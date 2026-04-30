@@ -149,6 +149,7 @@ function VerifyEmailPage(props: PageProps<"/auth/verify-email">) {
 									</p>
 									<Button
 										theme="primary-ghost"
+										size="large"
 										isLoading={resendCodeMutationResult.isPending}
 										disabled={resendCodeMutationResult.isPending}
 										onClick={handleResendCode}

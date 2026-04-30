@@ -66,12 +66,36 @@ export const seedUsers = async (totalCount = 20) => {
 
 	const passwordHash = await hashPassword(ENVIRONMENT.SEED_PASSWORD);
 
-	const doctors = Array.from({ length: halfCount }, () => generateFakeUser("doctor", passwordHash));
-	const patients = Array.from({ length: halfCount }, () => generateFakeUser("patient", passwordHash));
+	const fixedDoctor: InsertUserType = {
+		...generateFakeUser("doctor", passwordHash),
+		email: "amos.heathcote@seeded.com",
+		firstName: "Amos",
+		fullName: "Amos Heathcote",
+		lastName: "Heathcote",
+	};
 
-	const allUsers = [...doctors, ...patients];
+	const fixedPatient: InsertUserType = {
+		...generateFakeUser("patient", passwordHash),
+		email: "cassin_cassey@seeded.com",
+		firstName: "Cassin",
+		fullName: "Cassin Cassey",
+		lastName: "Cassey",
+	};
 
-	consola.info(`Seeding ${allUsers.length} users (${halfCount} doctors, ${halfCount} patients)...`);
+	const doctors = Array(halfCount)
+		.keys()
+		.map(() => generateFakeUser("doctor", passwordHash));
+
+	const patients = Array(halfCount)
+		.keys()
+		.map(() => generateFakeUser("patient", passwordHash));
+
+	const allUsers = [fixedDoctor, fixedPatient, ...doctors, ...patients];
+
+	const doctorCount = allUsers.filter((u) => u.role === "doctor").length;
+	const patientCount = allUsers.filter((u) => u.role === "patient").length;
+
+	consola.info(`Seeding ${allUsers.length} users (${doctorCount} doctors, ${patientCount} patients)...`);
 	consola.info(`All users have password: "${ENVIRONMENT.SEED_PASSWORD}"`);
 
 	await db.insert(users).values(allUsers).onConflictDoNothing();
