@@ -21,8 +21,6 @@
 		"@medinfo/env": "workspace:*",
 		"@medinfo/shared": "workspace:*",
 		"@tanstack/react-query": "5.100.6",
-		"@vercel/analytics": "^2.0.1",
-		"@vercel/speed-insights": "^2.0.0",
 		"@zayne-labs/callapi": "1.12.6",
 		"@zayne-labs/callapi-plugins": "^5.0.6",
 		"@zayne-labs/toolkit-core": "0.12.49",
