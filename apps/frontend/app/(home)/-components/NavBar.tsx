@@ -1,10 +1,9 @@
 "use client";
 
 import { useToggle } from "@zayne-labs/toolkit-react";
-import type { AppRoutes } from "@/.next/dev/types/routes";
 import { Logo } from "@/app/-components/Logo";
 import { ForWithWrapper } from "@/components/common/for";
-import { NavLink } from "@/components/common/NavLink";
+import { NavLink, type MainAppRoutes } from "@/components/common/NavLink";
 import { HamburgerIcon, SearchIcon, XIcon } from "@/components/icons";
 import { Button } from "@/components/ui";
 import { cnMerge } from "@/lib/utils/cn";
@@ -33,7 +32,7 @@ const linkItems = [
 	{ href: "/library", title: "Library" },
 	{ href: "/about" as never, title: "About us" },
 	{ href: "/contact" as never, title: "Contact us" },
-] satisfies Array<{ href: AppRoutes; title: string }>;
+] satisfies Array<{ href: MainAppRoutes; title: string }>;
 
 function DesktopNavigation(props: { className?: string }) {
 	const { className } = props;

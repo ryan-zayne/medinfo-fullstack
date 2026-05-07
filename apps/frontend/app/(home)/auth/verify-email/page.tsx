@@ -43,7 +43,7 @@ function VerifyEmailPage(props: PageProps<"/auth/verify-email">) {
 			meta: { toast: { success: true } },
 
 			onSuccess: (ctx) => {
-				router.push(`/dashboard/${ctx.data.data.user.role}`);
+				router.push(`/auth/signin?user=${ctx.data.data.user.role}`);
 			},
 		});
 	});

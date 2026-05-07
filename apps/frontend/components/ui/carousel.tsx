@@ -1,3 +1,5 @@
+/* eslint-disable react-you-might-not-need-an-effect/no-event-handler */
+/* eslint-disable react/set-state-in-effect */
 "use client";
 
 import { createCustomContext, useCallbackRef } from "@zayne-labs/toolkit-react";
@@ -93,11 +95,9 @@ function CarouselRoot(props: CarouselProps & InferProps<"div">) {
 		if (!carouselApi) return;
 
 		const onSelect = () => {
-			/* eslint-disable react/set-state-in-effect */
 			setCanScrollPrev(carouselApi.canScrollPrev());
 			setCanScrollNext(carouselApi.canScrollNext());
 			setSelectedIndex(carouselApi.selectedScrollSnap());
-			/* eslint-enable react/set-state-in-effect */
 		};
 
 		onSelect();

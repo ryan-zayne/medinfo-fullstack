@@ -1,7 +1,7 @@
 import type { ConfigProps } from "hono-rate-limiter";
 import { AppError } from "@/lib/utils";
 
-const rateLimiterOptions: ConfigProps = {
+const globalRateLimiterOptions: ConfigProps = {
 	handler: () => {
 		throw new AppError({
 			code: 429,
@@ -22,9 +22,9 @@ const authRateLimiterOptions: ConfigProps = {
 		});
 	},
 	keyGenerator: (ctx) => ctx.req.header("x-forwarded-for") ?? "unknown",
-	limit: 5,
+	limit: 10,
 	standardHeaders: "draft-7",
 	windowMs: 30 * 60 * 1000,
 };
 
-export { authRateLimiterOptions, rateLimiterOptions };
+export { authRateLimiterOptions, globalRateLimiterOptions };

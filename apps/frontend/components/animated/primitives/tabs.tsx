@@ -1,3 +1,4 @@
+/* eslint-disable react-you-might-not-need-an-effect/no-event-handler */
 /* eslint-disable react/set-state-in-effect */
 /* eslint-disable react-you-might-not-need-an-effect/no-derived-state */
 /* eslint-disable react-you-might-not-need-an-effect/no-chain-state-updates */
@@ -59,7 +60,6 @@ function TabsRoot(props: TabsProps) {
 
 	useEffect(() => {
 		if (
-			// eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler
 			!isControlled
 			&& activeValue === undefined
 			&& triggersRef.current.size > 0

@@ -4,7 +4,7 @@ import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
 import { secureHeaders } from "hono/secure-headers";
 import { corsOptions } from "@/config/corsOptions";
-import { rateLimiterOptions } from "@/config/rateLimiterOptions";
+import { globalRateLimiterOptions } from "@/config/rateLimiterOptions";
 import { secureHeadersOptions } from "@/config/secureHeadersOptions";
 import { errorHandler, notFoundHandler } from "@/middleware";
 import { pinoLoggerMiddleware } from "@/middleware/pinoLogger";
@@ -15,7 +15,7 @@ const createHonoApp = () => {
 	/**
 	 *  == Middleware - App Security
 	 */
-	app.use(rateLimiter(rateLimiterOptions));
+	app.use(rateLimiter(globalRateLimiterOptions));
 	app.use(secureHeaders(secureHeadersOptions));
 	app.use(cors(corsOptions));
 

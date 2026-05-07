@@ -2,7 +2,7 @@ import type { RequestContext, ResponseErrorContext } from "@zayne-labs/callapi";
 import { definePlugin } from "@zayne-labs/callapi/utils";
 import { isBrowser } from "@zayne-labs/toolkit-core";
 import type { Awaitable, CallbackFn } from "@zayne-labs/toolkit-type-helpers";
-import type { AppRoutes } from "@/.next/dev/types/routes";
+import type { MainAppRoutes } from "@/components/common/NavLink";
 import type { BaseApiErrorResponse } from "../apiSchema";
 import type { ToastPluginMeta } from "./toastPlugin";
 import { isAuthErrorThatNeedsRedirect, isPathnameMatchingRoute, redirectTo } from "./utils/common";
@@ -10,9 +10,9 @@ import { isAuthErrorThatNeedsRedirect, isPathnameMatchingRoute, redirectTo } fro
 export type AuthErrorRedirectPluginMeta = {
 	auth?: {
 		redirectErrorMessage?: string;
-		redirectFn?: CallbackFn<AppRoutes, Awaitable<void>>;
-		redirectRoute?: AppRoutes;
-		routesToExemptFromErrorRedirect?: Array<`${string}/**` | AppRoutes>;
+		redirectFn?: CallbackFn<MainAppRoutes, Awaitable<void>>;
+		redirectRoute?: MainAppRoutes;
+		routesToExemptFromErrorRedirect?: Array<`${MainAppRoutes}/**` | `${string}/**` | MainAppRoutes>;
 		skipErrorRedirect?: boolean;
 	};
 };

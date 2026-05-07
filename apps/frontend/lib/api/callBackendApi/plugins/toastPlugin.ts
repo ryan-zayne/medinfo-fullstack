@@ -8,14 +8,14 @@ import { definePlugin, isHTTPError } from "@zayne-labs/callapi/utils";
 import { isBrowser } from "@zayne-labs/toolkit-core";
 import { isBoolean } from "@zayne-labs/toolkit-type-helpers";
 import { toast } from "sonner";
-import type { BaseApiErrorResponse, BaseApiSuccessResponse } from "../apiSchema";
+import type { BackendApiRouteKeys, BaseApiErrorResponse, BaseApiSuccessResponse } from "../apiSchema";
 
 export type ToastPluginMeta = {
 	toast?: {
 		endpointsToSkip?: {
-			error?: Array<string | undefined>;
-			errorAndSuccess?: Array<string | undefined>;
-			success?: Array<string | undefined>;
+			error?: Array<BackendApiRouteKeys | undefined>;
+			errorAndSuccess?: Array<BackendApiRouteKeys | undefined>;
+			success?: Array<BackendApiRouteKeys | undefined>;
 		};
 		error?: boolean;
 		errorAndSuccess?: boolean;

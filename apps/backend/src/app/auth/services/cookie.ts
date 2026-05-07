@@ -17,8 +17,9 @@ export const setCookie = (
 	ctx: Context,
 	options: CookieOptions & { name: PossibleCookieNames; value: string }
 ) => {
-	const isProduction = ENVIRONMENT.NODE_ENV === "production";
 	const { name, value, ...restOptions } = options;
+
+	const isProduction = ENVIRONMENT.NODE_ENV === "production";
 
 	cookieHelpers.setCookie(ctx, name, value, {
 		httpOnly: true,

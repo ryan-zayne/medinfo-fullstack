@@ -1,22 +1,20 @@
 "use client";
 
 import type { UrlObject } from "node:url";
-import type { InferProps } from "@zayne-labs/toolkit-react/utils";
-import { isString, type AnyString } from "@zayne-labs/toolkit-type-helpers";
-import Link from "next/link";
+import { isString } from "@zayne-labs/toolkit-type-helpers";
+import type { Route } from "next";
+import Link, { type LinkProps } from "next/link";
 import { usePathname } from "next/navigation";
 import type { AppRoutes } from "@/.next/dev/types/routes";
 import { cnMerge } from "@/lib/utils/cn";
 
-export type MainAppRoutes<TAppRoutes extends AppRoutes = AppRoutes> =
-	TAppRoutes extends `${infer TPrefix}/[${string}]` ? `${TPrefix}/${AnyString}` : TAppRoutes;
+export type MainAppRoutes<TRouteType extends string = AppRoutes> = Route<TRouteType>;
 
-type ModifiedHref = "#" | (Omit<UrlObject, "pathname"> & { pathname?: MainAppRoutes }) | MainAppRoutes;
-
-function NavLink(
-	props: Omit<InferProps<typeof Link>, "href"> & {
-		href: ModifiedHref;
-		relative?: boolean;
+function NavLink<TRouteType extends string = AppRoutes>(
+	props: Omit<LinkProps<TRouteType>, "href"> & {
+		href:
+			| (Omit<UrlObject, "pathname"> & { pathname: MainAppRoutes<TRouteType> })
+			| MainAppRoutes<TRouteType>;
 		transitionType?: "navbar" | "no-transition" | "regular";
 	}
 ) {

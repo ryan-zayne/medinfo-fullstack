@@ -475,6 +475,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 									<NavLink
 										transitionType="regular"
 										href={{
+											pathname: "/auth/signup",
 											query: { user: userRole === "doctor" ? "patient" : "doctor" },
 										}}
 										className="text-medinfo-primary-main md:text-[20px]"
@@ -488,7 +489,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 											transitionType="regular"
 											href={{
 												pathname: "/auth/signin",
-												query: { user: userRole === "doctor" ? "doctor" : "patient" },
+												query: { user: userRole },
 											}}
 											className="text-medinfo-primary-main"
 										>
@@ -515,7 +516,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 						<NavLink
 							href={{
 								pathname: "/auth/signin",
-								query: { user: userRole === "doctor" ? "doctor" : "patient" },
+								query: { user: userRole },
 							}}
 						>
 							Sign in

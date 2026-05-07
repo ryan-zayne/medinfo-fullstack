@@ -23,6 +23,7 @@ export const nextjsForwardCookiesPlugin = () => {
 
 				if (!cookieHeader) return;
 
+				// eslint-disable-next-line require-atomic-updates
 				ctx.request.headers.cookie = cookieHeader;
 			} catch (error) {
 				// Handle cases where headers() might be called outside of request context

@@ -36,8 +36,7 @@ import {
 
 const authRoutes = new Hono()
 	.basePath("/auth")
-	.use(rateLimiter(authRateLimiterOptions))
-	.post("/signup", async (ctx) => {
+	.post("/signup", rateLimiter(authRateLimiterOptions), async (ctx) => {
 		const formDataBody = await ctx.req.parseBody();
 
 		const {
@@ -137,6 +136,7 @@ const authRoutes = new Hono()
 	})
 	.post(
 		"/signin",
+		rateLimiter(authRateLimiterOptions),
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/auth/signin"].body),
 		async (ctx) => {
 			const { email, password } = ctx.req.valid("json");
@@ -261,6 +261,7 @@ const authRoutes = new Hono()
 	)
 	.get(
 		"/google",
+		rateLimiter(authRateLimiterOptions),
 		validateWithZodMiddleware("query", backendApiSchemaRoutes["@get/auth/google"].query),
 		(ctx) => {
 			const { role } = ctx.req.valid("query");
@@ -295,6 +296,7 @@ const authRoutes = new Hono()
 	)
 	.get(
 		"/google/callback",
+		rateLimiter(authRateLimiterOptions),
 		validateWithZodMiddleware("query", backendApiSchemaRoutes["@get/auth/google/callback"].query),
 		async (ctx) => {
 			const { code, state } = ctx.req.valid("query");
@@ -379,58 +381,9 @@ const authRoutes = new Hono()
 			return ctx.redirect(result.redirectURL);
 		}
 	)
-
-	.get("/signout", authMiddleware, async (ctx) => {
-		const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
-
-		const currentUser = ctx.get("currentUser");
-
-		await Promise.all([
-			db
-				.update(users)
-				.set({ refreshTokenArray: getUpdatedTokenResultArray({ currentUser, zayneRefreshToken }) })
-				.where(eq(users.id, currentUser.id)),
-			removeFromCache(`user:${currentUser.id}`),
-		]);
-
-		deleteCookie(ctx, "zayneAccessToken");
-
-		deleteCookie(ctx, "zayneRefreshToken");
-
-		return AppJsonResponse(ctx, {
-			data: null,
-			message: "Signed out successfully",
-			schema: backendApiSchemaRoutes["@get/auth/signout"].data,
-		});
-	})
-	.get("/signout/all", authMiddleware, async (ctx) => {
-		const currentUser = ctx.get("currentUser");
-
-		await Promise.all([
-			db.update(users).set({ refreshTokenArray: [] }).where(eq(users.id, currentUser.id)),
-			removeFromCache(`user:${currentUser.id}`),
-		]);
-
-		deleteCookie(ctx, "zayneAccessToken");
-		deleteCookie(ctx, "zayneRefreshToken");
-
-		return AppJsonResponse(ctx, {
-			data: null,
-			message: "Signed out from all devices successfully",
-			schema: backendApiSchemaRoutes["@get/auth/signout"].data,
-		});
-	})
-	.get("/session", authMiddleware, (ctx) => {
-		const currentUser = ctx.get("currentUser");
-
-		return AppJsonResponse(ctx, {
-			data: { user: getNecessaryUserDetails(currentUser) },
-			message: "Session fetched successfully",
-			schema: backendApiSchemaRoutes["@get/auth/session"].data,
-		});
-	})
 	.post(
 		"/verify-email",
+		rateLimiter(authRateLimiterOptions),
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/auth/verify-email"].body),
 		async (ctx) => {
 			const { code, email } = ctx.req.valid("json");
@@ -502,6 +455,7 @@ const authRoutes = new Hono()
 	)
 	.post(
 		"/resend-verification-email",
+		rateLimiter(authRateLimiterOptions),
 		validateWithZodMiddleware(
 			"json",
 			backendApiSchemaRoutes["@post/auth/resend-verification-email"].body
@@ -540,6 +494,7 @@ const authRoutes = new Hono()
 	)
 	.post(
 		"/forgot-password",
+		rateLimiter(authRateLimiterOptions),
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/auth/forgot-password"].body),
 		async (ctx) => {
 			const { email } = ctx.req.valid("json");
@@ -602,6 +557,7 @@ const authRoutes = new Hono()
 	)
 	.post(
 		"/reset-password",
+		rateLimiter(authRateLimiterOptions),
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@post/auth/reset-password"].body),
 		async (ctx) => {
 			const { newPassword, token } = ctx.req.valid("json");
@@ -689,9 +645,59 @@ const authRoutes = new Hono()
 			});
 		}
 	)
+	.use(authMiddleware)
+	.get("/signout", async (ctx) => {
+		const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
+
+		const currentUser = ctx.get("currentUser");
+
+		await Promise.all([
+			db
+				.update(users)
+				.set({ refreshTokenArray: getUpdatedTokenResultArray({ currentUser, zayneRefreshToken }) })
+				.where(eq(users.id, currentUser.id)),
+			removeFromCache(`user:${currentUser.id}`),
+		]);
+
+		deleteCookie(ctx, "zayneAccessToken");
+
+		deleteCookie(ctx, "zayneRefreshToken");
+
+		return AppJsonResponse(ctx, {
+			data: null,
+			message: "Signed out successfully",
+			schema: backendApiSchemaRoutes["@get/auth/signout"].data,
+		});
+	})
+	.get("/signout/all", async (ctx) => {
+		const currentUser = ctx.get("currentUser");
+
+		await Promise.all([
+			db.update(users).set({ refreshTokenArray: [] }).where(eq(users.id, currentUser.id)),
+			removeFromCache(`user:${currentUser.id}`),
+		]);
+
+		deleteCookie(ctx, "zayneAccessToken");
+		deleteCookie(ctx, "zayneRefreshToken");
+
+		return AppJsonResponse(ctx, {
+			data: null,
+			message: "Signed out from all devices successfully",
+			schema: backendApiSchemaRoutes["@get/auth/signout"].data,
+		});
+	})
+	.get("/session", (ctx) => {
+		const currentUser = ctx.get("currentUser");
+
+		return AppJsonResponse(ctx, {
+			data: { user: getNecessaryUserDetails(currentUser) },
+			message: "Session fetched successfully",
+			schema: backendApiSchemaRoutes["@get/auth/session"].data,
+		});
+	})
 	.patch(
 		"/change-password",
-		authMiddleware,
+		rateLimiter(authRateLimiterOptions),
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@patch/auth/change-password"].body),
 		async (ctx) => {
 			const { currentPassword, newPassword } = ctx.req.valid("json");
@@ -749,7 +755,7 @@ const authRoutes = new Hono()
 	)
 	.patch(
 		"/update-profile",
-		authMiddleware,
+		rateLimiter(authRateLimiterOptions),
 		validateWithZodMiddleware("json", backendApiSchemaRoutes["@patch/auth/update-profile"].body),
 		async (ctx) => {
 			const { bio, city, country, firstName, gender, lastName } = ctx.req.valid("json");

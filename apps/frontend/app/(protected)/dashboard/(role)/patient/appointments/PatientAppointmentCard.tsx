@@ -1,7 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useDisclosure } from "@zayne-labs/toolkit-react";
 import { isToday } from "date-fns";
-import Link from "next/link";
 import { useState } from "react";
 import {
 	AppointmentCardShared,
@@ -76,7 +75,7 @@ export function PatientAppointmentCard(props: PatientAppointmentCardProps) {
 						asChild={true}
 						isDisabled={!isToday(appointment.dateOfAppointment)}
 					>
-						<Link
+						<a
 							onClick={(event) => {
 								if (!isToday(appointment.dateOfAppointment)) {
 									event.preventDefault();
@@ -87,7 +86,7 @@ export function PatientAppointmentCard(props: PatientAppointmentCardProps) {
 							rel="noopener noreferrer"
 						>
 							Join Meeting
-						</Link>
+						</a>
 					</Button>
 				)}
 

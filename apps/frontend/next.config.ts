@@ -40,7 +40,15 @@ const config: NextConfig = {
 		],
 	},
 
+	logging: {
+		fetches: {
+			fullUrl: true,
+		},
+	},
+
 	reactStrictMode: true,
+
+	typedRoutes: true,
 
 	typescript: {
 		ignoreBuildErrors: true,

@@ -1,7 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useDisclosure } from "@zayne-labs/toolkit-react";
 import { isToday } from "date-fns";
-import Link from "next/link";
 import { useState } from "react";
 import { AppointmentCardShared } from "@/app/(protected)/dashboard/-components/appointments/AppointmentCardShared";
 import { DialogAnimated } from "@/components/animated/ui";
@@ -111,7 +110,7 @@ export function DoctorAppointmentCard(props: DoctorAppointmentCardProps) {
 						asChild={true}
 						isDisabled={!isToday(appointment.dateOfAppointment)}
 					>
-						<Link
+						<a
 							onClick={(event) => {
 								if (!isToday(appointment.dateOfAppointment)) {
 									event.preventDefault();
@@ -122,7 +121,7 @@ export function DoctorAppointmentCard(props: DoctorAppointmentCardProps) {
 							rel="noopener noreferrer"
 						>
 							Join Meeting
-						</Link>
+						</a>
 					</Button>
 				)}
 
@@ -130,9 +129,9 @@ export function DoctorAppointmentCard(props: DoctorAppointmentCardProps) {
 					<div className="flex gap-4">
 						{appointment.meetingURL && (
 							<Button theme="primary" asChild={true}>
-								<Link href={appointment.meetingURL} target="_blank" rel="noopener noreferrer">
+								<a href={appointment.meetingURL} target="_blank" rel="noopener noreferrer">
 									Join Meeting
-								</Link>
+								</a>
 							</Button>
 						)}
 
