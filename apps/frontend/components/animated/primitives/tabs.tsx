@@ -18,7 +18,7 @@ import {
 	useRef,
 	useState,
 } from "react";
-import * as MotionHighlightPrimitive from "./motion-highlight";
+import * as HighlightPrimitive from "./effects/highlight";
 import { Slot, type WithAsChild } from "./slot";
 
 type TabsContextType = {
@@ -112,7 +112,7 @@ function TabsRoot(props: TabsProps) {
 }
 
 type TabsHighlightProps = Omit<
-	React.ComponentProps<typeof MotionHighlightPrimitive.Root>,
+	React.ComponentProps<typeof HighlightPrimitive.Root>,
 	"controlledItems" | "value"
 >;
 
@@ -121,7 +121,7 @@ function TabsHighlight(props: TabsHighlightProps) {
 	const { activeValue } = useTabsContext();
 
 	return (
-		<MotionHighlightPrimitive.Root
+		<HighlightPrimitive.Root
 			data-slot="tabs-highlight-root"
 			controlledItems={true}
 			value={activeValue}
@@ -139,12 +139,12 @@ function TabsList(props: TabsListProps) {
 	return <div role="tablist" data-slot="tabs-list" {...props} />;
 }
 
-type TabsHighlightItemProps = React.ComponentProps<typeof MotionHighlightPrimitive.Item> & {
+type TabsHighlightItemProps = React.ComponentProps<typeof HighlightPrimitive.Item> & {
 	value: string;
 };
 
 function TabsHighlightItem(props: TabsHighlightItemProps) {
-	return <MotionHighlightPrimitive.Item data-slot="tabs-highlight-item" {...props} />;
+	return <HighlightPrimitive.Item data-slot="tabs-highlight-item" {...props} />;
 }
 
 type TabsTriggerProps = WithAsChild<
