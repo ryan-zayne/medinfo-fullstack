@@ -6,7 +6,7 @@ import { z } from "zod";
 import { IconBox } from "@/components/common/IconBox";
 import { NavLink } from "@/components/common/NavLink";
 import { Switch } from "@/components/common/switch";
-import { Button, } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { Form } from "@/components/ui/form";
 import { callBackendApiForQuery } from "@/lib/api/callBackendApi";
 import { backendApiSchemaRoutes } from "@/lib/api/callBackendApi/apiSchema";
