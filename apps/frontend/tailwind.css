@@ -55,12 +55,6 @@
 }
 
 /* ------------------*/
-/* Custom Properties */
-/*-------------------*/
-@layer base {
-}
-
-/* ------------------*/
 /* Fonts */
 /*-------------------*/
 @theme inline {
@@ -92,6 +86,9 @@
 	--color-shadcn-secondary: hsl(210, 40%, 96.1%);
 	--color-shadcn-secondary-foreground: hsl(222.2, 47.4%, 11.2%);
 
+	--color-shadcn-card: hsl(0, 0%, 100%);
+	--color-shadcn-card-foreground: hsl(0, 0%, 0%);
+
 	--color-shadcn-popover: hsl(0, 0%, 100%);
 	--color-shadcn-popover-foreground: hsl(222.2, 47.4%, 11.2%);
 
@@ -108,6 +105,15 @@
 	--color-shadcn-destructive: hsl(0 100% 50%);
 	--color-shadcn-destructive-foreground: hsl(210 40% 98%);
 
+	--color-shadcn-sidebar: oklch(0.985 0 0);
+	--color-shadcn-sidebar-foreground: oklch(0.145 0 0);
+	--color-shadcn-sidebar-primary: oklch(0.205 0 0);
+	--color-shadcn-sidebar-primary-foreground: oklch(0.985 0 0);
+	--color-shadcn-sidebar-accent: oklch(0.97 0 0);
+	--color-shadcn-sidebar-accent-foreground: oklch(0.205 0 0);
+	--color-shadcn-sidebar-border: oklch(0.922 0 0);
+	--color-shadcn-sidebar-ring: oklch(0.708 0 0);
+
 	--color-sonner-success-bg: hsl(150, 100%, 6%);
 	--color-sonner-success-text: hsl(150, 100%, 90%);
 	--color-sonner-success-border: hsl(147, 100%, 12%);
@@ -118,6 +124,8 @@
 
 	--animate-accordion-down: accordion-down 0.2s ease-out;
 	--animate-accordion-up: accordion-up 0.2s ease-out;
+	--animate-collapsible-down: collapsible-down 0.2s ease-in-out;
+	--animate-collapsible-up: collapsible-up 0.2s ease-in-out;
 
 	@keyframes accordion-down {
 		from {
@@ -127,6 +135,7 @@
 			height: var(--radix-accordion-content-height);
 		}
 	}
+
 	@keyframes accordion-up {
 		from {
 			height: var(--radix-accordion-content-height);
@@ -134,6 +143,45 @@
 		to {
 			height: 0;
 		}
+	}
+
+	@keyframes collapsible-down {
+		from {
+			height: 0;
+		}
+		to {
+			height: var(--radix-collapsible-content-height);
+		}
+	}
+
+	@keyframes collapsible-up {
+		from {
+			height: var(--radix-collapsible-content-height);
+		}
+		to {
+			height: 0;
+		}
+	}
+}
+
+/* ------------------*/
+/* Custom Properties */
+/*-------------------*/
+@layer base {
+	:root {
+		--chart-1: oklch(0.646 0.222 41.116);
+		--chart-2: oklch(0.6 0.118 184.704);
+		--chart-3: oklch(0.398 0.07 227.392);
+		--chart-4: oklch(0.828 0.189 84.429);
+		--chart-5: oklch(0.769 0.188 70.08);
+	}
+
+	.dark {
+		--chart-1: oklch(0.488 0.243 264.376);
+		--chart-2: oklch(0.696 0.17 162.48);
+		--chart-3: oklch(0.769 0.188 70.08);
+		--chart-4: oklch(0.627 0.265 303.9);
+		--chart-5: oklch(0.645 0.246 16.439);
 	}
 }
 
@@ -207,12 +255,6 @@
 		background-color: var(--color-medinfo-primary-main);
 		border: 1px solid hsl(0, 0%, 76%);
 		border-radius: 10px;
-	}
-}
-
-@utility scrollbar-hidden {
-	&::-webkit-scrollbar {
-		display: none;
 	}
 }
 

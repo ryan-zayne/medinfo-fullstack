@@ -3,7 +3,8 @@ import { AvatarGroupAnimated } from "@/components/animated/ui";
 import { ForWithWrapper } from "@/components/common/for";
 import { IconBox } from "@/components/common/IconBox";
 import { Switch } from "@/components/common/switch";
-import { Avatar, Card, Skeleton } from "@/components/ui";
+import { Avatar, Skeleton } from "@/components/ui";
+import { Card } from "@/components/ui/card";
 import type {
 	DoctorAppointmentQueryResultType,
 	PatientAppointmentQueryResultType,

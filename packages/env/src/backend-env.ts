@@ -17,10 +17,10 @@ export const backendEnvSchema = z.object({
 	DATABASE_URL: z.string(),
 	DATABASE_URL_DEV: z
 		.literal([
-			"postgresql://postgres:postgres@localhost:5432/medinfo",
+			"postgresql://postgres:postgres@localhost:5433/medinfo",
 			"postgresql://postgres:postgres@medinfo-postgres-db:5432/medinfo",
 		])
-		.default("postgresql://postgres:postgres@localhost:5432/medinfo"),
+		.default("postgresql://postgres:postgres@localhost:5433/medinfo"),
 	DB_MIGRATING: stringBoolean.default(false),
 	DB_SEEDING: stringBoolean.default(false),
 	EMAIL_APP_PASSWORD: z.string(),

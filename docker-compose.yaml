@@ -10,9 +10,9 @@ services:
          POSTGRES_PASSWORD: postgres
          POSTGRES_DB: medinfo
       ports:
-         - "5432:5432"
+         - "5433:5432"
       volumes:
-         - medinfo-postgres-db-data:/var/lib/postgresql/data
+         - medinfo-postgres-db-data:/var/lib/postgresql
       networks:
          - medinfo-network
       healthcheck:
@@ -21,6 +21,22 @@ services:
          timeout: 5s
          retries: 3
          start_period: 10s
+
+   medinfo-db-setup:
+      build:
+         context: .
+         dockerfile: packages/db/Dockerfile
+      container_name: medinfo-db-setup
+      depends_on:
+         medinfo-postgres-db:
+            condition: service_healthy
+      env_file:
+         - ./apps/backend/.env
+      environment:
+         - DATABASE_URL_DEV=postgresql://postgres:postgres@medinfo-postgres-db:5432/medinfo
+      networks:
+         - medinfo-network
+      restart: no
 
    medinfo-redis-cache:
       image: redis:8-alpine
@@ -67,6 +83,8 @@ services:
             condition: service_healthy
          medinfo-redis-queue:
             condition: service_healthy
+         medinfo-db-setup:
+            condition: service_completed_successfully
       networks:
          - medinfo-network
       ports:

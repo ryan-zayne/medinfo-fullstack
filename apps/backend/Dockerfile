@@ -4,14 +4,15 @@
 FROM node:24.14.0-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
+RUN corepack enable && corepack prepare pnpm@10.33.3 --activate
+
+WORKDIR /app
+
 
 # ================================================================
 # Stage 2: Dependencies
 # ================================================================
 FROM base AS deps
-
-WORKDIR /app
 
 # Copy workspace configuration first (best for layer caching)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
@@ -45,20 +46,14 @@ COPY packages ./packages
 FROM base AS runner
 
 # Copy workspace root files needed for pnpm filters and tsx path resolution
-COPY --from=deps /app/{package.json,pnpm-lock.yaml,pnpm-workspace.yaml,tsconfig.base.json} ./
+COPY --from=deps /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml /app/tsconfig.base.json ./
 
 # Copy node_modules from deps stage, source files from builder stage
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/apps/backend ./apps/backend
 COPY --from=builder /app/packages ./packages
 
-# Install curl for healthcheck (not included in slim)
-RUN apk add --no-cache curl
-
 WORKDIR /app/apps/backend
-
-# Set production environment for optimized runtime
-ENV NODE_ENV=production
 
 EXPOSE 8000
 
@@ -67,4 +62,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
 # Run migrations and start app
-CMD ["sh", "-c", "pnpm --filter=@medinfo/db db:push && pnpm --filter=@medinfo/db db:seed && pnpm start"]
+CMD ["sh", "-c", "pnpm start:dev"]

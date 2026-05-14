@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { For } from "@/components/common/for";
-import { Form } from "@/components/ui";
+import { Form } from "@/components/ui/form";
 import { Main } from "./Main";
 
 const notificationOptions = [

@@ -1,19 +1,16 @@
-/* eslint-disable react-you-might-not-need-an-effect/no-event-handler */
 /* eslint-disable react/no-nested-component-definitions */
-"use client";
 
-import type { InferProps } from "@zayne-labs/toolkit-react/utils";
+import { DayButton, DayPicker, getDefaultClassNames } from "@daypicker/react";
 import type { ExtractUnion } from "@zayne-labs/toolkit-type-helpers";
 import { useEffect, useRef } from "react";
-import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker";
 import { cnMerge } from "@/lib/utils/cn";
 import { IconBox } from "../common/IconBox";
 import { shadcnButtonVariants, type ShadcnButtonProps } from "./constants";
 
 export function Calendar(
-	props: InferProps<typeof DayPicker> & {
+	props: React.ComponentProps<typeof DayPicker> & {
 		buttonVariant?: ExtractUnion<(typeof shadcnButtonVariants)["variants"]["variant"]>;
-		classNames?: InferProps<typeof DayPicker>["classNames"] & { base?: string };
+		classNames?: React.ComponentProps<typeof DayPicker>["classNames"] & { base?: string };
 	}
 ) {
 	const {
@@ -140,7 +137,7 @@ export function Calendar(
 				),
 				root: cnMerge("w-fit", defaultClassNames.root, classNames?.root),
 				today: cnMerge(
-					`rounded-md bg-shadcn-accent text-shadcn-primary-foreground
+					`rounded-md bg-shadcn-accent text-shadcn-accent-foreground
 					data-[selected=true]:rounded-none`,
 					defaultClassNames.today,
 					classNames?.today
@@ -224,7 +221,8 @@ export function Calendar(
 	);
 }
 
-export function CalendarDayButton(props: InferProps<typeof DayButton> & ShadcnButtonProps) {
+export function CalendarDayButton(props: React.ComponentProps<typeof DayButton> & ShadcnButtonProps) {
+	// eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler
 	const { className, day, modifiers, size = "icon", variant = "ghost", ...restOfProps } = props;
 
 	const defaultClassNames = getDefaultClassNames();
@@ -251,7 +249,7 @@ export function CalendarDayButton(props: InferProps<typeof DayButton> & ShadcnBu
 			className={cnMerge(
 				`flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 leading-none
 				font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10
-				group-data-[focused=true]/day:ring-[3px] group-data-[focused=true]/day:ring-shadcn-ring/30
+				group-data-[focused=true]/day:ring-[1px] group-data-[focused=true]/day:ring-shadcn-ring/30
 				data-[range-end=true]:rounded-md data-[range-end=true]:rounded-r-md
 				data-[range-end=true]:bg-shadcn-primary data-[range-end=true]:text-shadcn-primary-foreground
 				data-[range-middle=true]:rounded-none data-[range-middle=true]:bg-shadcn-accent

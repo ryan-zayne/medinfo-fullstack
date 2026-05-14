@@ -16,7 +16,8 @@ import { IconBox } from "@/components/common/IconBox";
 import { NavLink } from "@/components/common/NavLink";
 import { Show } from "@/components/common/show";
 import { CloseIcon, GreenSpinnerIcon } from "@/components/icons";
-import { Avatar, Button, DateTimePicker, Form, Select } from "@/components/ui";
+import { Avatar, Button, DateTimePicker, Select } from "@/components/ui";
+import { Form } from "@/components/ui/form";
 import { backendApiSchemaRoutes } from "@/lib/api/callBackendApi/apiSchema";
 import {
 	bookAppointmentMutation,

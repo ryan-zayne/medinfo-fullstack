@@ -4,14 +4,13 @@
 FROM node:24.14.0-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
+RUN corepack enable && corepack prepare pnpm@10.33.3 --activate
+WORKDIR /app
 
 # ================================================================
 # Stage 2: Dependencies - Install all deps
 # ================================================================
 FROM base AS deps
-
-WORKDIR /app
 
 # Copy workspace configuration first (best for layer caching)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
@@ -47,7 +46,7 @@ FROM base AS runner
 COPY --from=builder /app/apps/backend/pruned ./
 
 # Install curl for healthcheck (not included in slim)
-RUN apk add --no-cache curl
+RUN apt-get install -y curl
 
 EXPOSE 8000
 
@@ -55,4 +54,4 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
-CMD ["pnpm", "start:built:nitro"]
+CMD ["sh", "-c", "pnpm start:built:nitro"]

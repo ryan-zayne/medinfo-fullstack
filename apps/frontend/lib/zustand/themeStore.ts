@@ -1,68 +1,117 @@
-import { isBrowser } from "@zayne-labs/toolkit-core";
+import { isBrowser, on, pipeline } from "@zayne-labs/toolkit-core";
 import { createReactStore } from "@zayne-labs/toolkit-react/zustand-compat";
+import { defineEnum } from "@zayne-labs/toolkit-type-helpers";
 import type { StateCreator } from "zustand";
 import { persist } from "zustand/middleware";
 
-type Theme = "dark" | "light" | "system";
+const SYSTEM_THEMES = defineEnum(["light", "dark"], { inferredUnionVariant: "values" });
+const EXPLICIT_THEMES = defineEnum([...SYSTEM_THEMES], { inferredUnionVariant: "values" });
 
-type SystemTheme = "dark" | "light";
+type SystemThemeModes = typeof SYSTEM_THEMES.$inferUnion;
+export type ExplicitThemeModes = typeof EXPLICIT_THEMES.$inferUnion;
+export type ThemeModes = "system" | ExplicitThemeModes;
 
 type ThemeStore = {
 	actions: {
-		initThemeOnLoad: () => void;
-		setTheme: (newTheme: Theme) => void;
-		toggleTheme: () => void;
+		getSsrThemeSyncScriptContent: () => string;
+		initThemeOnLoad: () => (() => void) | undefined;
+		setTheme: (newTheme: ThemeModes) => void;
+		toggleLightAndDark: () => void;
 	};
-	isDarkMode: boolean;
-
-	systemTheme: SystemTheme;
-
-	theme: Theme;
+	theme: ExplicitThemeModes;
+	userThemeIntent: ThemeModes;
 };
 
-const getPrefersDarkMode = () => {
-	return isBrowser() && globalThis.matchMedia("(prefers-color-scheme: dark)").matches;
+const getSystemThemeMq = () => {
+	if (!isBrowser()) return;
+	return globalThis.matchMedia("(prefers-color-scheme: dark)");
 };
+
+const getSystemTheme = (): SystemThemeModes => (getSystemThemeMq()?.matches ? "dark" : "light");
 
 const themeStoreObjectFn: StateCreator<ThemeStore> = (set, get) => ({
+	theme: getSystemTheme(),
+
+	userThemeIntent: "system",
+
+	/* eslint-disable perfectionist/sort-objects */
 	actions: {
+		/* eslint-enable perfectionist/sort-objects */
+
+		getSsrThemeSyncScriptContent: () => {
+			const storageKey = useThemeStore.persist.getOptions().name;
+
+			const script = /* js */ `
+				try {
+					const rawItem = localStorage.getItem(${JSON.stringify(storageKey)});
+					const parsed = rawItem ? JSON.parse(rawItem)?.state : null;
+
+					const intent = parsed?.userThemeIntent;
+
+					const theme = !intent || intent === "system"
+						? window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+						: ${JSON.stringify(EXPLICIT_THEMES)}.includes(intent) ? intent : "light";
+
+					document.documentElement.dataset.theme = theme;
+				} catch {
+					document.documentElement.dataset.theme = "light";
+				}
+			`;
+
+			return script;
+		},
+
 		initThemeOnLoad: () => {
-			const { systemTheme, theme: persistedTheme } = get();
+			if (!isBrowser()) return;
 
-			const resolvedTheme = persistedTheme === "system" ? systemTheme : persistedTheme;
+			void useThemeStore.persist.rehydrate();
 
-			document.documentElement.dataset.theme = resolvedTheme;
+			const unsubscribeStore = useThemeStore.subscribe.withSelector(
+				(state) => state.theme,
+				(theme) => {
+					document.documentElement.dataset.theme = theme;
+				},
+				{ fireListenerImmediately: true }
+			);
+
+			const mediaQuery = getSystemThemeMq();
+
+			if (!mediaQuery) {
+				return unsubscribeStore;
+			}
+
+			const unsubscribeMediaQuery = on(mediaQuery, "change", (event) => {
+				const { userThemeIntent } = get();
+
+				userThemeIntent === "system" && set({ theme: event.matches ? "dark" : "light" });
+			});
+
+			return () => {
+				unsubscribeStore();
+				unsubscribeMediaQuery();
+			};
 		},
 
 		setTheme: (newTheme) => {
-			document.documentElement.dataset.theme = newTheme;
-
-			set({ isDarkMode: newTheme === "dark", theme: newTheme });
+			newTheme === "system" ?
+				set({ theme: getSystemTheme(), userThemeIntent: "system" })
+			:	set({ theme: newTheme, userThemeIntent: newTheme });
 		},
 
-		toggleTheme: () => {
-			const { actions, systemTheme, theme: persistedTheme } = get();
-
-			const resolvedTheme = persistedTheme === "system" ? systemTheme : persistedTheme;
-
-			const newTheme = resolvedTheme === "light" ? "dark" : "light";
-
-			actions.setTheme(newTheme);
+		toggleLightAndDark: () => {
+			const { actions, theme } = get();
+			actions.setTheme(theme === "light" ? "dark" : "light");
 		},
 	},
-
-	isDarkMode: getPrefersDarkMode(),
-
-	systemTheme: getPrefersDarkMode() ? "dark" : "light",
-
-	theme: "system",
 });
 
-export const useThemeStore = createReactStore<ThemeStore>()(
-	persist(themeStoreObjectFn, {
-		migrate: (persistedState) => persistedState,
-		name: "colorScheme",
-		partialize: ({ isDarkMode, theme }) => ({ isDarkMode, theme }),
-		version: 1,
+export const useThemeStore = createReactStore(
+	pipeline(themeStoreObjectFn, (store) => {
+		return persist(store, {
+			name: "colorScheme",
+			partialize: ({ theme, userThemeIntent }) => ({ theme, userThemeIntent }),
+			skipHydration: true, // NOTE - Turn on in SSR context
+			version: 1,
+		});
 	})
 );

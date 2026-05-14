@@ -31,7 +31,7 @@ async function DiseaseDetailsPage({ params }: PageProps<"/library/disease/[name]
 
 				<section
 					id="Ads"
-					className="scrollbar-hidden flex max-h-[460px] flex-col gap-2 overflow-auto max-lg:hidden"
+					className="flex max-h-[460px] scrollbar-none flex-col gap-2 overflow-auto max-lg:hidden"
 				>
 					<AlternateDiseaseCard type="list" linkToAd="https://www.google.com" />
 					<AlternateDiseaseCard type="list" linkToAd="https://www.google.com" />

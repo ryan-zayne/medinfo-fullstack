@@ -8,7 +8,8 @@ import { For } from "@/components/common/for";
 import { IconBox } from "@/components/common/IconBox";
 import { NavLink } from "@/components/common/NavLink";
 import { Switch } from "@/components/common/switch";
-import { Card, Carousel, Skeleton } from "@/components/ui";
+import { Carousel, Skeleton } from "@/components/ui";
+import { Card } from "@/components/ui/card";
 import { healthTipsQuery } from "@/lib/react-query/queryOptions";
 import { cnMerge } from "@/lib/utils/cn";
 

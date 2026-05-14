@@ -1,3 +1,3 @@
 "use client";
 
-export * from "@zayne-labs/ui-react/common/await";
+export { Await, AwaitRoot } from "@zayne-labs/ui-react/common/await";
