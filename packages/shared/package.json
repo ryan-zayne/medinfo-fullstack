@@ -16,7 +16,7 @@
 		"@medinfo/env": "workspace:*",
 		"@zayne-labs/callapi": "1.13.0",
 		"consola": "3.4.2",
-		"zod": "4.4.3"
+		"zod": "4.4.0"
 	},
 	"devDependencies": {
 		"@total-typescript/ts-reset": "0.6.1",

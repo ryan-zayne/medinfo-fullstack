@@ -171,8 +171,8 @@ importers:
         specifier: 4.22.2
         version: 4.22.2
       zod:
-        specifier: 4.4.3
-        version: 4.4.3
+        specifier: 4.4.0
+        version: 4.4.0
     devDependencies:
       '@total-typescript/ts-reset':
         specifier: 0.6.1
@@ -295,8 +295,8 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       zod:
-        specifier: 4.4.3
-        version: 4.4.3
+        specifier: 4.4.0
+        version: 4.4.0
       zustand:
         specifier: 5.0.13
         version: 5.0.13(@types/react@19.2.14)(immer@11.1.8)(react@19.2.6)(use-sync-external-store@1.6.0(react@19.2.6))
@@ -387,7 +387,7 @@ importers:
         version: 0.45.2(@types/pg@8.20.0)(pg@8.21.0)
       drizzle-zod:
         specifier: 0.8.3
-        version: 0.8.3(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.21.0))(zod@4.4.3)
+        version: 0.8.3(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.21.0))(zod@4.4.0)
       pg:
         specifier: 8.21.0
         version: 8.21.0
@@ -395,8 +395,8 @@ importers:
         specifier: 4.22.2
         version: 4.22.2
       zod:
-        specifier: 4.4.3
-        version: 4.4.3
+        specifier: 4.4.0
+        version: 4.4.0
     devDependencies:
       '@total-typescript/ts-reset':
         specifier: 0.6.1
@@ -420,8 +420,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1
       zod:
-        specifier: 4.4.3
-        version: 4.4.3
+        specifier: 4.4.0
+        version: 4.4.0
     devDependencies:
       '@total-typescript/ts-reset':
         specifier: 0.6.1
@@ -451,8 +451,8 @@ importers:
         specifier: 3.4.2
         version: 3.4.2
       zod:
-        specifier: 4.4.3
-        version: 4.4.3
+        specifier: 4.4.0
+        version: 4.4.0
     devDependencies:
       '@total-typescript/ts-reset':
         specifier: 0.6.1
@@ -7045,6 +7045,9 @@ packages:
   zod@3.22.4:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
 
+  zod@4.4.0:
+    resolution: {integrity: sha512-932TE3dEKhhYkEZFv6meaxLaCyg1m6LSI0ETKCIyUqIim+KgIsB/kha/4CKwDEbYgMzS5QxAe2mtDPpaHLHdsQ==}
+
   zod@4.4.2:
     resolution: {integrity: sha512-IynmDyxsEsb9RKzO3J9+4SxXnl2FTFSzNBaKKaMV6tsSk0rw9gYw9gs+JFCq/qk2LCZ78KDwyj+Z289TijSkUw==}
 
@@ -10869,10 +10872,10 @@ snapshots:
       '@types/pg': 8.20.0
       pg: 8.21.0
 
-  drizzle-zod@0.8.3(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.21.0))(zod@4.4.3):
+  drizzle-zod@0.8.3(drizzle-orm@0.45.2(@types/pg@8.20.0)(pg@8.21.0))(zod@4.4.0):
     dependencies:
       drizzle-orm: 0.45.2(@types/pg@8.20.0)(pg@8.21.0)
-      zod: 4.4.3
+      zod: 4.4.0
 
   dts-resolver@3.0.0: {}
 
@@ -13724,6 +13727,8 @@ snapshots:
       zod: 4.4.2
 
   zod@3.22.4: {}
+
+  zod@4.4.0: {}
 
   zod@4.4.2: {}
 
