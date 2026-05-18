@@ -1,4 +1,5 @@
 /* eslint-disable import/no-named-as-default-member */
+
 import type { SelectUserType } from "@medinfo/db/schema/auth";
 import { pickKeys } from "@zayne-labs/toolkit-core";
 import { consola } from "consola";
@@ -79,7 +80,9 @@ export const generateAccessToken = (
 
 	const expiresAt = new Date(Date.now() + expiresIn);
 
-	return { expiresAt, token: accessToken };
+	const issuedAt = new Date();
+
+	return { expiresAt, issuedAt, token: accessToken };
 };
 
 export const generateRefreshToken = (
@@ -94,69 +97,56 @@ export const generateRefreshToken = (
 
 	const expiresAt = new Date(Date.now() + expiresIn);
 
-	return { expiresAt, token: refreshToken };
+	const issuedAt = new Date();
+
+	return { expiresAt, issuedAt, token: refreshToken };
 };
 
 export const isTokenInWhitelist = (
 	refreshTokenArray: SelectUserType["refreshTokenArray"],
 	zayneRefreshToken: string
 ) => {
-	const whiteListSet = new Set(refreshTokenArray.map((item) => item.token));
-
-	return whiteListSet.has(zayneRefreshToken);
+	return refreshTokenArray.some((item) => item.token === zayneRefreshToken);
 };
 
 export const warnAboutTokenReuse = (options: {
 	compromisedRefreshToken: string;
-	currentUser: SelectUserType;
+	compromisedUser: SelectUserType;
+	requestUserAgent: string;
 }) => {
-	const { compromisedRefreshToken, currentUser } = options;
+	const { compromisedRefreshToken, compromisedUser, requestUserAgent } = options;
 
-	const message = "Possible token reuse detected!";
+	const error = new Error("Possible token reuse detected!", {
+		cause: {
+			compromisedRefreshToken,
+			compromisedUserDetails: pickKeys(compromisedUser, ["id", "email", "gender", "fullName", "role"]),
+			userAgent: requestUserAgent,
+		},
+	});
 
-	const user = pickKeys(currentUser, [
-		"id",
-		"email",
-		"firstName",
-		"lastName",
-		"role",
-		"lastLoginAt",
-		"loginRetryCount",
-	]);
-
-	consola.warn(
-		new Error(message, {
-			cause: {
-				compromisedRefreshToken,
-				timestamp: new Date().toISOString(),
-				user,
-				userAgent: globalThis.navigator.userAgent,
-			},
-		})
-	);
-
-	consola.trace(message);
+	consola.warn(error);
 };
 
-export const getUpdatedTokenResultArray = (options: {
+type TokenArrayOptions = {
 	currentUser: SelectUserType;
+	variant?: "keep-current" | "remove-current";
 	zayneRefreshToken: string | undefined;
-}): SelectUserType["refreshTokenArray"] => {
-	const { currentUser, zayneRefreshToken } = options;
+};
+
+export const getUpdatedTokenResultArray = (
+	options: TokenArrayOptions
+): SelectUserType["refreshTokenArray"] => {
+	const { currentUser, variant = "remove-current", zayneRefreshToken } = options;
 
 	if (!zayneRefreshToken) {
 		return currentUser.refreshTokenArray.filter((item) => !isPast(item.expiresAt));
 	}
 
-	if (!isTokenInWhitelist(currentUser.refreshTokenArray, zayneRefreshToken)) {
-		warnAboutTokenReuse({ compromisedRefreshToken: zayneRefreshToken, currentUser });
+	return currentUser.refreshTokenArray.filter((item) => {
+		if (isPast(item.expiresAt)) return false;
 
-		return [];
-	}
-
-	const updatedTokenResultArray = currentUser.refreshTokenArray.filter(
-		(item) => item.token !== zayneRefreshToken && !isPast(item.expiresAt)
-	);
-
-	return updatedTokenResultArray;
+		return variant === "remove-current" ?
+				item.token !== zayneRefreshToken
+			:	item.token === zayneRefreshToken;
+	});
 };

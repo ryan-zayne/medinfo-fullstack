@@ -13,20 +13,19 @@ export const handleCookieRelay = async (nextjsRequest: Request, nextjsResponse: 
 
 	const backendResponse = await callBackendApi("@get/auth/session", {
 		...sessionDedupeOptions,
-		headers: {
-			Cookie: cookieHeader,
-		},
-		// == Turn off all base plugins
+		headers: { Cookie: cookieHeader },
 		plugins: [],
 		resultMode: "fetchApi",
 	});
 
-	const responseCookies = backendResponse?.headers.get("set-cookie");
+	// getSetCookie() returns each Set-Cookie header as a separate array entry
+	const responseCookies = backendResponse?.headers.getSetCookie();
 
-	if (!responseCookies) return;
+	if (!responseCookies?.length) return;
 
-	// == Attach the backend's Set-Cookie header to the outgoing Next.js response.
-	nextjsResponse.headers.set("set-cookie", responseCookies);
+	for (const cookie of responseCookies) {
+		nextjsResponse.headers.append("set-cookie", cookie);
+	}
 
 	return nextjsResponse;
 };

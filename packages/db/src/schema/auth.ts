@@ -24,13 +24,14 @@ export const users = pg.pgTable(
 		medicalLicense: pg.text(),
 		passwordChangedAt: pg.timestamp({ withTimezone: true }),
 		passwordHash: pg.text(),
+		passwordResetRetriedAt: pg.timestamp({ withTimezone: true }),
 		passwordResetRetryCount: pg.integer().notNull().default(0),
 		passwordResetToken: pg.text(),
 		passwordResetTokenExpiresAt: pg.timestamp({ withTimezone: true }),
 		refreshTokenArray: pg
 			.jsonb()
 			.notNull()
-			.$type<Array<{ expiresAt: Date; token: string }>>()
+			.$type<Array<{ expiresAt: Date; issuedAt: Date; token: string }>>()
 			.default([]),
 		role: pg.text({ enum: ["doctor", "patient"] }).notNull(),
 		specialty: pg.text(),

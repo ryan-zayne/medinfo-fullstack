@@ -11,19 +11,19 @@ const coreServices = [
 	{
 		description:
 			"Connect with certified sub-specialists across various medical fields for expert guidance tailored to your specific health needs.",
-		imageSrc: feature1 as string,
+		imageSrc: feature1,
 		title: "SubSpecialists",
 	},
 	{
 		description:
 			"Access a rich, user-friendly library of health information covering a wide range of conditions, symptoms, and treatments—all for free.",
-		imageSrc: feature2 as string,
+		imageSrc: feature2,
 		title: "Open source library",
 	},
 	{
 		description:
 			"Get personalized medical advice from experienced healthcare professionals through our secure and convenient virtual consultation service.",
-		imageSrc: feature3 as string,
+		imageSrc: feature3,
 		title: "Virtual consultancy",
 	},
 ];
@@ -92,7 +92,7 @@ function HomePage() {
 					/>
 					<Image
 						className="aspect-223/273 min-h-[273px] md:aspect-340/415 md:min-h-[415px]"
-						src={hero as string}
+						src={hero}
 						alt=""
 						priority={true}
 						width={223}

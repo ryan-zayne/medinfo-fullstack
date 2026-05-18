@@ -32,6 +32,7 @@ export const buttonVariants = tv({
 			isLoading: true,
 			loadingStyle: "side-by-side",
 		},
+		t
 		{
 			className: "hover:rounded-[16px]",
 			size: "medium",
@@ -55,11 +56,6 @@ export const buttonVariants = tv({
 			size: "icon",
 			withInteractions: true,
 		},
-		{
-			className: "border-2 border-medinfo-dark-4 bg-medinfo-disabled-fill text-medinfo-dark-4",
-			isDisabled: true,
-			isLoading: false,
-		},
 	],
 
 	defaultVariants: {
@@ -73,8 +69,7 @@ export const buttonVariants = tv({
 		},
 
 		isDisabled: {
-			true: `cursor-not-allowed border-2 border-medinfo-dark-4 bg-medinfo-disabled-fill
-			text-medinfo-dark-4`,
+			true: "cursor-not-allowed",
 		},
 
 		isLoading: {

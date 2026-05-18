@@ -1,9 +1,9 @@
-import * as dotenvx from "@dotenvx/dotenvx";
+import path from "node:path";
 import { consola } from "consola";
+import { findUpSync } from "find-up-simple";
 import { z } from "zod";
 import { sharedEnvSchema } from "./shared-env";
 import { evaluateString } from "./utils/common";
-import { resolvePathToCwd } from "./utils/url";
 
 const stringBoolean = z.stringbool({ falsy: ["false"], truthy: ["true"] });
 
@@ -49,9 +49,11 @@ export const backendEnvSchema = z.object({
 	ZOOM_CLIENT_SECRET: z.string(),
 });
 
-dotenvx.config({
-	path: resolvePathToCwd("/apps/backend/.env"),
-});
+const packageJson = findUpSync("pnpm-workspace.yaml", { cwd: import.meta.dirname });
+
+const monorepoRoot = packageJson ? path.dirname(packageJson) : null;
+
+monorepoRoot && process.loadEnvFile(path.resolve(monorepoRoot, "apps/backend/.env"));
 
 export const getBackendEnv = () => {
 	// eslint-disable-next-line node/no-process-env

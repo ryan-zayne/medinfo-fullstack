@@ -14,8 +14,9 @@ import {
 } from "@/app/auth/services/token";
 import { ENVIRONMENT } from "@/config/env";
 import { AppError } from "@/lib/utils";
-import { getFromCache } from "@/services/cache";
+import { getFromCache, removeFromCache } from "@/services/cache";
 import { AUTH_ERROR_MESSAGES } from "./constants";
+import { requestContext } from "./requestContext";
 
 type VerifyOptions = UnionDiscriminator<
 	[
@@ -70,11 +71,17 @@ const getAndVerifyUserFromToken = async (options: VerifyOptions) => {
 	// == At this point, the refresh token is still valid but is not in the refreshTokenArray (whitelist)
 	// == So it can be seen as a token reuse situation
 	// == So clear the refreshTokenArray to log the user out from all devices including current device, greatly diminishing the risk of another token reuse attack
-
 	if (!isTokenInWhitelist(currentUser.refreshTokenArray, zayneRefreshToken)) {
-		warnAboutTokenReuse({ compromisedRefreshToken: zayneRefreshToken, currentUser });
+		warnAboutTokenReuse({
+			compromisedRefreshToken: zayneRefreshToken,
+			compromisedUser: currentUser,
+			requestUserAgent: requestContext.get().userAgent ?? "unknown",
+		});
 
-		await db.update(users).set({ refreshTokenArray: [] }).where(eq(users.id, decodedPayload.id));
+		await Promise.all([
+			db.update(users).set({ refreshTokenArray: [] }).where(eq(users.id, currentUser.id)),
+			removeFromCache(`user:${currentUser.id}`),
+		]);
 
 		throw new AppError({
 			code: 401,
@@ -121,7 +128,6 @@ export const refreshUserSession = async (zayneRefreshToken: string): Promise<New
 			newZayneAccessTokenResult,
 		};
 	} catch (error) {
-		// == If the refresh token is invalid, throw an error
 		if (error instanceof jwt.JsonWebTokenError || error instanceof jwt.TokenExpiredError) {
 			throw new AppError({
 				cause: error,
@@ -168,11 +174,8 @@ const validateUserSession = async (
 		});
 	}
 
-	// == If access token is not present, verify the refresh token and generate new session
 	if (!zayneAccessToken) {
-		const newSession = await refreshUserSession(zayneRefreshToken);
-
-		return newSession;
+		return refreshUserSession(zayneRefreshToken);
 	}
 
 	try {
@@ -182,17 +185,13 @@ const validateUserSession = async (
 			zayneRefreshToken,
 		});
 
-		// == Return Existing session if accessToken is still valid
 		return {
 			currentUser,
 			newZayneAccessTokenResult: null,
 		};
 	} catch (error) {
-		// == Attempt to generate new session if the error indicates that the access token is invalid / expired
 		if (error instanceof jwt.JsonWebTokenError || error instanceof jwt.TokenExpiredError) {
-			const newSession = await refreshUserSession(zayneRefreshToken);
-
-			return newSession;
+			return refreshUserSession(zayneRefreshToken);
 		}
 
 		if (AppError.isError(error)) {

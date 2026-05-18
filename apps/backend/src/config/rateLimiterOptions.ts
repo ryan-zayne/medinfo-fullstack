@@ -9,7 +9,7 @@ const globalRateLimiterOptions: ConfigProps = {
 		});
 	},
 	keyGenerator: (ctx) => ctx.req.header("x-forwarded-for") ?? "unknown",
-	limit: 50,
+	limit: 100,
 	standardHeaders: "draft-7",
 	windowMs: 15 * 60 * 1000,
 };

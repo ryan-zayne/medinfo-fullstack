@@ -51,11 +51,12 @@ export function DiseaseCard(props: DiseaseCardProps) {
 				className={cnJoin(
 					"flex flex-col justify-between",
 					type === "grid"
-						&& `absolute right-0 -bottom-(--card-height-half) h-(--card-height) w-fit rounded-[16px]
-						border-2 border-medinfo-primary-main bg-white p-2
-						[--card-height-half:calc(var(--card-height)/2)] [--card-height:95px]
-						lg:-right-[calc(3/5*var(--card-width))] lg:bottom-[calc(400px-var(--card-height-half))]
-						lg:max-w-(--card-width) lg:p-6 lg:[--card-height:182px] lg:[--card-width:229px]`
+						&& `absolute right-0 -bottom-(--card-content-height-half) z-1 h-(--card-content-height)
+						w-fit rounded-[16px] border-2 border-medinfo-primary-main bg-white p-2
+						[--card-content-height-half:calc(var(--card-content-height)/2)]
+						[--card-content-height:95px] lg:-right-[calc(3/5*var(--card-content-width))]
+						lg:bottom-[calc(var(--card-content-height-half))] lg:max-w-(--card-content-width) lg:p-6
+						lg:[--card-content-height:182px] lg:[--card-content-width:229px]`
 				)}
 			>
 				<div className={cnJoin(type === "list" && "flex flex-col gap-4")}>
@@ -200,7 +201,7 @@ export function AlternateDiseaseCard(props: AlternateDiseaseCardProps) {
 						type === "grid" && "h-[132px] rounded-[7.5px] lg:h-[280px] lg:rounded-[16px]",
 						type === "list" && "size-[92px] rounded-[6px] lg:size-[120px] lg:rounded-[8px]"
 					)}
-					src={type === "grid" ? disease.image : (tipPlaceHolder as string)}
+					src={type === "grid" ? disease.image : tipPlaceHolder}
 					alt=""
 					priority={true}
 					width={type === "grid" ? 161 : 92}

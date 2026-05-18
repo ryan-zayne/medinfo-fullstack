@@ -465,7 +465,7 @@ function SignUpPage(props: PageProps<"/auth/signup">) {
 										<Button
 											type="submit"
 											isLoading={formState.isSubmitting}
-											disabled={formState.isSubmitting}
+											isDisabled={formState.isSubmitting}
 										>
 											Sign Up
 										</Button>

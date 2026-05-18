@@ -41,7 +41,7 @@ function DesktopNavigation(props: { className?: string }) {
 		<section className={cnMerge("flex w-full items-center", className)}>
 			<ForWithWrapper
 				as="nav"
-				className="mx-auto flex min-w-fit gap-14 text-[22px] font-medium"
+				className="mx-5 flex min-w-fit justify-center gap-14 text-[22px] font-medium"
 				each={linkItems}
 				renderItem={(linkItem) => (
 					<NavLink key={linkItem.title} transitionType="navbar" href={linkItem.href}>

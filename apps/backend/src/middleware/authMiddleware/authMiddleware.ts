@@ -1,28 +1,31 @@
 import { createMiddleware } from "hono/factory";
 import { getCookie, setCookie } from "@/app/auth/services/cookie";
 import type { HonoAppBindings } from "@/lib/types/common";
+import { requestContext } from "./requestContext";
 import { validateUserSession } from "./validateUserSession";
 
 const authMiddleware = createMiddleware<HonoAppBindings>(async (ctx, next) => {
-	const zayneAccessToken = getCookie(ctx, "zayneAccessToken");
-	const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
+	await requestContext.run({ userAgent: ctx.req.header("user-agent") }, async () => {
+		const zayneAccessToken = getCookie(ctx, "zayneAccessToken");
+		const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
 
-	const { currentUser, newZayneAccessTokenResult } = await validateUserSession({
-		zayneAccessToken,
-		zayneRefreshToken,
-	});
-
-	if (newZayneAccessTokenResult) {
-		setCookie(ctx, {
-			expires: newZayneAccessTokenResult.expiresAt,
-			name: "zayneAccessToken",
-			value: newZayneAccessTokenResult.token,
+		const { currentUser, newZayneAccessTokenResult } = await validateUserSession({
+			zayneAccessToken,
+			zayneRefreshToken,
 		});
-	}
 
-	ctx.set("currentUser", currentUser);
+		if (newZayneAccessTokenResult) {
+			setCookie(ctx, {
+				expires: newZayneAccessTokenResult.expiresAt,
+				name: "zayneAccessToken",
+				value: newZayneAccessTokenResult.token,
+			});
+		}
 
-	await next();
+		ctx.set("currentUser", currentUser);
+
+		await next();
+	});
 });
 
 export { authMiddleware };

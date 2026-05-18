@@ -6,17 +6,21 @@ import type {
 } from "@zayne-labs/callapi";
 import { definePlugin, isHTTPError } from "@zayne-labs/callapi/utils";
 import { isBrowser } from "@zayne-labs/toolkit-core";
-import { isBoolean } from "@zayne-labs/toolkit-type-helpers";
 import { toast } from "sonner";
+import type { MainAppRoutes } from "@/components/common/NavLink";
 import type { BackendApiRouteKeys, BaseApiErrorResponse, BaseApiSuccessResponse } from "../apiSchema";
+import { isPathnameMatchingRoute } from "./utils/common";
+
+type RoutePattern = Array<`${MainAppRoutes}/**` | `${string}/**` | MainAppRoutes>;
 
 export type ToastPluginMeta = {
 	toast?: {
-		endpointsToSkip?: {
-			error?: Array<BackendApiRouteKeys | undefined>;
-			errorAndSuccess?: Array<BackendApiRouteKeys | undefined>;
-			success?: Array<BackendApiRouteKeys | undefined>;
-		};
+		endpointsToSkip?: Array<{
+			endpoints: BackendApiRouteKeys[];
+			on: "error" | "errorAndSuccess" | "success";
+			routesExclude?: RoutePattern;
+			routesInclude?: RoutePattern;
+		}>;
 		error?: boolean;
 		errorAndSuccess?: boolean;
 		errorsToSkip?: Array<CallApiResultErrorVariant<unknown>["error"]["name"]>;
@@ -25,6 +29,37 @@ export type ToastPluginMeta = {
 		) => boolean | undefined;
 		success?: boolean;
 	};
+};
+
+const shouldEndpointBeSkipped = (
+	options: Pick<NonNullable<ToastPluginMeta["toast"]>, "endpointsToSkip"> & {
+		initURL: string | undefined;
+		type: "error" | "success";
+	}
+) => {
+	const { endpointsToSkip, initURL, type } = options;
+
+	return Boolean(
+		endpointsToSkip?.some((entry) => {
+			const onMatches = entry.on === type || entry.on === "errorAndSuccess";
+
+			if (!onMatches || initURL == null || !entry.endpoints.includes(initURL as BackendApiRouteKeys)) {
+				return false;
+			}
+
+			const isRouteExcluded =
+				entry.routesExclude ?
+					entry.routesExclude.some((pattern) => isPathnameMatchingRoute(pattern))
+				:	false;
+
+			const isRouteIncluded =
+				entry.routesInclude ?
+					entry.routesInclude.some((pattern) => isPathnameMatchingRoute(pattern))
+				:	true;
+
+			return !isRouteExcluded && isRouteIncluded;
+		})
+	);
 };
 
 export const toastPlugin = (toastOptions?: ToastPluginMeta["toast"]) => {
@@ -43,21 +78,23 @@ export const toastPlugin = (toastOptions?: ToastPluginMeta["toast"]) => {
 
 				const toastMeta = getToastMeta(ctx);
 
-				/* eslint-disable ts-eslint/prefer-nullish-coalescing */
-				const shouldSkipErrorToast =
-					(isBoolean(toastMeta?.error) && !toastMeta.error)
-					|| (isBoolean(toastMeta?.errorAndSuccess) && !toastMeta.errorAndSuccess)
-					|| toastMeta?.endpointsToSkip?.error?.includes(ctx.options.initURLNormalized)
-					|| toastMeta?.endpointsToSkip?.errorAndSuccess?.includes(ctx.options.initURLNormalized)
-					|| toastMeta?.errorsToSkip?.includes(ctx.error.name)
-					|| toastMeta?.errorsToSkipCondition?.(ctx.error);
-				/* eslint-enable ts-eslint/prefer-nullish-coalescing */
+				const initURL = ctx.options.initURL;
 
-				if (shouldSkipErrorToast) return;
+				const shouldSkipErrorToast =
+					shouldEndpointBeSkipped({
+						endpointsToSkip: toastMeta?.endpointsToSkip,
+						initURL,
+						type: "error",
+					})
+					|| (toastMeta?.errorsToSkip?.includes(ctx.error.name) ?? false)
+					|| (toastMeta?.errorsToSkipCondition?.(ctx.error) ?? false);
+
+				const isErrorToastEnabled = toastMeta?.error ?? toastMeta?.errorAndSuccess;
+
+				if (shouldSkipErrorToast || !isErrorToastEnabled) return;
 
 				if (isHTTPError(ctx.error) && ctx.error.errorData.errors) {
 					Object.values(ctx.error.errorData.errors).forEach((message) => toast.error(message));
-
 					return;
 				}
 
@@ -69,15 +106,17 @@ export const toastPlugin = (toastOptions?: ToastPluginMeta["toast"]) => {
 
 				const toastMeta = getToastMeta(ctx);
 
-				/* eslint-disable ts-eslint/prefer-nullish-coalescing */
-				const shouldSkipSuccessToast =
-					(isBoolean(toastMeta?.success) && !toastMeta.success)
-					|| (isBoolean(toastMeta?.errorAndSuccess) && !toastMeta.errorAndSuccess)
-					|| toastMeta?.endpointsToSkip?.success?.includes(ctx.options.initURLNormalized)
-					|| toastMeta?.endpointsToSkip?.errorAndSuccess?.includes(ctx.options.initURLNormalized);
-				/* eslint-enable ts-eslint/prefer-nullish-coalescing */
+				const initURL = ctx.options.initURL;
 
-				if (shouldSkipSuccessToast) return;
+				const shouldSkipSuccessToast = shouldEndpointBeSkipped({
+					endpointsToSkip: toastMeta?.endpointsToSkip,
+					initURL,
+					type: "success",
+				});
+
+				const isSuccessToastEnabled = toastMeta?.success ?? toastMeta?.errorAndSuccess;
+
+				if (shouldSkipSuccessToast || !isSuccessToastEnabled) return;
 
 				toast.success(ctx.data.message);
 			},

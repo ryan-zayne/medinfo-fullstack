@@ -2,17 +2,14 @@ import { NextResponse, type NextProxy, type ProxyConfig } from "next/server";
 
 // import { handleCookieRelay } from "./lib/api/callBackendApi/plugins/nextjsForwardCookiesPlugin/cookieRelay";
 
-// export const proxy: NextProxy = (_nextjsRequest) => {
+// export const proxy: NextProxy = (nextjsRequest) => {
 // 	const nextjsResponse = NextResponse.next();
 
-// 	// return handleCookieRelay(nextjsRequest, nextjsResponse);
-
-// 	return nextjsResponse;
+// 	return handleCookieRelay(nextjsRequest, nextjsResponse);
 // };
+
 export const proxy: NextProxy = () => {
 	const nextjsResponse = NextResponse.next();
-
-	// return handleCookieRelay(nextjsRequest, nextjsResponse);
 
 	return nextjsResponse;
 };

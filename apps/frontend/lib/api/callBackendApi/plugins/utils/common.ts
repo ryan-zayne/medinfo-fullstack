@@ -20,15 +20,15 @@ export const isPathnameMatchingRoute = (route: string) => {
 		return false;
 	}
 
-	const isCatchAllRoute = route.endsWith("/**");
-
 	const pathname = globalThis.location.pathname;
 
-	if (isCatchAllRoute) {
-		const actualRoute = route.slice(0, -3);
+	const isRouteWithCatchAll = route.endsWith("/**");
 
-		return pathname.includes(actualRoute);
+	if (isRouteWithCatchAll) {
+		const routeWithoutCatchAll = route.slice(0, -3);
+
+		return pathname === routeWithoutCatchAll || pathname.startsWith(`${routeWithoutCatchAll}/`);
 	}
 
-	return pathname.endsWith(route);
+	return pathname === route;
 };

@@ -12,7 +12,6 @@
 		"lint:type-check": "tsc --pretty -p tsconfig.json"
 	},
 	"dependencies": {
-		"@dotenvx/dotenvx": "1.65.1",
 		"@medinfo/db": "workspace:*",
 		"@medinfo/env": "workspace:*",
 		"@zayne-labs/callapi": "1.13.0",

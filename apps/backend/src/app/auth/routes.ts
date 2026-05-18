@@ -199,7 +199,9 @@ const authRoutes = new Hono()
 			const hoursSinceLastLogin = differenceInHours(new Date(), currentUser.lastLoginAt);
 
 			// == Check if user has exceeded login retries (3 times in 12 hours)
-			if (currentUser.loginRetryCount >= 3 && hoursSinceLastLogin < 12) {
+			const loginRetryWindowActive = hoursSinceLastLogin < 12;
+
+			if (currentUser.loginRetryCount >= 3 && loginRetryWindowActive) {
 				// TODO: send reset password email to user
 
 				throw new AppError({
@@ -210,18 +212,17 @@ const authRoutes = new Hono()
 
 			const newZayneRefreshTokenResult = generateRefreshToken(currentUser);
 
+			const updatedTokenArray = getUpdatedTokenResultArray({
+				currentUser,
+				zayneRefreshToken: getCookie(ctx, "zayneRefreshToken"),
+			});
+
 			const [updatedUser] = await db
 				.update(users)
 				.set({
 					lastLoginAt: new Date(),
 					loginRetryCount: 0,
-					refreshTokenArray: [
-						...getUpdatedTokenResultArray({
-							currentUser,
-							zayneRefreshToken: getCookie(ctx, "zayneRefreshToken"),
-						}),
-						newZayneRefreshTokenResult,
-					],
+					refreshTokenArray: [...updatedTokenArray, newZayneRefreshTokenResult],
 				})
 				.where(eq(users.id, currentUser.id))
 				.returning();
@@ -333,20 +334,17 @@ const authRoutes = new Hono()
 
 				const newZayneRefreshTokenResult = generateRefreshToken(user);
 
+				const updatedTokenArray = getUpdatedTokenResultArray({
+					currentUser: user,
+					zayneRefreshToken: getCookie(ctx, "zayneRefreshToken"),
+				});
+
 				const [updatedUser] = await tx
 					.update(users)
 					.set(
 						variant === "new-user" ?
 							{ refreshTokenArray: [newZayneRefreshTokenResult] }
-						:	{
-								refreshTokenArray: [
-									...getUpdatedTokenResultArray({
-										currentUser: user,
-										zayneRefreshToken: getCookie(ctx, "zayneRefreshToken"),
-									}),
-									newZayneRefreshTokenResult,
-								],
-							}
+						:	{ refreshTokenArray: [...updatedTokenArray, newZayneRefreshTokenResult] }
 					)
 					.where(eq(users.id, user.id))
 					.returning();
@@ -504,6 +502,7 @@ const authRoutes = new Hono()
 					email: users.email,
 					firstName: users.firstName,
 					id: users.id,
+					passwordResetRetriedAt: users.passwordResetRetriedAt,
 					passwordResetRetryCount: users.passwordResetRetryCount,
 				})
 				.from(users)
@@ -511,19 +510,23 @@ const authRoutes = new Hono()
 				.limit(1);
 
 			if (!existingUser) {
-				throw new AppError({
-					code: 404,
-					message: "No user found with provided email",
+				return AppJsonResponse(ctx, {
+					data: null,
+					message: `Password reset link sent to ${email}`,
+					schema: backendApiSchemaRoutes["@post/auth/forgot-password"].data,
 				});
 			}
 
-			if (existingUser.passwordResetRetryCount >= 3) {
-				await db
-					.update(users)
-					.set({
-						suspendedAt: new Date(),
-					})
-					.where(eq(users.id, existingUser.id));
+			const hoursSincePasswordRetryWindowStart =
+				existingUser.passwordResetRetriedAt ?
+					differenceInHours(new Date(), existingUser.passwordResetRetriedAt)
+				:	null;
+
+			const passwordResetWindowActive =
+				hoursSincePasswordRetryWindowStart !== null && hoursSincePasswordRetryWindowStart < 24;
+
+			if (existingUser.passwordResetRetryCount >= 3 && passwordResetWindowActive) {
+				await db.update(users).set({ suspendedAt: new Date() }).where(eq(users.id, existingUser.id));
 
 				throw new AppError({
 					code: 401,
@@ -534,7 +537,12 @@ const authRoutes = new Hono()
 			await db.transaction(async (tx) => {
 				const [updatedUser] = await tx
 					.update(users)
-					.set({ passwordResetRetryCount: sql`${users.passwordResetRetryCount} + 1` })
+					.set({
+						passwordResetRetriedAt:
+							passwordResetWindowActive ? existingUser.passwordResetRetriedAt : new Date(),
+						passwordResetRetryCount:
+							passwordResetWindowActive ? sql`${users.passwordResetRetryCount} + 1` : 1,
+					})
 					.where(eq(users.id, existingUser.id))
 					.returning({ email: users.email, firstName: users.firstName, id: users.id });
 
@@ -616,6 +624,7 @@ const authRoutes = new Hono()
 				.set({
 					passwordChangedAt: new Date(),
 					passwordHash: newPasswordHash,
+					passwordResetRetriedAt: null,
 					passwordResetRetryCount: 0,
 					passwordResetToken: null,
 					passwordResetTokenExpiresAt: null,
@@ -646,15 +655,17 @@ const authRoutes = new Hono()
 		}
 	)
 	.use(authMiddleware)
-	.get("/signout", async (ctx) => {
+	.post("/signout", async (ctx) => {
 		const zayneRefreshToken = getCookie(ctx, "zayneRefreshToken");
 
 		const currentUser = ctx.get("currentUser");
 
+		const updatedTokenArray = getUpdatedTokenResultArray({ currentUser, zayneRefreshToken });
+
 		await Promise.all([
 			db
 				.update(users)
-				.set({ refreshTokenArray: getUpdatedTokenResultArray({ currentUser, zayneRefreshToken }) })
+				.set({ refreshTokenArray: updatedTokenArray })
 				.where(eq(users.id, currentUser.id)),
 			removeFromCache(`user:${currentUser.id}`),
 		]);
@@ -669,7 +680,7 @@ const authRoutes = new Hono()
 			schema: backendApiSchemaRoutes["@get/auth/signout"].data,
 		});
 	})
-	.get("/signout/all", async (ctx) => {
+	.post("/signout/all", async (ctx) => {
 		const currentUser = ctx.get("currentUser");
 
 		await Promise.all([
@@ -724,15 +735,19 @@ const authRoutes = new Hono()
 
 			const newPasswordHash = await hashValue(newPassword);
 
+			// Sign out from other devices aside from current one
+			const updatedTokenArray = getUpdatedTokenResultArray({
+				currentUser,
+				variant: "keep-current",
+				zayneRefreshToken,
+			});
+
 			const [updatedUser] = await db
 				.update(users)
 				.set({
 					passwordChangedAt: new Date(),
 					passwordHash: newPasswordHash,
-					// Sign out from other devices aside from current one
-					refreshTokenArray: currentUser.refreshTokenArray.filter(
-						(item) => item.token === zayneRefreshToken
-					),
+					refreshTokenArray: updatedTokenArray,
 				})
 				.where(eq(users.id, currentUser.id))
 				.returning();

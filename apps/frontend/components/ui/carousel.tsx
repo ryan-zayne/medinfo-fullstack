@@ -8,6 +8,7 @@ import useEmblaCarousel, { type UseEmblaCarouselType } from "embla-carousel-reac
 import { useEffect, useMemo, useState } from "react";
 import { cnMerge } from "@/lib/utils/cn";
 import { IconBox } from "../common/IconBox";
+import { Slot } from "../common/slot";
 import { shadcnButtonVariants, type ShadcnButtonProps } from "./constants";
 
 type CarouselApi = UseEmblaCarouselType[1];
@@ -178,13 +179,15 @@ function CarouselContent(props: React.ComponentProps<"div">) {
 	);
 }
 
-function CarouselItem(props: React.ComponentProps<"div">) {
-	const { className, ...restOfProps } = props;
+function CarouselItem(props: React.ComponentProps<"div"> & { asChild?: boolean }) {
+	const { asChild, className, ...restOfProps } = props;
+
+	const Component = asChild ? Slot.Root : "div";
 
 	// const { orientation } = useCarouselContext();
 
 	return (
-		<div
+		<Component
 			role="group"
 			aria-roledescription="slide"
 			data-slot="carousel-item"

@@ -25,12 +25,16 @@ export const sharedBaseConfig = defineBaseConfig({
 	},
 
 	plugins: [
-		// nextjsForwardCookiesPlugin(),
+		// nextjsForwardCookiesPlugin({ enabled: true }),
 		authErrorRedirectPlugin({
 			redirectRoute: "/auth/signin",
 			routesToExemptFromErrorRedirect: ["/", "/library/**", "/daily-tips/**", "/auth/**"],
 		}),
 		toastPlugin({
+			endpointsToSkip: [
+				{ endpoints: ["@get/auth/session"], on: "success" },
+				{ endpoints: ["@get/auth/session"], on: "error", routesExclude: ["/dashboard/**"] },
+			],
 			errorAndSuccess: true,
 			errorsToSkip: ["AbortError"],
 		}),
