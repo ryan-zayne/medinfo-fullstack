@@ -1,4 +1,4 @@
-# MedInfo-Fullstack
+# MedInfo
 
 MedInfo Nigeria is a comprehensive healthcare platform built to connect patients with certified doctors, provide free medical information, and facilitate virtual consultations.
 
