@@ -1,8 +1,8 @@
 # @medinfo/frontend
 
-The frontend application for MedInfo, built with **Next.js 16** and **React 19**.
+The frontend application for MedInfo, built with Next.js 16 and React 19.
 
-## 🚀 Features
+## Features
 
 - **Framework**: Next.js 16 (App Router)
 - **UI Library**: React 19
@@ -11,9 +11,9 @@ The frontend application for MedInfo, built with **Next.js 16** and **React 19**
 - **Forms**: React Hook Form + Zod resolvers
 - **Components**: Custom component library built on top of Radix UI primitives (Ark UI)
 
-## 📂 Project Structure
+## Project Structure
 
-```
+```text
 apps/frontend/app/
 ├── (home)/            # Public marketing pages (Landing, About, etc.)
 ├── (protected)/       # Authenticated dashboard routes
@@ -25,11 +25,11 @@ apps/frontend/app/
 └── lib/               # Utilities and API clients
 ```
 
-## 🛠️ Scripts
+## Scripts
 
 ```bash
 # Development
-pnpm dev          # Start development server (localhost:3000)
+pnpm dev          # Start development server
 
 # Build
 pnpm build        # Build for production
@@ -41,8 +41,8 @@ pnpm lint:format  # Format code with Prettier
 pnpm lint:type-check # Run TypeScript type checking
 ```
 
-## 🎨 Styling
+## Styling
 
-We use **TailwindCSS 4** with a custom configuration.
-Global styles are defined in `app/globals.css`.
-Component variants are managed using `tailwind-variants`.
+- Tailwind CSS 4 for styling (configuration in `tailwind.css`)
+- `tailwind-variants` for component variants
+- `tailwind-merge` for class merging

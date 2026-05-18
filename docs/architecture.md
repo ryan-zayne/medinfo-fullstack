@@ -1,8 +1,8 @@
 # Project Architecture
 
-This document provides an overview of MedInfo's codebase structure, architecture patterns, and development guidelines.
+This document provides an overview of the MedInfo codebase structure, architecture patterns, and development guidelines.
 
-## 🏗️ Project Overview
+## Project Overview
 
 MedInfo Nigeria connects patients with certified doctors for virtual consultations, provides a medical information library, and supports appointment scheduling with video conferencing.
 
@@ -23,10 +23,10 @@ MedInfo Nigeria connects patients with certified doctors for virtual consultatio
 
 ---
 
-## 📁 Monorepo Structure
+## Monorepo Structure
 
-```
-medinfo-fullstack/
+```text
+medinfo/
 ├── apps/
 │   ├── backend/          # Hono API server
 │   │   └── src/
@@ -76,7 +76,7 @@ medinfo-fullstack/
 
 ---
 
-## 🏛️ Architecture Patterns
+## Architecture Patterns
 
 ### Backend Architecture
 
@@ -122,7 +122,7 @@ medinfo-fullstack/
 
 ---
 
-## 🔄 Development Workflow
+## Development Workflow
 
 ### Package Management
 
@@ -150,7 +150,7 @@ medinfo-fullstack/
 
 ---
 
-## 🔧 Key Integrations
+## Key Integrations
 
 ### Authentication Flow
 
@@ -182,7 +182,7 @@ medinfo-fullstack/
 
 ---
 
-## 🎯 Development Guidelines
+## Development Guidelines
 
 ### Code Organization
 
@@ -240,7 +240,7 @@ medinfo-fullstack/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 For complete setup instructions, see:
 

@@ -1,10 +1,10 @@
 # @medinfo/backend
 
-The backend API server for MedInfo, built with **Hono** and **Node.js**.
+The backend API server for MedInfo, built with Hono and Node.js.
 
-## 🚀 Features
+## Features
 
-- **Framework**: Hono (Lightweight & Fast)
+- **Framework**: Hono
 - **Database**: PostgreSQL with Drizzle ORM
 - **Authentication**: JWT & OAuth (Google)
 - **Validation**: Zod (Shared with frontend)
@@ -12,9 +12,9 @@ The backend API server for MedInfo, built with **Hono** and **Node.js**.
 - **Cloud Storage**: Cloudinary integration
 - **Logging**: Pino logger
 
-## 📂 Project Structure
+## Project Structure
 
-```
+```text
 apps/backend/src/
 ├── app/               # Feature-based modules (routes, services)
 │   ├── auth/          # Authentication logic
@@ -28,11 +28,11 @@ apps/backend/src/
 └── server.ts          # Entry point
 ```
 
-## 🛠️ Scripts
+## Scripts
 
 ```bash
 # Development
-pnpm dev          # Start server in watch mode (localhost:8000)
+pnpm dev          # Start server in watch mode
 
 # Build
 pnpm build        # Build using tsdown
@@ -44,12 +44,13 @@ pnpm lint:format  # Format code with Prettier
 pnpm lint:type-check # Run TypeScript type checking
 ```
 
-## 🧪 API Documentation
+## API Documentation
 
-This project uses **Bruno** for API testing and documentation.
+This project uses Bruno for API testing and documentation.
 You can find the collection in the root directory under `(bruno)-(medinfo)`.
 
-## 🧠 AI Services
+## AI Services
 
 The backend integrates with HuggingFace for AI capabilities.
 Configuration can be found in `src/services/ai/huggingFace.ts`.
+

@@ -92,11 +92,4 @@ REDIS_CACHE_URL_DEV=redis://medinfo-redis-cache:6379
 REDIS_QUEUE_URL_DEV=redis://medinfo-redis-queue:6379
 ```
 
-## Security Notes
-
-- Never commit `.env` file to version control
-- Use different secrets for development and production
-- Rotate secrets periodically in production
-- Keep API keys secure and limit permissions
-
 For troubleshooting environment variable issues, see [troubleshooting.md](./troubleshooting.md).
